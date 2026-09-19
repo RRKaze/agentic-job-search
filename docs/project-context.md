@@ -1,6 +1,6 @@
 # Project Context and Progress
 
-Last canonicalized: 2026-09-12
+Last canonicalized: 2026-09-19
 
 This document records the durable product context, current progress, and major decisions for the Agentic Job Search Workflow. `AGENTS.md` contains concise instructions for coding agents; this file provides the fuller context behind those instructions.
 
@@ -50,24 +50,24 @@ Resume value must come from real architecture, state management, scoring, data m
 
 ## 3. Candidate positioning
 
-Current canonical positioning:
+The public repository ships with a fictional demo profile configured for:
 
 - Primary level: Senior Software Engineer
 - Strongest families: Backend, Platform, Identity/Authentication, Distributed Systems
 - Selective backup: SWE III / mid-senior roles with strong fit
 - Staff/Principal: not a primary target
-- Sponsorship: not required; candidate is a U.S. citizen
+- Sponsorship preference: configurable demo value
 - Support/on-call: unusually heavy support/on-call expectations should reduce ranking/application priority
 
-The system should emphasize backend/platform/identity/distributed-systems depth rather than generic full-stack breadth.
+These are product defaults, not claims about a real person. Real identity, employment, authorization, and preference data must remain outside the public fixture.
 
-## 4. Verified candidate evidence
+## 4. Fictional demo evidence
 
-The system may use the following evidence as currently verified context, subject to future corrections.
+The checked-in seed data exists only to demonstrate scoring behavior and must not be presented as a real person's resume.
 
 ### Current role and stack
 
-- Senior Software Engineer at UKG, Jan 2022–present
+- Senior Software Engineer at Example Corp
 - C#, .NET / ASP.NET Core
 - REST APIs
 - SQL
@@ -76,7 +76,7 @@ The system may use the following evidence as currently verified context, subject
 
 ### Authentication modernization
 
-- Authentication modernization/migration supporting 1,000+ enterprise companies/tenants
+- Authentication modernization/migration supporting fictional enterprise tenants
 - Staged readiness checks
 - Remediation before/during migration
 - Asynchronous synchronization
@@ -86,7 +86,7 @@ The system may use the following evidence as currently verified context, subject
 ### Messaging and distributed processing
 
 - Authentication service functions as both producer and consumer
-- Uses the company’s internally built/self-hosted messaging/eventing system
+- Uses a fictional internal messaging/eventing system
 - Jobs are enqueued and picked up by backend C# workers/processors
 - Significant data processing and data cleaning occurs in these flows
 - Workflows mix asynchronous and synchronous processing
@@ -110,12 +110,12 @@ The system may use the following evidence as currently verified context, subject
 
 - Product/design partnership works backward from desired outcomes to identify technical gaps, dependencies, edge cases, and timeline tradeoffs
 - Mentoring, onboarding, and documentation are supporting evidence
-- Cross-team collaboration at 20+ team scale appeared in prior resume material; treat cautiously and verify before emphasizing
+- Cross-team collaboration is included as a fictional demonstration category
 
 ### CI/CD
 
-- TeamCity CI/CD automation experience
-- A prior claim of approximately 40% deployment/operational-effort improvement exists; retain only when evidence remains supportable
+- CI/CD automation experience
+- No performance metric may be added without evidence supplied by the user
 
 ## 5. Evidence integrity requirements
 
@@ -138,22 +138,22 @@ A future implementation should make provenance/verification explicit in the cand
 
 ## 6. Job Search state relevant to the system
 
-The real Job Search currently has:
+A new fictional demo profile starts with:
 
 - 0 applications
 - 0 screens
 - 0 interviews
 - 0 offers
 
-This is an initial state rather than negative market feedback; the candidate/resume foundation was established before starting targeted applications.
+This empty state demonstrates onboarding and must not be interpreted as a real person's job-search activity.
 
-Current real-world sequence:
+Representative product workflow:
 
-1. Finish usable Senior SWE resume v2.
-2. Submit the first 2–3 strong-fit targeted applications.
+1. Import or create a verified candidate profile.
+2. Review and submit strong-fit applications.
 3. Record outcomes and feedback.
 4. Iterate ranking/resume strategy from real market signals.
-5. Move toward a sustainable target of roughly 1–2 applications per day.
+5. Let each user configure a sustainable activity target.
 
 The existing career tracker conceptually contains:
 
@@ -202,9 +202,9 @@ A job may be a strong skills match but low priority because of factors such as s
 
 ### Persistence
 
-Start with SQLite for v0.1.
+Use PostgreSQL with EF Core for v0.1.
 
-PostgreSQL is a possible later migration if concurrency, deployment, multi-user behavior, scale, or other requirements justify it.
+This supersedes the earlier SQLite starting point because the current direction prioritizes enterprise-transferable tooling and a cleaner path toward a generalized multi-user product. Keep the rest of the infrastructure lightweight until requirements justify it.
 
 ### Automation boundary
 
@@ -217,27 +217,27 @@ First establish reliable discovery/scoring/tracking/feedback. Any future submiss
 | Workstream | State | Approx. progress |
 | --- | --- | ---: |
 | Goals & success criteria | Complete | 100% |
-| System architecture | In progress | 25% |
-| Data contracts / schemas | Not started | 0% |
-| Scoring engine | Not started | 0% |
-| Persistence | Not started | 0% |
+| System architecture | In progress | 50% |
+| Data contracts / schemas | Initial V0.1 models implemented | 40% |
+| Scoring engine | Deterministic V0.1 implemented | 35% |
+| Persistence | PostgreSQL/EF Core implemented | 40% |
 | Resume tailoring | Not started | 0% |
 | Browser automation | Deferred | 0% |
 
 ## 9. Immediate v0.1 milestone
 
-Before building substantial application code:
+The first implemented slice is:
 
-1. define system boundaries
-2. define the primary data flow
-3. define `CandidateProfile`
-4. define `Job`
-5. define `Application`
-6. define `Feedback`
-7. identify state transitions and invariants
-8. identify what scoring is deterministic versus model-assisted
+1. maintain a seeded candidate profile with verified evidence
+2. manually add a job description
+3. normalize job fields
+4. run deterministic eligibility and scoring
+5. persist the job and evaluation through EF Core/PostgreSQL
+6. display the recommendation in Angular
 
-After these contracts are understood, implementation should proceed in small testable slices.
+The slice is now functional locally. Next work should replace development-time schema creation with migrations, add integration coverage, and make candidate evidence editable with explicit provenance and verification status. Model-assisted semantic scoring comes later, behind inspectable interfaces and a repeatable evaluation set.
+
+The ordered delivery plan is maintained in [`roadmap.md`](roadmap.md).
 
 ## 10. Near-term design questions
 

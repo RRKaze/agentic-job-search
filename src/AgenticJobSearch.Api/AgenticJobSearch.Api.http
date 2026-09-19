@@ -1,0 +1,6 @@
+@AgenticJobSearch.Api_HostAddress = http://localhost:0
+
+GET {{AgenticJobSearch.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

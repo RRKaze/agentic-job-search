@@ -16,7 +16,7 @@ The first version focuses on the foundations:
 - a workflow/state-machine approach instead of one large prompt
 - hard filters + deterministic scoring + LLM semantic scoring
 - separate **job fit** from **application priority**
-- SQLite-backed persistence
+- PostgreSQL-backed persistence through EF Core
 - feedback and application outcomes as first-class data
 - evidence-grounded resume tailoring
 
@@ -27,16 +27,149 @@ Browser/application automation comes later, after scoring and tracking are relia
 | Area | Status |
 | --- | --- |
 | Goals & success criteria | Complete |
-| System architecture | In progress (~25%) |
-| Data contracts / schemas | Not started |
-| Scoring engine | Not started |
-| Persistence | Not started |
+| System architecture | In progress (~40%) |
+| Data contracts / schemas | Initial models implemented |
+| Scoring engine | Deterministic V0.1 implemented |
+| Persistence | PostgreSQL/EF Core implemented |
 | Resume tailoring | Not started |
 | Browser automation | Deferred / low priority |
 
 ### Current milestone
 
-Define the v0.1 system boundaries and data flow, then define the initial contracts for `CandidateProfile`, `Job`, `Application`, and `Feedback` before substantial implementation begins.
+Harden the implemented manual intake slice, then add an editable, evidence-backed candidate profile. See [`docs/roadmap.md`](docs/roadmap.md) for the ordered plan.
+
+## Run locally
+
+The first implemented vertical slice is split into an ASP.NET Core API and an Angular frontend.
+
+### Prerequisites
+
+Install and start:
+
+- Docker Desktop
+- .NET 9 SDK
+- Node.js 22 LTS with npm
+
+Clone the repository and enter its root directory before running the commands below.
+
+### First-time setup
+
+Install the frontend packages:
+
+```bash
+cd apps/web
+npm install
+cd ../..
+```
+
+The .NET packages restore automatically when the API is first run. You can also restore them explicitly with `dotnet restore AgenticJobSearch.sln`.
+
+### Start the application
+
+Use three terminal windows and leave the API and frontend processes running while you use the application.
+
+1. From the repository root, start PostgreSQL and the database viewer:
+
+   ```bash
+   docker compose up -d postgres adminer
+   ```
+
+2. From the repository root, start the API:
+
+   ```bash
+   dotnet run --project src/AgenticJobSearch.Api
+   ```
+
+   The API listens on `http://localhost:5156`.
+
+3. From `apps/web`, start the Angular app:
+
+   ```bash
+   cd apps/web
+   npm start
+   ```
+
+Open these local URLs:
+
+| Service | URL | Purpose |
+| --- | --- | --- |
+| Application | http://localhost:4200 | Add, score, and review jobs |
+| API health | http://localhost:5156/api/health | Confirm the backend is responding |
+| Saved jobs API | http://localhost:5156/api/jobs | Inspect saved job JSON |
+| Database viewer | http://localhost:8080 | Browse PostgreSQL tables and rows |
+
+### View database data
+
+Open Adminer at `http://localhost:8080` and sign in with these local-development values:
+
+| Field | Value |
+| --- | --- |
+| System | PostgreSQL |
+| Server | `postgres` |
+| Username | `agentic` |
+| Password | `agentic` |
+| Database | `agentic_job_search` |
+
+Select a table and choose **Select data**. The most useful tables are `Jobs`, `JobEvaluations`, `JobEvaluationFactors`, `CandidateProfiles`, and `CandidateEvidence`.
+
+These credentials are only for local development. Production credentials must be supplied through secure configuration and must not be committed.
+
+### Stop the application
+
+1. Press `Ctrl+C` in the Angular terminal.
+2. Press `Ctrl+C` in the API terminal.
+3. From the repository root, stop the Docker services:
+
+   ```bash
+   docker compose down
+   ```
+
+`docker compose down` preserves the PostgreSQL data volume. The next startup will retain saved jobs.
+
+To deliberately delete all local database data and start fresh, run:
+
+```bash
+docker compose down --volumes
+```
+
+This reset command is destructive and cannot recover the deleted local data.
+
+## Basic usage
+
+1. Open `http://localhost:4200`.
+2. Enter a title, company, location, and source URL when available.
+3. Paste the complete job description. This is the only required field.
+4. Submit the form.
+5. Review eligibility, fit score, application priority, recommendation, explanation, and scoring factors.
+6. Select earlier jobs from the recent-jobs list to compare results.
+
+The current scorer is deterministic and inspectable. It does not yet call an LLM or tailor resumes.
+
+## Verify the project
+
+Run backend tests from the repository root:
+
+```bash
+dotnet test tests/AgenticJobSearch.Tests
+```
+
+Build the frontend from `apps/web`:
+
+```bash
+npm run build
+```
+
+## Troubleshooting
+
+If the UI says it cannot load jobs:
+
+- Confirm the API terminal says `Now listening on: http://localhost:5156`.
+- Open `http://localhost:5156/api/health` and confirm it returns a JSON response.
+- Confirm PostgreSQL is healthy with `docker compose ps`.
+
+If Docker reports that port `5432`, `8080`, `5156`, or `4200` is already in use, stop the other process using that port before starting this project.
+
+The Angular CLI currently warns when run on Node 23 because it is not an LTS Node release. The app builds successfully, but Node 22 LTS is the better local development target.
 
 ## Design principles
 
