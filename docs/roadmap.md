@@ -21,13 +21,13 @@ Goal: make the current slice dependable enough to use for real job evaluation an
 
 Deliverables:
 
-1. Replace `EnsureCreated` with versioned EF Core migrations.
-2. Add API integration tests backed by PostgreSQL/Testcontainers.
-3. Add request validation and consistent API error responses.
-4. Move local configuration into documented environment-based settings.
-5. Add structured logs and correlation identifiers for a submitted job.
-6. Add a small, versioned scoring fixture set to detect ranking regressions.
-7. Add CI that builds the API and UI and runs tests for every pull request.
+- [x] Replace `EnsureCreated` with versioned EF Core migrations.
+- [x] Add API integration tests backed by PostgreSQL/Testcontainers.
+- [x] Add request validation and consistent API error responses.
+- [ ] Move local configuration into documented environment-based settings.
+- [ ] Add structured logs and correlation identifiers for a submitted job.
+- [ ] Add a small, versioned scoring fixture set to detect ranking regressions.
+- [x] Add CI that builds the API and UI and runs tests for every pull request.
 
 Exit criteria:
 
