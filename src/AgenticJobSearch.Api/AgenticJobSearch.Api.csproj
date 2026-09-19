@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\AgenticJobSearch.Application\AgenticJobSearch.Application.csproj" />
+    <ProjectReference Include="..\AgenticJobSearch.Domain\AgenticJobSearch.Domain.csproj" />
+    <ProjectReference Include="..\AgenticJobSearch.Infrastructure\AgenticJobSearch.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+</Project>

@@ -12,35 +12,27 @@ There are two distinct projects:
 
 Do not collapse these projects. Job Search remains the source of truth for real-world career decisions and verified candidate evidence.
 
-## Candidate Positioning
-- Primary target: Senior Software Engineer.
-- Best-fit families: Senior Backend, Platform, Identity/Authentication, Distributed Systems.
-- Selective backup: SWE III / mid-senior when fit is strong.
-- Staff/Principal is not a primary target.
-- Penalize unusually heavy support/on-call roles.
-- U.S. citizen; sponsorship is not required.
+## Demo Candidate Defaults
+The checked-in candidate profile is fictional public demo data. Its defaults target Senior Software Engineer roles in backend, platform, identity/authentication, and distributed systems. It treats unusually heavy support/on-call expectations as a negative ranking factor.
+
+Real candidate identity, employment history, authorization status, preferences, and evidence must be supplied outside the public seed data. Do not commit personal candidate data without explicit approval.
 
 ## Evidence Safety Rule
 Resume tailoring must use verified evidence only. Never invent or inflate technologies, ownership, scope, scale, metrics, architectural mechanisms, or business outcomes. When evidence is uncertain, preserve the uncertainty or omit the claim.
 
 Example: transactional rollback/recovery semantics may be described when verified, but do not claim a specific `.NET TransactionScope` implementation unless explicitly confirmed.
 
-## Verified Candidate Evidence
-- Senior Software Engineer at UKG, Jan 2022–present.
-- Production C#, .NET / ASP.NET Core, REST APIs, SQL.
-- Production React / TypeScript / JavaScript; Python experience/project use.
-- Authentication modernization/migration supporting 1,000+ enterprise tenants/companies.
-- Migration flow includes staged readiness checks, remediation, asynchronous synchronization, validation, and feature-flag recovery.
-- Producer/consumer async workflows with selective retry for transient failures and remediation paths for data-validation failures.
-- User-level transactional processing; incomplete operations can roll back on timeout while preserving migration recovery semantics.
-- Authentication service participates as producer and consumer in an internally built/self-hosted messaging/eventing system.
-- Backend C# workers/processors pick up enqueued jobs and perform data processing/cleaning with mixed async/sync flows.
-- Deep production/system/data diagnosis across authentication migration workflows, targeted remediation, and systemic follow-up.
-- Product/design partnership working backward from desired outcomes to identify technical gaps, dependencies, edge cases, and timeline tradeoffs.
-- SRE/production incident and customer escalation experience.
-- TeamCity CI/CD automation; prior ~40% deployment/operational-effort improvement claim must only be used if evidence remains supportable.
-- Cross-team collaboration at 20+ team scale appeared in prior resume material; use cautiously and truthfully.
-- Mentoring/onboarding/documentation are supporting evidence, not core positioning.
+## Fictional Demo Evidence
+The public seed may use only clearly fictional, non-identifying statements such as:
+
+- backend development with C#, .NET / ASP.NET Core, REST APIs, and SQL
+- frontend experience with React, TypeScript, and JavaScript
+- authentication and authorization workflow experience
+- producer/consumer processing, retry handling, and data validation
+- production diagnosis, incident response, and customer support
+- product and design collaboration around requirements and tradeoffs
+
+This fixture exists to demonstrate product behavior. It must never be presented as a real person's resume or employment record.
 
 ## Architecture Principles
 Design this as a workflow/state machine rather than one giant prompt.
@@ -53,16 +45,16 @@ Core domain concepts should include at minimum:
 
 Scoring should combine hard filters, deterministic scoring, and LLM semantic scoring. Keep **fit score** separate from **application priority**.
 
-Start persistence with SQLite. Consider PostgreSQL only if requirements justify it.
+Use PostgreSQL with EF Core for v0.1 because the current implementation direction prioritizes enterprise-transferable tooling and a path toward a generalized multi-user product. Avoid adding heavier infrastructure until requirements justify it.
 
 Browser/application automation is intentionally low priority. Build scoring, state tracking, and feedback loops first. Keep human approval before application submission.
 
 ## Current Engineering Progress
 - Goals & success criteria — Complete
-- System architecture — In Progress (~25%)
-- Data contracts/schemas — Not Started
-- Scoring engine — Not Started
-- Persistence — Not Started
+- System architecture — In Progress
+- Data contracts/schemas — Started
+- Scoring engine — Started
+- Persistence — Started
 - Resume tailoring — Not Started
 - Browser automation — Not Started; intentionally low priority
 
@@ -82,4 +74,4 @@ Define v0.1 system boundaries and data flow, then define schemas/contracts for C
 10. Never generate candidate claims unsupported by verified evidence.
 
 ## Current Next Action
-Start with the v0.1 architecture/data-contract design. Implementation should emerge from those contracts rather than ad-hoc prompt orchestration.
+Continue the v0.1 vertical slice from the implemented manual job intake path: improve API/UI usability, add persistence migrations, and keep deterministic scoring covered by tests before adding LLM-assisted evaluation.

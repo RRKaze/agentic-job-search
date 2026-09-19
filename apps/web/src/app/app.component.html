@@ -1,0 +1,127 @@
+<main class="app-shell">
+  <section class="workspace">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Agentic Job Search</p>
+        <h1>Job fit review</h1>
+      </div>
+      <div class="status-pill">V0.1</div>
+    </header>
+
+    <section class="entry-panel">
+      <div class="panel-heading">
+        <h2>Add a job</h2>
+        <span>Manual intake</span>
+      </div>
+
+      <form (ngSubmit)="addJob()" class="job-form">
+        <div class="field-grid">
+          <label>
+            <span>Title</span>
+            <input name="title" [(ngModel)]="form.title" placeholder="Senior Backend Engineer">
+          </label>
+
+          <label>
+            <span>Company</span>
+            <input name="company" [(ngModel)]="form.company" placeholder="Company name">
+          </label>
+
+          <label>
+            <span>Location</span>
+            <input name="location" [(ngModel)]="form.location" placeholder="Remote, US">
+          </label>
+
+          <label>
+            <span>URL</span>
+            <input name="sourceUrl" [(ngModel)]="form.sourceUrl" placeholder="https://...">
+          </label>
+        </div>
+
+        <label>
+          <span>Job description</span>
+          <textarea name="sourceText" [(ngModel)]="form.sourceText" rows="11" placeholder="Paste the job description here"></textarea>
+        </label>
+
+        @if (error()) {
+          <p class="error">{{ error() }}</p>
+        }
+
+        <div class="actions">
+          <button type="submit" [disabled]="isSaving()">
+            {{ isSaving() ? 'Scoring...' : 'Score job' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </section>
+
+  <aside class="results-panel">
+    <section class="summary-strip">
+      <div>
+        <span class="metric-label">Tracked</span>
+        <strong>{{ jobs().length }}</strong>
+      </div>
+      <div>
+        <span class="metric-label">Selected</span>
+        <strong>{{ selectedJob()?.fitScore ?? 0 }}</strong>
+      </div>
+    </section>
+
+    @if (selectedJob(); as job) {
+      <section class="result-detail">
+        <div class="recommendation">
+          <span>{{ job.eligibility }}</span>
+          <h2>{{ job.recommendation }}</h2>
+          <p>{{ job.title }} · {{ job.company }}</p>
+        </div>
+
+        <div class="score-grid">
+          <div>
+            <span>Fit</span>
+            <strong>{{ job.fitScore }}</strong>
+          </div>
+          <div>
+            <span>Priority</span>
+            <strong>{{ job.applicationPriority }}</strong>
+          </div>
+          <div>
+            <span>State</span>
+            <strong>{{ job.lifecycleState }}</strong>
+          </div>
+        </div>
+
+        <p class="explanation">{{ job.explanation }}</p>
+
+        <div class="factor-list">
+          <h3>Signals</h3>
+          @for (factor of job.factors; track factor.name) {
+            <div class="factor-row">
+              <div>
+                <strong>{{ factor.name }}</strong>
+                <p>{{ factor.rationale }}</p>
+              </div>
+              <span [class.negative]="factor.scoreImpact < 0">{{ factor.scoreImpact > 0 ? '+' : '' }}{{ factor.scoreImpact }}</span>
+            </div>
+          }
+        </div>
+      </section>
+    } @else {
+      <section class="empty-state">
+        <h2>No jobs scored yet</h2>
+        <p>Paste a role on the left to create the first saved evaluation.</p>
+      </section>
+    }
+
+    @if (jobs().length > 0) {
+      <section class="job-list">
+        <h3>Recent jobs</h3>
+        @for (job of jobs(); track job.id) {
+          <button type="button" (click)="selectJob(job)" [class.active]="selectedJob()?.id === job.id">
+            <span>{{ job.title }}</span>
+            <strong>{{ job.fitScore }}</strong>
+          </button>
+        }
+      </section>
+    }
+  </aside>
+</main>

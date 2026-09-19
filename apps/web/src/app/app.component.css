@@ -1,0 +1,297 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  color: #1d2433;
+  background: #f4f6f8;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 430px;
+  min-height: 100vh;
+}
+
+.workspace {
+  padding: 32px;
+}
+
+.page-header,
+.panel-heading,
+.actions,
+.summary-strip,
+.factor-row,
+.job-list button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-header {
+  margin-bottom: 28px;
+}
+
+.eyebrow,
+.metric-label,
+label span,
+.panel-heading span {
+  color: #617084;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.2rem;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: 1.15rem;
+}
+
+.status-pill {
+  border: 1px solid #cad2dc;
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #354255;
+  background: #ffffff;
+  font-weight: 700;
+}
+
+.entry-panel,
+.result-detail,
+.empty-state,
+.job-list {
+  border: 1px solid #d9e0e8;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.entry-panel {
+  padding: 24px;
+}
+
+.panel-heading {
+  margin-bottom: 22px;
+}
+
+.job-form {
+  display: grid;
+  gap: 18px;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+}
+
+input,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cbd5df;
+  border-radius: 6px;
+  padding: 12px 13px;
+  color: #1d2433;
+  background: #ffffff;
+  font: inherit;
+}
+
+textarea {
+  min-height: 260px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #2563eb;
+  outline: 3px solid rgba(37, 99, 235, 0.15);
+}
+
+button {
+  border: 0;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.actions button {
+  padding: 12px 18px;
+  color: #ffffff;
+  background: #1f6feb;
+}
+
+.error {
+  border-left: 4px solid #dc2626;
+  padding: 10px 12px;
+  color: #991b1b;
+  background: #fef2f2;
+}
+
+.results-panel {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  border-left: 1px solid #d9e0e8;
+  padding: 32px 24px;
+  background: #eef2f5;
+}
+
+.summary-strip {
+  gap: 12px;
+}
+
+.summary-strip > div {
+  flex: 1;
+  border: 1px solid #d9e0e8;
+  border-radius: 8px;
+  padding: 14px;
+  background: #ffffff;
+}
+
+.summary-strip strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.7rem;
+}
+
+.result-detail,
+.empty-state,
+.job-list {
+  padding: 18px;
+}
+
+.recommendation {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.recommendation span {
+  color: #2563eb;
+  font-weight: 800;
+}
+
+.recommendation p,
+.explanation,
+.factor-row p,
+.empty-state p {
+  color: #526174;
+  line-height: 1.45;
+}
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.score-grid div {
+  border: 1px solid #d9e0e8;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.score-grid span {
+  display: block;
+  color: #617084;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.score-grid strong {
+  display: block;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.factor-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.factor-row {
+  gap: 12px;
+  border-top: 1px solid #e3e8ef;
+  padding-top: 12px;
+}
+
+.factor-row > span {
+  color: #047857;
+  font-weight: 900;
+}
+
+.factor-row > span.negative {
+  color: #b91c1c;
+}
+
+.job-list {
+  display: grid;
+  gap: 10px;
+}
+
+.job-list button {
+  gap: 12px;
+  width: 100%;
+  border: 1px solid #d9e0e8;
+  padding: 12px;
+  color: #1d2433;
+  background: #ffffff;
+  text-align: left;
+}
+
+.job-list button.active {
+  border-color: #1f6feb;
+  background: #eff6ff;
+}
+
+.job-list button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 980px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .results-panel {
+    border-left: 0;
+    border-top: 1px solid #d9e0e8;
+  }
+}
+
+@media (max-width: 680px) {
+  .workspace,
+  .results-panel {
+    padding: 20px;
+  }
+
+  .field-grid,
+  .score-grid {
+    grid-template-columns: 1fr;
+  }
+}
