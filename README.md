@@ -64,6 +64,14 @@ cd ../..
 
 The .NET packages restore automatically when the API is first run. You can also restore them explicitly with `dotnet restore AgenticJobSearch.sln`.
 
+If your local database was created before EF Core migrations were introduced, reset the development volume once before starting this version:
+
+```bash
+docker compose down --volumes
+```
+
+This deletes local development data. It is not required for a fresh clone or for databases already managed by migrations.
+
 ### Start the application
 
 Use three terminal windows and leave the API and frontend processes running while you use the application.
@@ -81,6 +89,8 @@ Use three terminal windows and leave the API and frontend processes running whil
    ```
 
    The API listens on `http://localhost:5156`.
+
+   The API applies pending EF Core migrations during startup.
 
 3. From `apps/web`, start the Angular app:
 
@@ -153,6 +163,14 @@ Run backend tests from the repository root:
 dotnet test tests/AgenticJobSearch.Tests
 ```
 
+Run PostgreSQL-backed API integration tests while Docker Desktop is running:
+
+```bash
+dotnet test tests/AgenticJobSearch.Api.IntegrationTests
+```
+
+The integration tests create and remove their own disposable PostgreSQL container. They do not use the local development database.
+
 Build the frontend from `apps/web`:
 
 ```bash
@@ -170,6 +188,25 @@ If the UI says it cannot load jobs:
 If Docker reports that port `5432`, `8080`, `5156`, or `4200` is already in use, stop the other process using that port before starting this project.
 
 The Angular CLI currently warns when run on Node 23 because it is not an LTS Node release. The app builds successfully, but Node 22 LTS is the better local development target.
+
+## Database migrations
+
+The repository pins the EF Core CLI as a local .NET tool. Restore it once after cloning:
+
+```bash
+dotnet tool restore
+```
+
+After changing the EF Core model, create and review a migration before committing:
+
+```bash
+dotnet tool run dotnet-ef migrations add MigrationName \
+  --project src/AgenticJobSearch.Infrastructure \
+  --startup-project src/AgenticJobSearch.Api \
+  --output-dir Persistence/Migrations
+```
+
+Application startup applies pending migrations. Production deployment policy may move migration execution into a dedicated release step as the deployment model matures.
 
 ## Design principles
 

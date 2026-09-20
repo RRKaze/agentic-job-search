@@ -4,11 +4,13 @@ using AgenticJobSearch.Application.Candidates;
 using AgenticJobSearch.Application.Jobs;
 using AgenticJobSearch.Infrastructure;
 using AgenticJobSearch.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddProblemDetails();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -31,11 +33,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    await using var scope = app.Services.CreateAsyncScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<JobSearchDbContext>();
-    await dbContext.Database.EnsureCreatedAsync();
 }
 
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<JobSearchDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
+
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 app.UseCors();
 
 var api = app.MapGroup("/api");
@@ -57,6 +64,12 @@ api.MapPost("/jobs", async (
     AddJobHandler handler,
     CancellationToken cancellationToken) =>
 {
+    var validationErrors = AddJobRequestValidator.Validate(request);
+    if (validationErrors.Count > 0)
+    {
+        return Results.ValidationProblem(validationErrors);
+    }
+
     try
     {
         var job = await handler.HandleAsync(request, cancellationToken);
