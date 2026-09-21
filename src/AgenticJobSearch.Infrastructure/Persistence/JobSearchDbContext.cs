@@ -13,8 +13,16 @@ public sealed class JobSearchDbContext(DbContextOptions<JobSearchDbContext> opti
     public DbSet<Domain.Application> Applications => Set<Domain.Application>();
     public DbSet<Feedback> Feedback => Set<Feedback>();
 
+    public DbSet<ImportCheckpoint> ImportCheckpoints => Set<ImportCheckpoint>();
+    public DbSet<TrackingChange> TrackingChanges => Set<TrackingChange>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ImportCheckpoint>().HasKey(x => x.Source);
+        modelBuilder.Entity<Job>().HasIndex(x => new { x.SourceRepository, x.ExternalId }).IsUnique();
+        modelBuilder.Entity<Domain.Application>().HasIndex(x => new { x.SourceRepository, x.ExternalId }).IsUnique();
+        modelBuilder.Entity<Job>().Property(x => x.ImportedRecord).HasColumnType("jsonb");
+        modelBuilder.Entity<Domain.Application>().Property(x => x.ImportedRecord).HasColumnType("jsonb");
         modelBuilder.Entity<CandidateProfile>(entity =>
         {
             entity.Property(item => item.DisplayName).HasMaxLength(200);
@@ -37,10 +45,10 @@ public sealed class JobSearchDbContext(DbContextOptions<JobSearchDbContext> opti
         modelBuilder.Entity<Job>(entity =>
         {
             entity.Property(item => item.SourceText).HasMaxLength(20000);
-            entity.Property(item => item.SourceUrl).HasMaxLength(1000);
-            entity.Property(item => item.Title).HasMaxLength(300);
-            entity.Property(item => item.Company).HasMaxLength(300);
-            entity.Property(item => item.Location).HasMaxLength(300);
+            entity.Property(item => item.SourceUrl).HasMaxLength(2048);
+            entity.Property(item => item.Title).HasMaxLength(500);
+            entity.Property(item => item.Company).HasMaxLength(500);
+            entity.Property(item => item.Location).HasMaxLength(500);
             entity.Property(item => item.Seniority).HasMaxLength(80);
             entity.Property(item => item.WorkMode).HasConversion<string>().HasMaxLength(40);
             entity.Property(item => item.LifecycleState).HasConversion<string>().HasMaxLength(40);

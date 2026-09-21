@@ -224,3 +224,8 @@ This project succeeds only if it does both:
 
 1. materially improves the efficiency and outcomes of the real job search; and
 2. reaches enough engineering depth and quality to be credibly showcased as a public Senior Software Engineer project.
+
+
+## Temporary GitHub record import
+
+The manual-import API and disposable runner test artifact are described in [the import handoff](docs/import-api-handoff.md) and [v1 contract](docs/job-record-import-contract-v1.md). This is a temporary GitHub-to-database bridge; database-to-GitHub write-back is intentionally excluded. The dashboard integration and hosting are separate milestones.
