@@ -44,6 +44,42 @@ public sealed class ApiFixture : IAsyncLifetime
             """);
     }
 
+    public async Task SeedTrackedApplicationAsync()
+    {
+        await using var scope = application!.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<JobSearchDbContext>();
+        var job = new AgenticJobSearch.Domain.Job
+        {
+            Id = Guid.NewGuid(),
+            ExternalId = "JOB-DASHBOARD",
+            SourceRepository = "RRKaze/job-search",
+            Title = "Platform Engineer",
+            Company = "Fictional Systems",
+            Location = "Remote",
+            SourceUrl = "https://example.com/jobs/platform",
+            TrackingStage = "interviewing",
+            Priority = "high",
+            FitRationale = "Matches the fictional candidate's backend experience.",
+            GapsNotes = "Clarify the on-call rotation.",
+            StatusDate = new DateOnly(2026, 9, 21),
+            VerifiedDate = new DateOnly(2026, 9, 20)
+        };
+        job.Application = new AgenticJobSearch.Domain.Application
+        {
+            Id = Guid.NewGuid(),
+            ExternalId = "APP-DASHBOARD",
+            SourceRepository = "RRKaze/job-search",
+            JobId = job.Id,
+            State = AgenticJobSearch.Domain.ApplicationState.Interview,
+            SubmittedDate = new DateOnly(2026, 9, 18),
+            ResumeVersion = "platform-v1",
+            NextFollowUp = new DateOnly(2026, 9, 25),
+            Notes = "Fictional recruiter screen scheduled."
+        };
+        db.Jobs.Add(job);
+        await db.SaveChangesAsync();
+    }
+
     public async Task AssertImportedStateAsync()
     {
         await using var scope = application!.Services.CreateAsyncScope();

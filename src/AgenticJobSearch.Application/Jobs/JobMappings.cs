@@ -10,9 +10,28 @@ public static class JobMappings
 
         return new JobDto(
             job.Id,
+            job.ExternalId,
             job.Title,
             job.Company,
             job.Location,
+            job.SourceUrl,
+            job.TrackingStage,
+            job.SalaryText,
+            job.Priority,
+            job.FitRationale,
+            job.GapsNotes,
+            job.StatusDate,
+            job.VerifiedDate,
+            job.Application is null
+                ? null
+                : new ApplicationSummaryDto(
+                    job.Application.ExternalId,
+                    job.Application.State,
+                    job.Application.SubmittedDate,
+                    job.Application.ResumeVersion,
+                    job.Application.NextFollowUp,
+                    job.Application.Outcome,
+                    job.Application.Notes),
             job.Seniority,
             job.WorkMode,
             job.LifecycleState,

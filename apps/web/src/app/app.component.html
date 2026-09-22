@@ -1,127 +1,103 @@
 <main class="app-shell">
+  <aside class="sidebar">
+    <div class="brand-mark">A</div>
+    <div class="brand-copy"><strong>Agentic Job Search</strong><span>Personal workspace</span></div>
+    <nav aria-label="Main navigation">
+      <button class="nav-item active" type="button"><span>⌂</span> Dashboard</button>
+      <span class="nav-item inactive" aria-disabled="true"><span>◎</span> Applications</span>
+      <span class="nav-item inactive" aria-disabled="true"><span>◇</span> Job discovery</span>
+      <span class="nav-item inactive" aria-disabled="true"><span>□</span> Resumes</span>
+    </nav>
+    <div class="sync-card"><div><strong>Local workspace</strong><small>Refresh after each import</small></div></div>
+  </aside>
+
   <section class="workspace">
     <header class="page-header">
-      <div>
-        <p class="eyebrow">Agentic Job Search</p>
-        <h1>Job fit review</h1>
+      <div><p class="eyebrow">Your job search</p><h1>Application tracker</h1><p class="subheading">See what needs attention and where each opportunity stands.</p></div>
+      <div class="header-actions">
+        <button type="button" class="secondary-button" (click)="loadJobs()">↻ Refresh</button>
+        <button type="button" class="primary-button" (click)="showAddJob.set(!showAddJob())">{{ showAddJob() ? 'Close' : '+ Add job' }}</button>
       </div>
-      <div class="status-pill">V0.1</div>
     </header>
 
-    <section class="entry-panel">
-      <div class="panel-heading">
-        <h2>Add a job</h2>
-        <span>Manual intake</span>
-      </div>
+    @if (showAddJob()) {
+      <section class="entry-panel">
+        <div class="panel-heading"><div><p class="eyebrow">Manual intake</p><h2>Score another job</h2></div><span>This creates a saved lead</span></div>
+        <form (ngSubmit)="addJob()" class="job-form">
+          <div class="field-grid">
+            <label><span>Title</span><input name="title" [(ngModel)]="form.title" placeholder="Senior Backend Engineer"></label>
+            <label><span>Company</span><input name="company" [(ngModel)]="form.company" placeholder="Company name"></label>
+            <label><span>Location</span><input name="location" [(ngModel)]="form.location" placeholder="Remote, US"></label>
+            <label><span>URL</span><input name="sourceUrl" [(ngModel)]="form.sourceUrl" placeholder="https://..."></label>
+          </div>
+          <label><span>Job description</span><textarea name="sourceText" [(ngModel)]="form.sourceText" rows="8" placeholder="Paste the job description here"></textarea></label>
+          <div class="form-actions"><button class="primary-button" type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Scoring...' : 'Score and save' }}</button></div>
+        </form>
+      </section>
+    }
 
-      <form (ngSubmit)="addJob()" class="job-form">
-        <div class="field-grid">
-          <label>
-            <span>Title</span>
-            <input name="title" [(ngModel)]="form.title" placeholder="Senior Backend Engineer">
-          </label>
+    @if (error()) { <p class="error">{{ error() }}</p> }
 
-          <label>
-            <span>Company</span>
-            <input name="company" [(ngModel)]="form.company" placeholder="Company name">
-          </label>
-
-          <label>
-            <span>Location</span>
-            <input name="location" [(ngModel)]="form.location" placeholder="Remote, US">
-          </label>
-
-          <label>
-            <span>URL</span>
-            <input name="sourceUrl" [(ngModel)]="form.sourceUrl" placeholder="https://...">
-          </label>
-        </div>
-
-        <label>
-          <span>Job description</span>
-          <textarea name="sourceText" [(ngModel)]="form.sourceText" rows="11" placeholder="Paste the job description here"></textarea>
-        </label>
-
-        @if (error()) {
-          <p class="error">{{ error() }}</p>
-        }
-
-        <div class="actions">
-          <button type="submit" [disabled]="isSaving()">
-            {{ isSaving() ? 'Scoring...' : 'Score job' }}
-          </button>
-        </div>
-      </form>
-    </section>
-  </section>
-
-  <aside class="results-panel">
-    <section class="summary-strip">
-      <div>
-        <span class="metric-label">Tracked</span>
-        <strong>{{ jobs().length }}</strong>
-      </div>
-      <div>
-        <span class="metric-label">Selected</span>
-        <strong>{{ selectedJob()?.fitScore ?? 0 }}</strong>
-      </div>
+    <section class="summary-grid" aria-label="Application summary">
+      <article><span class="summary-icon blue">◆</span><div><small>Total tracked</small><strong>{{ jobs().length }}</strong><p>All opportunities</p></div></article>
+      <article><span class="summary-icon indigo">↗</span><div><small>Active</small><strong>{{ activeCount() }}</strong><p>Applied or progressing</p></div></article>
+      <article><span class="summary-icon amber">●</span><div><small>Interviews</small><strong>{{ interviewCount() }}</strong><p>In conversation</p></div></article>
+      <article><span class="summary-icon green">✓</span><div><small>Offers</small><strong>{{ offerCount() }}</strong><p>{{ followUpCount() }} follow-ups this week</p></div></article>
     </section>
 
-    @if (selectedJob(); as job) {
-      <section class="result-detail">
-        <div class="recommendation">
-          <span>{{ job.eligibility }}</span>
-          <h2>{{ job.recommendation }}</h2>
-          <p>{{ job.title }} · {{ job.company }}</p>
-        </div>
-
-        <div class="score-grid">
-          <div>
-            <span>Fit</span>
-            <strong>{{ job.fitScore }}</strong>
-          </div>
-          <div>
-            <span>Priority</span>
-            <strong>{{ job.applicationPriority }}</strong>
-          </div>
-          <div>
-            <span>State</span>
-            <strong>{{ job.lifecycleState }}</strong>
-          </div>
-        </div>
-
-        <p class="explanation">{{ job.explanation }}</p>
-
-        <div class="factor-list">
-          <h3>Signals</h3>
-          @for (factor of job.factors; track factor.name) {
-            <div class="factor-row">
-              <div>
-                <strong>{{ factor.name }}</strong>
-                <p>{{ factor.rationale }}</p>
-              </div>
-              <span [class.negative]="factor.scoreImpact < 0">{{ factor.scoreImpact > 0 ? '+' : '' }}{{ factor.scoreImpact }}</span>
-            </div>
+    <section class="tracker-panel">
+      <div class="tracker-toolbar">
+        <div class="filters" role="group" aria-label="Filter by status">
+          @for (filter of filters; track filter.key) {
+            <button type="button" [class.active]="statusFilter() === filter.key" (click)="setFilter(filter.key)">{{ filter.label }} <span>{{ filterCount(filter.key) }}</span></button>
           }
         </div>
-      </section>
-    } @else {
-      <section class="empty-state">
-        <h2>No jobs scored yet</h2>
-        <p>Paste a role on the left to create the first saved evaluation.</p>
-      </section>
-    }
+        <label class="search-box"><span>⌕</span><input aria-label="Search jobs" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search company or role"></label>
+      </div>
 
-    @if (jobs().length > 0) {
-      <section class="job-list">
-        <h3>Recent jobs</h3>
-        @for (job of jobs(); track job.id) {
-          <button type="button" (click)="selectJob(job)" [class.active]="selectedJob()?.id === job.id">
-            <span>{{ job.title }}</span>
-            <strong>{{ job.fitScore }}</strong>
-          </button>
-        }
-      </section>
-    }
-  </aside>
+      <div class="tracker-content">
+        <div class="application-list">
+          <div class="list-heading"><span>Opportunity</span><span>Status</span><span>Updated</span></div>
+          @if (isLoading()) {
+            <div class="empty-state"><strong>Loading your applications…</strong></div>
+          } @else if (filteredJobs().length === 0) {
+            <div class="empty-state"><strong>No applications match this view.</strong><p>Try another status or search term.</p></div>
+          } @else {
+            @for (job of filteredJobs(); track job.id) {
+              <button type="button" class="application-row" [class.selected]="selectedJob()?.id === job.id" (click)="selectJob(job)">
+                <span class="company-avatar">{{ job.company.slice(0, 1).toUpperCase() }}</span>
+                <span class="job-identity"><strong>{{ job.title }}</strong><small>{{ job.company }} · {{ job.location }}</small></span>
+                <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>
+                <span class="updated-date">{{ statusDate(job) }}</span>
+              </button>
+            }
+          }
+        </div>
+
+        <aside class="detail-panel">
+          @if (selectedJob(); as job) {
+            <div class="detail-header"><span class="company-avatar large">{{ job.company.slice(0, 1).toUpperCase() }}</span><div><p class="eyebrow">{{ job.company }}</p><h2>{{ job.title }}</h2><p>{{ job.location }}</p></div></div>
+            <div class="detail-actions">
+              <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>
+              @if (job.sourceUrl) { <a [href]="job.sourceUrl" target="_blank" rel="noreferrer">Open posting ↗</a> }
+            </div>
+            <dl class="detail-grid">
+              <div><dt>Priority</dt><dd>{{ job.priority || 'Not set' }}</dd></div>
+              <div><dt>Status date</dt><dd>{{ statusDate(job) }}</dd></div>
+              <div><dt>Applied</dt><dd>{{ formatDate(job.application?.submittedDate) }}</dd></div>
+              <div><dt>Next follow-up</dt><dd>{{ formatDate(job.application?.nextFollowUp) }}</dd></div>
+              <div><dt>Resume used</dt><dd>{{ job.application?.resumeVersion || 'Not recorded' }}</dd></div>
+              <div><dt>Verified</dt><dd>{{ formatDate(job.verifiedDate) }}</dd></div>
+            </dl>
+            @if (job.fitRationale) { <section class="detail-note"><h3>Why it fits</h3><p>{{ job.fitRationale }}</p></section> }
+            @if (job.gapsNotes) { <section class="detail-note caution"><h3>Gaps and cautions</h3><p>{{ job.gapsNotes }}</p></section> }
+            @if (job.application?.notes) { <section class="detail-note"><h3>Application notes</h3><p class="preserve-lines">{{ job.application?.notes }}</p></section> }
+            @if (!job.fitRationale && job.explanation) { <section class="detail-note"><h3>Evaluation</h3><p>{{ job.explanation }}</p></section> }
+          } @else {
+            <div class="empty-state"><strong>Select an opportunity</strong><p>Its dates, notes, and next action will appear here.</p></div>
+          }
+        </aside>
+      </div>
+    </section>
+  </section>
 </main>

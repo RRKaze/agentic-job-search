@@ -63,7 +63,7 @@ public static class ApiBootstrap
             IJobRepository jobs,
             CancellationToken cancellationToken) =>
         {
-            var recent = await jobs.ListRecentAsync(25, cancellationToken);
+            var recent = await jobs.ListRecentAsync(500, cancellationToken);
             return Results.Ok(recent.Select(job => job.ToDto()));
         });
 
