@@ -48,7 +48,7 @@ Install and start:
 
 - Docker Desktop
 - .NET 9 SDK
-- Node.js 22 LTS with npm
+- Node.js 22.22.3 LTS with npm (the version in `.nvmrc`)
 
 Clone the repository and enter its root directory before running the commands below.
 
@@ -187,7 +187,9 @@ If the UI says it cannot load jobs:
 
 If Docker reports that port `5432`, `8080`, `5156`, or `4200` is already in use, stop the other process using that port before starting this project.
 
-The Angular CLI currently warns when run on Node 23 because it is not an LTS Node release. The app builds successfully, but Node 22 LTS is the better local development target.
+The Angular CLI does not support Node 23. Use the version in `.nvmrc` with a Node version manager, or install a supported version listed in `apps/web/package.json`.
+
+Production dependencies are checked in CI with `npm audit --omit=dev --audit-level=high`. The current audit status and upgrade decision are documented in [`docs/dependency-security.md`](docs/dependency-security.md).
 
 ## Database migrations
 

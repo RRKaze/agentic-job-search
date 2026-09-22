@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 type JobEvaluationFactor = { name: string; weight: number; scoreImpact: number; rationale: string };
@@ -17,7 +17,13 @@ type Job = {
 type AddJobRequest = { title?: string; company?: string; location?: string; sourceUrl?: string; sourceText: string };
 type StatusFilter = 'all' | 'lead' | 'applied' | 'interviewing' | 'offer' | 'rejected' | 'withdrawn' | 'closed';
 
-@Component({ selector: 'app-root', imports: [FormsModule], templateUrl: './app.component.html', styleUrl: './app.component.css' })
+@Component({
+  selector: 'app-root',
+  imports: [FormsModule],
+  templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './app.component.css'
+})
 export class AppComponent {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = 'http://localhost:5156/api';

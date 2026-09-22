@@ -24,6 +24,7 @@ Deliverables:
 - [x] Replace `EnsureCreated` with versioned EF Core migrations.
 - [x] Add API integration tests backed by PostgreSQL/Testcontainers.
 - [x] Add request validation and consistent API error responses.
+- [x] Upgrade Angular and gate high/critical production dependency advisories in CI.
 - [ ] Move local configuration into documented environment-based settings.
 - [ ] Add structured logs and correlation identifiers for a submitted job.
 - [ ] Add a small, versioned scoring fixture set to detect ranking regressions.
