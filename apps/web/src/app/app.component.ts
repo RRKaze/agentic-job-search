@@ -16,6 +16,8 @@ type Job = {
 };
 type AddJobRequest = { title?: string; company?: string; location?: string; sourceUrl?: string; sourceText: string };
 type StatusFilter = 'all' | 'lead' | 'applied' | 'interviewing' | 'offer' | 'rejected' | 'withdrawn' | 'closed';
+type SortColumn = 'opportunity' | 'status' | 'updated';
+type SortDirection = 'asc' | 'desc';
 
 @Component({
   selector: 'app-root',
@@ -35,16 +37,20 @@ export class AppComponent {
   readonly error = signal('');
   readonly search = signal('');
   readonly statusFilter = signal<StatusFilter>('all');
+  readonly sortColumn = signal<SortColumn>('updated');
+  readonly sortDirection = signal<SortDirection>('desc');
+  private readonly sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 
   readonly filteredJobs = computed(() => {
     const query = this.search().trim().toLocaleLowerCase();
     const filter = this.statusFilter();
-    return this.jobs().filter((job) => {
+    const jobs = this.jobs().filter((job) => {
       const stage = this.stage(job);
       const matchesStage = filter === 'all' || stage === filter || (filter === 'closed' && ['unavailable', 'ineligible'].includes(stage));
       const matchesQuery = !query || `${job.title} ${job.company} ${job.location}`.toLocaleLowerCase().includes(query);
       return matchesStage && matchesQuery;
     });
+    return jobs.sort((left, right) => this.compareJobs(left, right));
   });
   readonly activeCount = computed(() => this.jobs().filter((job) => ['applied', 'interviewing', 'offer'].includes(this.stage(job))).length);
   readonly interviewCount = computed(() => this.count('interviewing'));
@@ -83,6 +89,19 @@ export class AppComponent {
   }
 
   selectJob(job: Job): void { this.selectedJob.set(job); }
+  setSort(column: SortColumn): void {
+    if (this.sortColumn() === column) {
+      this.sortDirection.update((direction) => direction === 'asc' ? 'desc' : 'asc');
+      return;
+    }
+
+    this.sortColumn.set(column);
+    this.sortDirection.set(column === 'updated' ? 'desc' : 'asc');
+  }
+  sortIndicator(column: SortColumn): string {
+    if (this.sortColumn() !== column) return '↕';
+    return this.sortDirection() === 'asc' ? '↑' : '↓';
+  }
   setFilter(filter: StatusFilter): void {
     this.statusFilter.set(filter);
     const selected = this.selectedJob();
@@ -107,6 +126,31 @@ export class AppComponent {
     return this.count(filter);
   }
   private count(stage: string): number { return this.jobs().filter((job) => this.stage(job) === stage).length; }
+  private compareJobs(left: Job, right: Job): number {
+    const column = this.sortColumn();
+    let comparison = 0;
+
+    if (column === 'opportunity') {
+      comparison = this.sortCollator.compare(`${left.title} ${left.company}`, `${right.title} ${right.company}`);
+    } else if (column === 'status') {
+      comparison = this.statusRank(left) - this.statusRank(right);
+    } else {
+      comparison = this.statusTimestamp(left) - this.statusTimestamp(right);
+    }
+
+    if (comparison === 0) comparison = this.sortCollator.compare(`${left.title} ${left.company}`, `${right.title} ${right.company}`);
+    return this.sortDirection() === 'asc' ? comparison : -comparison;
+  }
+  private statusRank(job: Job): number {
+    const order = ['lead', 'applied', 'interviewing', 'offer', 'rejected', 'withdrawn', 'unavailable', 'ineligible'];
+    const index = order.indexOf(this.stage(job));
+    return index === -1 ? order.length : index;
+  }
+  private statusTimestamp(job: Job): number {
+    const value = job.statusDate ?? job.application?.submittedDate ?? job.createdAt;
+    const timestamp = new Date(value.length === 10 ? `${value}T12:00:00` : value).getTime();
+    return Number.isNaN(timestamp) ? 0 : timestamp;
+  }
   private applicationStage(state: string): string {
     const normalized = state.toLocaleLowerCase();
     if (normalized === 'submitted') return 'applied';

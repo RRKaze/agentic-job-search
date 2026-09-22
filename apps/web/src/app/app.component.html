@@ -57,7 +57,11 @@
 
       <div class="tracker-content">
         <div class="application-list">
-          <div class="list-heading"><span>Opportunity</span><span>Status</span><span>Updated</span></div>
+          <div class="list-heading">
+            <button type="button" class="sort-button opportunity-sort" [class.active]="sortColumn() === 'opportunity'" [attr.aria-pressed]="sortColumn() === 'opportunity'" (click)="setSort('opportunity')">Opportunity <span aria-hidden="true">{{ sortIndicator('opportunity') }}</span></button>
+            <button type="button" class="sort-button" [class.active]="sortColumn() === 'status'" [attr.aria-pressed]="sortColumn() === 'status'" (click)="setSort('status')">Status <span aria-hidden="true">{{ sortIndicator('status') }}</span></button>
+            <button type="button" class="sort-button" [class.active]="sortColumn() === 'updated'" [attr.aria-pressed]="sortColumn() === 'updated'" (click)="setSort('updated')">Updated <span aria-hidden="true">{{ sortIndicator('updated') }}</span></button>
+          </div>
           @if (isLoading()) {
             <div class="empty-state"><strong>Loading your applications…</strong></div>
           } @else if (filteredJobs().length === 0) {

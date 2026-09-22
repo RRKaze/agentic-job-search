@@ -49,8 +49,13 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .tracker-content { display: grid; grid-template-columns: minmax(460px, 1fr) 350px; min-height: 490px; }
 .application-list { min-width: 0; border-right: 1px solid #e5eaf1; }
 .list-heading, .application-row { display: grid; grid-template-columns: 36px minmax(180px, 1fr) 105px 100px; gap: 12px; align-items: center; }
-.list-heading { border-bottom: 1px solid #edf0f5; padding: 10px 16px; color: #99a3b2; font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
-.list-heading span:first-child { grid-column: 1 / 3; }
+.list-heading { border-bottom: 1px solid #edf0f5; padding: 6px 16px; }
+.sort-button { display: inline-flex; gap: 5px; align-items: center; justify-self: start; border: 0; border-radius: 6px; padding: 4px 2px; color: #99a3b2; background: transparent; font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.sort-button.opportunity-sort { grid-column: 1 / 3; }
+.sort-button span { color: #b4bdca; font-size: .78rem; line-height: 1; }
+.sort-button:hover, .sort-button.active { color: #2457d6; }
+.sort-button.active span { color: #2457d6; }
+.sort-button:focus-visible { outline: 2px solid #3970e5; outline-offset: 2px; }
 .application-row { width: 100%; border: 0; border-bottom: 1px solid #edf0f5; padding: 14px 16px; color: #263248; background: #fff; text-align: left; transition: background .15s ease; }
 .application-row:hover, .application-row.selected { background: #f7f9fd; }
 .application-row.selected { box-shadow: inset 3px 0 #2e67e5; }
