@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 type JobEvaluationFactor = { name: string; weight: number; scoreImpact: number; rationale: string };
@@ -64,6 +64,9 @@ export class AppComponent {
   form: AddJobRequest = { title: '', company: '', location: '', sourceUrl: '', sourceText: '' };
 
   constructor() { this.loadJobs(); }
+
+  @HostListener('document:keydown.escape')
+  closeAddJob(): void { this.showAddJob.set(false); }
 
   loadJobs(): void {
     this.isLoading.set(true);
