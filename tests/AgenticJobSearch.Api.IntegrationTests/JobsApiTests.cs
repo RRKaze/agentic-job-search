@@ -27,4 +27,18 @@ public sealed class JobsApiTests(ApiFixture fixture) : IClassFixture<ApiFixture>
         var jobs = body.RootElement.EnumerateArray().ToArray();
         Assert.Contains(jobs, job => job.GetProperty("title").GetString() == "Senior Backend Engineer");
     }
+
+    [Fact]
+    public async Task Tracked_application_details_are_returned_for_the_dashboard()
+    {
+        await fixture.SeedTrackedApplicationAsync();
+
+        var jobs = await fixture.Client.GetFromJsonAsync<JsonElement[]>("/api/jobs");
+        var tracked = Assert.Single(jobs!, job => job.GetProperty("externalId").GetString() == "JOB-DASHBOARD");
+
+        Assert.Equal("interviewing", tracked.GetProperty("trackingStage").GetString());
+        Assert.Equal("high", tracked.GetProperty("priority").GetString());
+        Assert.Equal("APP-DASHBOARD", tracked.GetProperty("application").GetProperty("externalId").GetString());
+        Assert.Equal("2026-09-25", tracked.GetProperty("application").GetProperty("nextFollowUp").GetString());
+    }
 }

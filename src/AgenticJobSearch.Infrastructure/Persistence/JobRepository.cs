@@ -19,6 +19,7 @@ public sealed class JobRepository(JobSearchDbContext dbContext) : IJobRepository
             .AsNoTracking()
             .Include(job => job.Evaluation)
             .ThenInclude(evaluation => evaluation!.Factors)
+            .Include(job => job.Application)
             .OrderByDescending(job => job.CreatedAt)
             .Take(count)
             .ToListAsync(cancellationToken);
