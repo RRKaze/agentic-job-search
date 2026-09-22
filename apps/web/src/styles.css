@@ -12,6 +12,10 @@ body {
 }
 
 /* Account and onboarding pages */
+.tracker-toolbar { align-items: center; }
+.toolbar-summary { display: grid; gap: 3px; }
+.search-box, .search-box input { min-width: 0; }
+.search-box { min-height: 40px; }
 .app-shell.signed-out { display: block; }
 .signed-out .workspace { padding: 0; }
 .auth-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; background: #fff; }

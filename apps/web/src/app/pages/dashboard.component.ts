@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { dateTimestamp, formatDate, Job, jobStage, stageLabel, statusDateValue } from '../job.model';
+import { dateTimestamp, formatDate, isSavedOpportunity, Job, jobStage, stageLabel, statusDateValue } from '../job.model';
 import { JobStore } from '../job-store.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class DashboardComponent {
   readonly interviewCount = computed(() => this.jobs().filter((job) => jobStage(job) === 'interviewing').length);
   readonly offerCount = computed(() => this.jobs().filter((job) => jobStage(job) === 'offer').length);
   readonly followUpCount = computed(() => this.jobs().filter((job) => this.isUpcoming(job.application?.nextFollowUp)).length);
-  readonly recentOpportunities = computed(() => this.byMostRecent(this.jobs().filter((job) => !job.application)).slice(0, 5));
+  readonly recentOpportunities = computed(() => this.byMostRecent(this.jobs().filter((job) => isSavedOpportunity(job))).slice(0, 5));
   readonly recentApplications = computed(() => this.byMostRecent(this.jobs().filter((job) => Boolean(job.application))).slice(0, 6));
 
   stage(job: Job): string { return jobStage(job); }

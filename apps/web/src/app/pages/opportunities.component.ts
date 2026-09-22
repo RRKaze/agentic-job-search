@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AddJobRequest, dateTimestamp, formatDate, Job, jobStage, stageLabel, statusDateValue } from '../job.model';
+import { AddJobRequest, dateTimestamp, formatDate, isSavedOpportunity, Job, jobStage, stageLabel, statusDateValue } from '../job.model';
 import { JobStore } from '../job-store.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class OpportunitiesComponent {
   readonly showAddJob = signal(false);
   readonly opportunities = computed(() => {
     const query = this.search().trim().toLocaleLowerCase();
-    return this.store.jobs().filter((job) => !job.application && (!query || `${job.title} ${job.company} ${job.location}`.toLocaleLowerCase().includes(query)))
+    return this.store.jobs().filter((job) => isSavedOpportunity(job) && (!query || `${job.title} ${job.company} ${job.location}`.toLocaleLowerCase().includes(query)))
       .sort((left, right) => dateTimestamp(statusDateValue(right)) - dateTimestamp(statusDateValue(left)));
   });
   readonly selectedJob = computed(() => this.opportunities().find((job) => job.id === this.selectedId()) ?? this.opportunities()[0] ?? null);

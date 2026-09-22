@@ -9,7 +9,8 @@
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:model": "node --experimental-strip-types --test src/app/job.model.test.mjs"
   },
   "private": true,
   "dependencies": {

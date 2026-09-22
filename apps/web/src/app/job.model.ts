@@ -55,6 +55,10 @@ export function jobStage(job: Job): string {
   return state;
 }
 
+export function isSavedOpportunity(job: Job): boolean {
+  return !job.application && jobStage(job) === 'lead';
+}
+
 export function stageLabel(job: Job): string {
   const labels: Record<string, string> = {
     lead: 'Saved', applied: 'Applied', interviewing: 'Interviewing', offer: 'Offer', rejected: 'Rejected',
