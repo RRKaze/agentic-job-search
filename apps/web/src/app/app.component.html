@@ -1,15 +1,22 @@
-<main class="app-shell">
+<main class="app-shell" [class.signed-out]="!auth.user()">
+  @if (auth.user()) {
   <aside class="sidebar">
     <div class="brand-mark">A</div>
     <div class="brand-copy"><strong>Agentic Job Search</strong><span>Personal workspace</span></div>
     <nav aria-label="Main navigation">
+      @if (auth.user()?.careerStage) {
       <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span>⌂</span> Dashboard</a>
       <a class="nav-item" routerLink="/applications" routerLinkActive="active"><span>◎</span> Applications</a>
       <a class="nav-item" routerLink="/opportunities" routerLinkActive="active"><span>◇</span> Opportunities</a>
       <span class="nav-item inactive" aria-disabled="true"><span>□</span> Resumes</span>
+      <a class="nav-item" routerLink="/profile" routerLinkActive="active"><span>○</span> Personal profile</a>
+      }
+      <button class="nav-item" type="button" (click)="signOut()" [disabled]="signingOut"><span>↪</span>{{ signingOut ? 'Signing out…' : 'Sign out' }}</button>
     </nav>
-    <div class="sync-card"><div><strong>Local workspace</strong><small>Refresh after each import</small></div></div>
+    @if (signOutError) { <p class="error" role="alert">{{ signOutError }}</p> }
+    <div class="sync-card"><div><strong>{{ auth.user()?.displayName }}</strong><small>Personal workspace</small></div></div>
   </aside>
+  }
 
   <section class="workspace">
     <router-outlet />

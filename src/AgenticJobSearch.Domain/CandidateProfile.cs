@@ -2,6 +2,7 @@ namespace AgenticJobSearch.Domain;
 
 public sealed class CandidateProfile
 {
+    public Guid? OwnerId { get; set; }
     public Guid Id { get; set; }
     public string DisplayName { get; set; } = string.Empty;
     public string TargetLevel { get; set; } = string.Empty;

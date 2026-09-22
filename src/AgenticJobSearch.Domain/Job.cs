@@ -2,6 +2,7 @@ namespace AgenticJobSearch.Domain;
 
 public sealed class Job
 {
+    public Guid? OwnerId { get; set; }
     public string? SourceRepository { get; set; }
     public string? ExternalId { get; set; }
     public string? TrackingStage { get; set; }

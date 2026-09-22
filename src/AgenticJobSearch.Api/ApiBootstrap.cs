@@ -14,6 +14,28 @@ public static class ApiBootstrap
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+        builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = "agentic.session";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing") ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
+                options.ExpireTimeSpan = TimeSpan.FromHours(8);
+                options.SlidingExpiration = false;
+                options.Events.OnRedirectToLogin = ctx => { ctx.Response.StatusCode = 401; return Task.CompletedTask; };
+                options.Events.OnRedirectToAccessDenied = ctx => { ctx.Response.StatusCode = 403; return Task.CompletedTask; };
+            });
+        builder.Services.AddAuthorization();
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = 429;
+            options.AddPolicy("accounts", context => System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+                { PermitLimit = 30, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+        });
         builder.Services.AddOpenApi();
         builder.Services.AddProblemDetails();
         builder.Services.AddCors(options =>
@@ -23,7 +45,8 @@ public static class ApiBootstrap
                 policy
                     .WithOrigins("http://localhost:4200", "http://127.0.0.1:4200")
                     .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    .AllowAnyMethod()
+                    .AllowCredentials();
             });
         });
         builder.Services.AddScoped<AgenticJobSearch.Infrastructure.Imports.RecordImporter>();
@@ -53,7 +76,21 @@ public static class ApiBootstrap
         app.UseStatusCodePages();
         app.UseCors();
 
-        var api = app.MapGroup("/api");
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseRateLimiter();
+        // All browser mutations require a custom header: cross-origin forms cannot submit it.
+        // CORS only grants preflight access to the trusted frontend origins above.
+        app.Use(async (context, next) =>
+        {
+            if ((context.Request.Path.StartsWithSegments("/api/account") || context.Request.Path.StartsWithSegments("/api/jobs")) &&
+                context.Request.Method is "POST" or "PUT" or "PATCH" or "DELETE" &&
+                context.Request.Headers["X-Agentic-Request"] != "1")
+            { context.Response.StatusCode = 403; return; }
+            await next();
+        });
+        app.MapAccounts();
+        var api = app.MapGroup("/api").RequireAuthorization();
 
         api.MapGet("/candidate-profile", async (
             GetCandidateProfileHandler handler,
@@ -89,7 +126,7 @@ public static class ApiBootstrap
             }
         });
 
-        api.MapGet("/health", () => Results.Ok(new { status = "ok", service = "agentic-job-search-api" }));
+        api.MapGet("/health", () => Results.Ok(new { status = "ok", service = "agentic-job-search-api" })).AllowAnonymous();
 
         app.MapRecordImports();
 

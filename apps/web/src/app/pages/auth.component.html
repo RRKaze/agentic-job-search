@@ -1,0 +1,28 @@
+<div class="auth-layout">
+  <section class="auth-intro">
+    <div class="brand-mark">A</div><p class="eyebrow">Agentic Job Search</p>
+    <h1>Your next chapter<br>starts here.</h1>
+    <p>One personal workspace for your opportunities, applications, and career journey.</p>
+    <div class="intro-detail"><span>01</span><div><strong>Start with you</strong><p>Tell us where you are in your career.</p></div></div>
+    <div class="intro-detail"><span>02</span><div><strong>Keep your search organized</strong><p>Bring your opportunities and applications together.</p></div></div>
+  </section>
+  <section class="auth-card" aria-labelledby="auth-title">
+    <p class="eyebrow">{{ register ? 'A fresh start' : 'Your personal workspace' }}</p>
+    <h2 id="auth-title">{{ register ? 'Create your account' : 'Welcome back' }}</h2>
+    <p class="subheading">{{ register ? 'Let’s get to know you and your next step.' : 'Sign in to continue your job search.' }}</p>
+    @if (auth.unavailable()) { <p class="error" role="alert">We couldn’t reach your account. Check the connection and try again.</p> }
+    @if (error) { <p class="error" role="alert">{{ error }}</p> }
+    <form class="account-form" #form="ngForm" (ngSubmit)="submit()">
+      @if (register) { <label for="display-name">Full name<input id="display-name" name="displayName" [(ngModel)]="displayName" required maxlength="200" autocomplete="name" [disabled]="busy"></label> }
+      <label for="email">Email address<input id="email" name="email" type="email" [(ngModel)]="email" required email maxlength="254" autocomplete="username" [disabled]="busy"></label>
+      <label for="password">Password<input id="password" name="password" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" required [minlength]="register ? 12 : 1" maxlength="128" [attr.autocomplete]="register ? 'new-password' : 'current-password'" [attr.aria-describedby]="register ? 'password-help' : null" [disabled]="busy"></label>
+      @if (register) {
+        <small id="password-help">Use 12–128 characters. A long, unique passphrase works well.</small>
+        <label for="confirm-password">Confirm password<input id="confirm-password" name="confirmPassword" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" required maxlength="128" autocomplete="new-password" [disabled]="busy"></label>
+      }
+      <label class="show-password"><input type="checkbox" name="showPassword" [(ngModel)]="showPassword"> Show password</label>
+      <button class="primary-button" type="submit" [disabled]="form.invalid || busy || (register && !displayName.trim())">{{ busy ? 'Please wait…' : register ? 'Create account' : 'Sign in' }}</button>
+    </form>
+    <p class="auth-switch">{{ register ? 'Already have an account?' : 'New to Agentic Job Search?' }} <a [routerLink]="register ? '/sign-in' : '/register'">{{ register ? 'Sign in' : 'Create an account' }}</a></p>
+  </section>
+</div>

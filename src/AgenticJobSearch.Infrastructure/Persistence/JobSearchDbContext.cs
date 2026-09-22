@@ -5,6 +5,7 @@ namespace AgenticJobSearch.Infrastructure.Persistence;
 
 public sealed class JobSearchDbContext(DbContextOptions<JobSearchDbContext> options) : DbContext(options)
 {
+    public DbSet<UserAccount> UserAccounts => Set<UserAccount>();
     public DbSet<CandidateProfile> CandidateProfiles => Set<CandidateProfile>();
     public DbSet<CandidateEvidence> CandidateEvidence => Set<CandidateEvidence>();
     public DbSet<Job> Jobs => Set<Job>();
@@ -18,6 +19,15 @@ public sealed class JobSearchDbContext(DbContextOptions<JobSearchDbContext> opti
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<UserAccount>(entity =>
+        {
+            entity.HasIndex(x => x.Email).IsUnique();
+            entity.Property(x => x.Email).HasMaxLength(254);
+            entity.Property(x => x.DisplayName).HasMaxLength(200);
+            entity.Property(x => x.CareerStage).HasMaxLength(30);
+        });
+        modelBuilder.Entity<Job>().HasIndex(x => x.OwnerId);
+        modelBuilder.Entity<CandidateProfile>().HasIndex(x => x.OwnerId).IsUnique();
         modelBuilder.Entity<ImportCheckpoint>().HasKey(x => x.Source);
         modelBuilder.Entity<Job>().HasIndex(x => new { x.SourceRepository, x.ExternalId }).IsUnique();
         modelBuilder.Entity<Domain.Application>().HasIndex(x => new { x.SourceRepository, x.ExternalId }).IsUnique();

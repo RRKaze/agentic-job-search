@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Configuration;
+using System.Net.Http.Json;
+using System.Text.Json;
 using AgenticJobSearch.Infrastructure.Persistence;
 using DotNet.Testcontainers.Builders;
 using Microsoft.AspNetCore.Hosting;
@@ -29,7 +31,18 @@ public sealed class ApiFixture : IAsyncLifetime
     {
         await database.StartAsync();
         application = new TestApplicationFactory(database.GetConnectionString(), SourceVerifier);
-        Client = application.CreateClient();
+        Client = CreateClient();
+        var response = await Client.PostAsJsonAsync("/api/account/register", new { displayName = "Fixture Owner", email = "owner@example.test", password = "Fictional test passphrase 2026" });
+        response.EnsureSuccessStatusCode();
+        var account = await response.Content.ReadFromJsonAsync<JsonElement>();
+        application.Services.GetRequiredService<IConfiguration>()["Accounts:LegacyWorkspaceOwnerId"] = account.GetProperty("id").GetString();
+    }
+
+    public HttpClient CreateClient()
+    {
+        var client = application!.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        client.DefaultRequestHeaders.Add("X-Agentic-Request", "1");
+        return client;
     }
 
     public async Task RejectApplicationWritesAsync()

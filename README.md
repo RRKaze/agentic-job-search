@@ -231,3 +231,7 @@ This project succeeds only if it does both:
 ## Temporary GitHub record import
 
 The manual-import API and disposable runner test artifact are described in [the import handoff](docs/import-api-handoff.md) and [v1 contract](docs/job-record-import-contract-v1.md). This is a temporary GitHub-to-database bridge; database-to-GitHub write-back is intentionally excluded. The dashboard integration and hosting are separate milestones.
+
+## User accounts
+
+Register or sign in at the dashboard URL. First-time users choose **New graduate** or **Experienced worker** before entering the workspace. Use **Personal profile** in the navigation to view and update this information. See [account setup and existing workspace ownership](docs/accounts.md) for local proxy configuration and the explicit legacy-data owner assignment.

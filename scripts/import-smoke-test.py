@@ -57,7 +57,9 @@ try:
     assert call(path, payload)['result'] == 'imported'
     assert call(path, payload)['result'] == 'already_imported'
     assert call(path + '/checkpoint')['source_commit'] == sha
-    assert len(call('/api/jobs')) == 1
+    # Imports use a separate machine token and must not grant browser-account access.
+    count = docker('exec', database, 'psql', '-U', 'postgres', '-d', 'import_test', '-tAc', 'SELECT count(*) FROM "Jobs"')
+    assert count == '1'
     print('Docker HTTP smoke test passed: dry-run, apply, retry, checkpoint, single job.')
 finally:
     for name in (api, database):
