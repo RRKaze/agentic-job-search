@@ -58,13 +58,18 @@ Exit criteria:
 
 Goal: carry strong jobs through a useful, measurable application lifecycle.
 
+Begin editable status tracking after the database becomes the source of truth, so a later GitHub import cannot overwrite changes made in the application.
+
 Deliverables:
 
-1. Finalize job and application lifecycle states and allowed transitions.
-2. Convert a reviewed job into an application.
-3. Track dates, status, resume version, notes, and next action.
-4. Record rejection, screen, interview, offer, and withdrawal outcomes.
-5. Add a focused dashboard for active work and outcome metrics.
+1. Make the database authoritative for job and application status and retire temporary GitHub ownership of those fields.
+2. Finalize job and application lifecycle states and allowed transitions.
+3. Convert a reviewed job into an application.
+4. Add an inline status selector to each opportunity and persist changes through the API.
+5. Immediately move an updated opportunity into or out of the active filtered list without requiring a page refresh.
+6. Track dates, status, resume version, notes, and next action.
+7. Record rejection, screen, interview, offer, and withdrawal outcomes.
+8. Add a focused dashboard for active work and outcome metrics.
 
 Exit criteria:
 
