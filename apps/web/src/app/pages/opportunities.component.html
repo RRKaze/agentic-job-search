@@ -1,0 +1,54 @@
+<header class="page-header">
+  <div><p class="eyebrow">Job discovery</p><h1>Opportunities</h1><p class="subheading">Review new and saved jobs before they become applications.</p></div>
+  <div class="header-actions"><button type="button" class="secondary-button" (click)="store.loadJobs()">↻ Refresh</button><button type="button" class="primary-button" (click)="showAddJob.set(true)">+ Add job</button></div>
+</header>
+
+@if (showAddJob()) {
+  <div class="modal-backdrop" (click)="closeAddJob()">
+    <section class="entry-panel modal-panel" role="dialog" aria-modal="true" aria-labelledby="add-job-title" (click)="$event.stopPropagation()">
+      <div class="panel-heading"><div><p class="eyebrow">Manual intake</p><h2 id="add-job-title">Score another job</h2><span>This creates a saved opportunity</span></div><button type="button" class="modal-close" aria-label="Close add job window" (click)="closeAddJob()">×</button></div>
+      @if (store.error()) { <p class="error">{{ store.error() }}</p> }
+      <form (ngSubmit)="addJob()" class="job-form">
+        <div class="field-grid">
+          <label><span>Title</span><input name="title" [(ngModel)]="form.title" placeholder="Senior Backend Engineer" autofocus></label>
+          <label><span>Company</span><input name="company" [(ngModel)]="form.company" placeholder="Company name"></label>
+          <label><span>Location</span><input name="location" [(ngModel)]="form.location" placeholder="Remote, US"></label>
+          <label><span>URL</span><input name="sourceUrl" [(ngModel)]="form.sourceUrl" placeholder="https://..."></label>
+        </div>
+        <label><span>Job description</span><textarea name="sourceText" [(ngModel)]="form.sourceText" rows="8" placeholder="Paste the job description here"></textarea></label>
+        <div class="form-actions"><button class="secondary-button" type="button" (click)="closeAddJob()">Cancel</button><button class="primary-button" type="submit" [disabled]="store.isSaving()">{{ store.isSaving() ? 'Scoring...' : 'Score and save' }}</button></div>
+      </form>
+    </section>
+  </div>
+}
+
+@if (store.error() && !showAddJob()) { <p class="error">{{ store.error() }}</p> }
+
+<section class="tracker-panel">
+  <div class="tracker-toolbar"><div><strong>{{ opportunities().length }} opportunities</strong><p class="toolbar-copy">Jobs that have not been recorded as applications.</p></div><label class="search-box"><span>⌕</span><input aria-label="Search opportunities" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search company or role"></label></div>
+  <div class="tracker-content">
+    <div class="application-list">
+      <div class="static-list-heading"><span>Opportunity</span><span>Status</span><span>Discovered</span></div>
+      @if (store.isLoading()) { <div class="empty-state"><strong>Loading opportunities…</strong></div> }
+      @else if (opportunities().length === 0) { <div class="empty-state"><strong>No opportunities match this view.</strong><p>Try another search term or add a job.</p></div> }
+      @else {
+        @for (job of opportunities(); track job.id) {
+          <button type="button" class="application-row" [class.selected]="selectedJob()?.id === job.id" (click)="selectJob(job)">
+            <span class="company-avatar">{{ job.company.slice(0, 1).toUpperCase() }}</span><span class="job-identity"><strong>{{ job.title }}</strong><small>{{ job.company }} · {{ job.location }}</small></span>
+            <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span><span class="updated-date">{{ statusDate(job) }}</span>
+          </button>
+        }
+      }
+    </div>
+    <aside class="detail-panel">
+      @if (selectedJob(); as job) {
+        <div class="detail-header"><span class="company-avatar large">{{ job.company.slice(0, 1).toUpperCase() }}</span><div><p class="eyebrow">{{ job.company }}</p><h2>{{ job.title }}</h2><p>{{ job.location }}</p></div></div>
+        <div class="detail-actions"><span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>@if (job.sourceUrl) { <a [href]="job.sourceUrl" target="_blank" rel="noreferrer">Open posting ↗</a> }</div>
+        <dl class="detail-grid"><div><dt>Priority</dt><dd>{{ job.priority || 'Not set' }}</dd></div><div><dt>Discovered</dt><dd>{{ statusDate(job) }}</dd></div><div><dt>Work mode</dt><dd>{{ job.workMode || 'Not set' }}</dd></div><div><dt>Verified</dt><dd>{{ formatDate(job.verifiedDate) }}</dd></div></dl>
+        @if (job.fitRationale) { <section class="detail-note"><h3>Why it fits</h3><p>{{ job.fitRationale }}</p></section> }
+        @if (job.gapsNotes) { <section class="detail-note caution"><h3>Gaps and cautions</h3><p>{{ job.gapsNotes }}</p></section> }
+        @if (!job.fitRationale && job.explanation) { <section class="detail-note"><h3>Evaluation</h3><p>{{ job.explanation }}</p></section> }
+      } @else { <div class="empty-state"><strong>No opportunity selected</strong><p>Newly discovered jobs will appear here.</p></div> }
+    </aside>
+  </div>
+</section>
