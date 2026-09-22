@@ -16,24 +16,33 @@
       <div><p class="eyebrow">Your job search</p><h1>Application tracker</h1><p class="subheading">See what needs attention and where each opportunity stands.</p></div>
       <div class="header-actions">
         <button type="button" class="secondary-button" (click)="loadJobs()">↻ Refresh</button>
-        <button type="button" class="primary-button" (click)="showAddJob.set(!showAddJob())">{{ showAddJob() ? 'Close' : '+ Add job' }}</button>
+        <button type="button" class="primary-button" (click)="showAddJob.set(true)">+ Add job</button>
       </div>
     </header>
 
     @if (showAddJob()) {
-      <section class="entry-panel">
-        <div class="panel-heading"><div><p class="eyebrow">Manual intake</p><h2>Score another job</h2></div><span>This creates a saved lead</span></div>
-        <form (ngSubmit)="addJob()" class="job-form">
-          <div class="field-grid">
-            <label><span>Title</span><input name="title" [(ngModel)]="form.title" placeholder="Senior Backend Engineer"></label>
-            <label><span>Company</span><input name="company" [(ngModel)]="form.company" placeholder="Company name"></label>
-            <label><span>Location</span><input name="location" [(ngModel)]="form.location" placeholder="Remote, US"></label>
-            <label><span>URL</span><input name="sourceUrl" [(ngModel)]="form.sourceUrl" placeholder="https://..."></label>
+      <div class="modal-backdrop" (click)="closeAddJob()">
+        <section class="entry-panel modal-panel" role="dialog" aria-modal="true" aria-labelledby="add-job-title" (click)="$event.stopPropagation()">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Manual intake</p><h2 id="add-job-title">Score another job</h2><span>This creates a saved lead</span></div>
+            <button type="button" class="modal-close" aria-label="Close add job window" (click)="closeAddJob()">×</button>
           </div>
-          <label><span>Job description</span><textarea name="sourceText" [(ngModel)]="form.sourceText" rows="8" placeholder="Paste the job description here"></textarea></label>
-          <div class="form-actions"><button class="primary-button" type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Scoring...' : 'Score and save' }}</button></div>
-        </form>
-      </section>
+          @if (error()) { <p class="error">{{ error() }}</p> }
+          <form (ngSubmit)="addJob()" class="job-form">
+            <div class="field-grid">
+              <label><span>Title</span><input name="title" [(ngModel)]="form.title" placeholder="Senior Backend Engineer" autofocus></label>
+              <label><span>Company</span><input name="company" [(ngModel)]="form.company" placeholder="Company name"></label>
+              <label><span>Location</span><input name="location" [(ngModel)]="form.location" placeholder="Remote, US"></label>
+              <label><span>URL</span><input name="sourceUrl" [(ngModel)]="form.sourceUrl" placeholder="https://..."></label>
+            </div>
+            <label><span>Job description</span><textarea name="sourceText" [(ngModel)]="form.sourceText" rows="8" placeholder="Paste the job description here"></textarea></label>
+            <div class="form-actions">
+              <button class="secondary-button" type="button" (click)="closeAddJob()">Cancel</button>
+              <button class="primary-button" type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Scoring...' : 'Score and save' }}</button>
+            </div>
+          </form>
+        </section>
+      </div>
     }
 
     @if (error()) { <p class="error">{{ error() }}</p> }
@@ -57,7 +66,11 @@
 
       <div class="tracker-content">
         <div class="application-list">
-          <div class="list-heading"><span>Opportunity</span><span>Status</span><span>Updated</span></div>
+          <div class="list-heading">
+            <button type="button" class="sort-button opportunity-sort" [class.active]="sortColumn() === 'opportunity'" [attr.aria-pressed]="sortColumn() === 'opportunity'" (click)="setSort('opportunity')">Opportunity <span aria-hidden="true">{{ sortIndicator('opportunity') }}</span></button>
+            <button type="button" class="sort-button" [class.active]="sortColumn() === 'status'" [attr.aria-pressed]="sortColumn() === 'status'" (click)="setSort('status')">Status <span aria-hidden="true">{{ sortIndicator('status') }}</span></button>
+            <button type="button" class="sort-button" [class.active]="sortColumn() === 'updated'" [attr.aria-pressed]="sortColumn() === 'updated'" (click)="setSort('updated')">Updated <span aria-hidden="true">{{ sortIndicator('updated') }}</span></button>
+          </div>
           @if (isLoading()) {
             <div class="empty-state"><strong>Loading your applications…</strong></div>
           } @else if (filteredJobs().length === 0) {
