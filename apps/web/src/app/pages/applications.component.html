@@ -1,0 +1,56 @@
+<header class="page-header">
+  <div><p class="eyebrow">Application workflow</p><h1>Applications</h1><p class="subheading">Review submitted applications, progress, outcomes, and follow-up dates.</p></div>
+  <button type="button" class="secondary-button" (click)="store.loadJobs()">↻ Refresh</button>
+</header>
+
+@if (store.error()) { <p class="error">{{ store.error() }}</p> }
+
+<section class="tracker-panel">
+  <div class="tracker-toolbar">
+    <div class="filters" role="group" aria-label="Filter by application status">
+      @for (filter of filters; track filter.key) {
+        <button type="button" [class.active]="statusFilter() === filter.key" (click)="statusFilter.set(filter.key)">{{ filter.label }} <span>{{ filterCount(filter.key) }}</span></button>
+      }
+    </div>
+    <label class="search-box"><span>⌕</span><input aria-label="Search applications" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search company or role"></label>
+  </div>
+
+  <div class="tracker-content">
+    <div class="application-list">
+      <div class="list-heading">
+        <button type="button" class="sort-button opportunity-sort" [class.active]="sortColumn() === 'opportunity'" (click)="setSort('opportunity')">Opportunity <span aria-hidden="true">{{ sortIndicator('opportunity') }}</span></button>
+        <button type="button" class="sort-button" [class.active]="sortColumn() === 'status'" (click)="setSort('status')">Status <span aria-hidden="true">{{ sortIndicator('status') }}</span></button>
+        <button type="button" class="sort-button" [class.active]="sortColumn() === 'updated'" (click)="setSort('updated')">Updated <span aria-hidden="true">{{ sortIndicator('updated') }}</span></button>
+      </div>
+      @if (store.isLoading()) {
+        <div class="empty-state"><strong>Loading applications…</strong></div>
+      } @else if (filteredJobs().length === 0) {
+        <div class="empty-state"><strong>No applications match this view.</strong><p>Try another status or search term.</p></div>
+      } @else {
+        @for (job of filteredJobs(); track job.id) {
+          <button type="button" class="application-row" [class.selected]="selectedJob()?.id === job.id" (click)="selectJob(job)">
+            <span class="company-avatar">{{ job.company.slice(0, 1).toUpperCase() }}</span>
+            <span class="job-identity"><strong>{{ job.title }}</strong><small>{{ job.company }} · {{ job.location }}</small></span>
+            <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>
+            <span class="updated-date">{{ statusDate(job) }}</span>
+          </button>
+        }
+      }
+    </div>
+
+    <aside class="detail-panel">
+      @if (selectedJob(); as job) {
+        <div class="detail-header"><span class="company-avatar large">{{ job.company.slice(0, 1).toUpperCase() }}</span><div><p class="eyebrow">{{ job.company }}</p><h2>{{ job.title }}</h2><p>{{ job.location }}</p></div></div>
+        <div class="detail-actions"><span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>@if (job.sourceUrl) { <a [href]="job.sourceUrl" target="_blank" rel="noreferrer">Open posting ↗</a> }</div>
+        <dl class="detail-grid">
+          <div><dt>Priority</dt><dd>{{ job.priority || 'Not set' }}</dd></div><div><dt>Status date</dt><dd>{{ statusDate(job) }}</dd></div>
+          <div><dt>Applied</dt><dd>{{ formatDate(job.application?.submittedDate) }}</dd></div><div><dt>Next follow-up</dt><dd>{{ formatDate(job.application?.nextFollowUp) }}</dd></div>
+          <div><dt>Resume used</dt><dd>{{ job.application?.resumeVersion || 'Not recorded' }}</dd></div><div><dt>Verified</dt><dd>{{ formatDate(job.verifiedDate) }}</dd></div>
+        </dl>
+        @if (job.fitRationale) { <section class="detail-note"><h3>Why it fits</h3><p>{{ job.fitRationale }}</p></section> }
+        @if (job.gapsNotes) { <section class="detail-note caution"><h3>Gaps and cautions</h3><p>{{ job.gapsNotes }}</p></section> }
+        @if (job.application?.notes) { <section class="detail-note"><h3>Application notes</h3><p class="preserve-lines">{{ job.application?.notes }}</p></section> }
+      } @else { <div class="empty-state"><strong>Select an application</strong><p>Its dates, notes, and next action will appear here.</p></div> }
+    </aside>
+  </div>
+</section>

@@ -1,0 +1,61 @@
+<header class="page-header">
+  <div><p class="eyebrow">Your job search</p><h1>Dashboard</h1><p class="subheading">See what needs attention and where each opportunity stands.</p></div>
+  <button type="button" class="secondary-button" (click)="store.loadJobs()">↻ Refresh</button>
+</header>
+
+@if (store.error()) { <p class="error">{{ store.error() }}</p> }
+
+<section class="summary-grid" aria-label="Application status counts">
+  <article><span class="summary-icon blue">◆</span><div><small>Total tracked</small><strong>{{ jobs().length }}</strong><p>All opportunities</p></div></article>
+  <article><span class="summary-icon indigo">↗</span><div><small>Active</small><strong>{{ activeCount() }}</strong><p>Applied or progressing</p></div></article>
+  <article><span class="summary-icon amber">●</span><div><small>Interviews</small><strong>{{ interviewCount() }}</strong><p>In conversation</p></div></article>
+  <article><span class="summary-icon green">✓</span><div><small>Offers</small><strong>{{ offerCount() }}</strong><p>{{ followUpCount() }} follow-ups this week</p></div></article>
+</section>
+
+<div class="dashboard-stack">
+  <section class="tracker-panel dashboard-section">
+    <div class="section-heading">
+      <div><p class="eyebrow">Latest additions</p><h2>Recently discovered opportunities</h2></div>
+      <a routerLink="/opportunities">View details →</a>
+    </div>
+    @if (store.isLoading()) {
+      <div class="empty-state"><strong>Loading opportunities…</strong></div>
+    } @else if (recentOpportunities().length === 0) {
+      <div class="empty-state"><strong>No new opportunities yet.</strong><p>The next imported search results will appear here.</p></div>
+    } @else {
+      <div class="preview-list">
+        @for (job of recentOpportunities(); track job.id) {
+          <article class="preview-row">
+            <span class="company-avatar">{{ job.company.slice(0, 1).toUpperCase() }}</span>
+            <span class="job-identity"><strong>{{ job.title }}</strong><small>{{ job.company }} · {{ job.location }}</small></span>
+            <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>
+            <span class="updated-date">{{ statusDate(job) }}</span>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="tracker-panel dashboard-section">
+    <div class="section-heading">
+      <div><p class="eyebrow">Application dashboard</p><h2>Recent applications</h2></div>
+      <a routerLink="/applications">View details →</a>
+    </div>
+    @if (store.isLoading()) {
+      <div class="empty-state"><strong>Loading applications…</strong></div>
+    } @else if (recentApplications().length === 0) {
+      <div class="empty-state"><strong>No applications recorded yet.</strong></div>
+    } @else {
+      <div class="preview-list">
+        @for (job of recentApplications(); track job.id) {
+          <article class="preview-row">
+            <span class="company-avatar">{{ job.company.slice(0, 1).toUpperCase() }}</span>
+            <span class="job-identity"><strong>{{ job.title }}</strong><small>{{ job.company }} · {{ job.location }}</small></span>
+            <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>
+            <span class="updated-date">{{ statusDate(job) }}</span>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</div>
