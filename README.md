@@ -214,6 +214,8 @@ Application startup applies pending migrations. Production deployment policy may
 
 The project favors explicit state, deterministic behavior where possible, measurable outcomes, small reviewable milestones, and infrastructure only when justified by actual requirements.
 
+See [`docs/architecture.md`](docs/architecture.md) for the dependency direction, module responsibilities, request flow, and conventions for extending the system.
+
 Resume/candidate claims must be backed by verified evidence. The system must not fabricate technologies, experience, ownership, metrics, scope, or outcomes to improve apparent job fit.
 
 ## Repository guidance

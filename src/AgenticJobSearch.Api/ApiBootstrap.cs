@@ -1,7 +1,5 @@
 using AgenticJobSearch.Application;
 using AgenticJobSearch.Application.Abstractions;
-using AgenticJobSearch.Application.Candidates;
-using AgenticJobSearch.Application.Jobs;
 using AgenticJobSearch.Infrastructure;
 using AgenticJobSearch.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -90,65 +88,9 @@ public static class ApiBootstrap
             await next();
         });
         app.MapAccounts();
-        var api = app.MapGroup("/api").RequireAuthorization();
-
-        api.MapGet("/candidate-profile", async (
-            GetCandidateProfileHandler handler,
-            CancellationToken cancellationToken) => Results.Ok(await handler.HandleAsync(cancellationToken)));
-
-        api.MapGet("/jobs", async (
-            IJobRepository jobs,
-            CancellationToken cancellationToken) =>
-        {
-            var recent = await jobs.ListRecentAsync(500, cancellationToken);
-            return Results.Ok(recent.Select(job => job.ToDto()));
-        });
-
-        api.MapPost("/jobs", async (
-            AddJobRequest request,
-            AddJobHandler handler,
-            CancellationToken cancellationToken) =>
-        {
-            var validationErrors = AddJobRequestValidator.Validate(request);
-            if (validationErrors.Count > 0)
-            {
-                return Results.ValidationProblem(validationErrors);
-            }
-
-            try
-            {
-                var job = await handler.HandleAsync(request, cancellationToken);
-                return Results.Created($"/api/jobs/{job.Id}", job);
-            }
-            catch (ArgumentException exception)
-            {
-                return Results.BadRequest(new { error = exception.Message });
-            }
-        });
-
-        api.MapPut("/jobs/{id:guid}/workflow", async (
-            Guid id,
-            UpdateJobWorkflowRequest request,
-            UpdateJobWorkflowHandler handler,
-            CancellationToken cancellationToken) =>
-        {
-            try
-            {
-                return Results.Ok(await handler.HandleAsync(id, request, cancellationToken));
-            }
-            catch (WorkflowFailure exception)
-            {
-                return Results.Json(new { message = exception.Message }, statusCode: exception.StatusCode);
-            }
-        });
-
-        api.MapGet("/jobs/{id:guid}/workflow-history", async (
-            Guid id,
-            UpdateJobWorkflowHandler handler,
-            CancellationToken cancellationToken) => Results.Ok(await handler.HistoryAsync(id, cancellationToken)));
-
-        api.MapGet("/health", () => Results.Ok(new { status = "ok", service = "agentic-job-search-api" })).AllowAnonymous();
-
+        app.MapCandidateEndpoints();
+        app.MapJobEndpoints();
+        app.MapHealthEndpoints();
         app.MapRecordImports();
 
 

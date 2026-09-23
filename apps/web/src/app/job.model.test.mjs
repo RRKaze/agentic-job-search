@@ -1,8 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isSavedOpportunity, workflowStatusOptions } from './job.model.ts';
+import { isSavedOpportunity } from './job.model.ts';
+import { workflowStatusOptions } from './features/applications/application-workflow.model.ts';
 
-const job = { id: 'fixture', title: 'Engineer', company: 'Example', location: 'Remote' };
+const job = { id: 'fixture', title: 'Engineer', company: 'Example', location: 'Remote', createdAt: '2026-09-22T12:00:00Z' };
 
 test('saved imported leads and manually saved jobs appear as opportunities', () => {
   assert.equal(isSavedOpportunity({ ...job, trackingStage: 'lead' }), true);

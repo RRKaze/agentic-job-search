@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { formatDate, Job, JobWorkflowUpdate, jobStage, stageLabel, statusDateValue, dateTimestamp, todayInput, WorkflowChange, workflowStatusOptions } from '../job.model';
+import { formatDate, Job, jobStage, stageLabel, statusDateValue, dateTimestamp, todayInput } from '../job.model';
+import {
+  cleanWorkflowUpdate,
+  JobWorkflowUpdate,
+  WorkflowChange,
+  workflowFormFor,
+  workflowStatusOptions
+} from '../features/applications/application-workflow.model';
 import { JobStore } from '../job-store.service';
 
 type StatusFilter = 'all' | 'applied' | 'interviewing' | 'offer' | 'rejected' | 'withdrawn';
@@ -46,7 +53,7 @@ export class ApplicationsComponent {
     effect(() => {
       const job = this.selectedJob();
       if (job) {
-        this.workflowForm = this.formFor(job);
+        this.workflowForm = workflowFormFor(job);
         if (this.historyJobId !== job.id) {
           this.saveMessage.set('');
           this.loadHistory(job.id);
@@ -62,7 +69,7 @@ export class ApplicationsComponent {
   quickStatus(job: Job, status: string): void {
     if (status === jobStage(job)) return;
     this.selectJob(job);
-    const request = this.formFor(job);
+    const request = workflowFormFor(job);
     request.status = status;
     request.statusDate = todayInput();
     if (status === 'rejected' || status === 'withdrawn') request.nextFollowUp = undefined;
@@ -101,27 +108,10 @@ export class ApplicationsComponent {
 
   private save(job: Job, request: JobWorkflowUpdate): void {
     this.saveMessage.set('');
-    this.store.updateWorkflow(job.id, this.clean(request)).subscribe({
+    this.store.updateWorkflow(job.id, cleanWorkflowUpdate(request)).subscribe({
       next: () => { this.saveMessage.set('Application updated.'); this.loadHistory(job.id, true); },
       error: (response) => this.store.setError(response?.error?.message ?? 'The application could not be updated.')
     });
-  }
-
-  private formFor(job: Job): JobWorkflowUpdate {
-    return {
-      status: jobStage(job),
-      statusDate: statusDateValue(job).slice(0, 10),
-      submittedDate: job.application?.submittedDate,
-      resumeVersion: job.application?.resumeVersion,
-      nextFollowUp: job.application?.nextFollowUp,
-      outcome: job.application?.outcome,
-      notes: job.application?.notes
-    };
-  }
-
-  private clean(request: JobWorkflowUpdate): JobWorkflowUpdate {
-    const text = (value?: string) => value?.trim() || undefined;
-    return { ...request, submittedDate: text(request.submittedDate), resumeVersion: text(request.resumeVersion), nextFollowUp: text(request.nextFollowUp), outcome: text(request.outcome), notes: text(request.notes) };
   }
 
   private loadHistory(jobId: string, force = false): void {

@@ -2,7 +2,8 @@ import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, tap } from 'rxjs';
-import { AddJobRequest, Job, JobWorkflowUpdate, WorkflowChange } from './job.model';
+import { AddJobRequest, Job } from './job.model';
+import type { JobWorkflowUpdate, WorkflowChange } from './features/applications/application-workflow.model';
 
 @Injectable({ providedIn: 'root' })
 export class JobStore {
