@@ -16,6 +16,7 @@ public sealed class JobSearchDbContext(DbContextOptions<JobSearchDbContext> opti
 
     public DbSet<ImportCheckpoint> ImportCheckpoints => Set<ImportCheckpoint>();
     public DbSet<TrackingChange> TrackingChanges => Set<TrackingChange>();
+    public DbSet<WorkflowChange> WorkflowChanges => Set<WorkflowChange>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,6 +30,20 @@ public sealed class JobSearchDbContext(DbContextOptions<JobSearchDbContext> opti
         modelBuilder.Entity<Job>().HasIndex(x => x.OwnerId);
         modelBuilder.Entity<CandidateProfile>().HasIndex(x => x.OwnerId).IsUnique();
         modelBuilder.Entity<ImportCheckpoint>().HasKey(x => x.Source);
+        modelBuilder.Entity<WorkflowChange>(entity =>
+        {
+            entity.HasIndex(x => new { x.OwnerId, x.JobId, x.ChangedAt });
+            entity.Property(x => x.PreviousStatus).HasMaxLength(40);
+            entity.Property(x => x.CurrentStatus).HasMaxLength(40);
+            entity.HasOne(x => x.Job)
+                .WithMany()
+                .HasForeignKey(x => x.JobId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<UserAccount>()
+                .WithMany()
+                .HasForeignKey(x => x.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
         modelBuilder.Entity<Job>().HasIndex(x => new { x.SourceRepository, x.ExternalId }).IsUnique();
         modelBuilder.Entity<Domain.Application>().HasIndex(x => new { x.SourceRepository, x.ExternalId }).IsUnique();
         modelBuilder.Entity<Job>().Property(x => x.ImportedRecord).HasColumnType("jsonb");

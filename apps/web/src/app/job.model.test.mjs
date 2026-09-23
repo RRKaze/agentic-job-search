@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isSavedOpportunity } from './job.model.ts';
+import { isSavedOpportunity, workflowStatusOptions } from './job.model.ts';
 
 const job = { id: 'fixture', title: 'Engineer', company: 'Example', location: 'Remote' };
 
@@ -20,4 +20,12 @@ test('an application record excludes a job even when its tracking stage is missi
   for (const trackingStage of [undefined, 'lead', 'applied']) {
     assert.equal(isSavedOpportunity({ ...job, trackingStage, application: { state: 'Submitted' } }), false);
   }
+});
+
+test('workflow options match the allowed application transitions', () => {
+  assert.deepEqual(workflowStatusOptions({ ...job, trackingStage: 'applied', application: { state: 'Submitted' } }).map(({ value }) => value),
+    ['applied', 'interviewing', 'rejected', 'withdrawn']);
+  assert.deepEqual(workflowStatusOptions({ ...job, trackingStage: 'interviewing', application: { state: 'Interview' } }).map(({ value }) => value),
+    ['interviewing', 'applied', 'offer', 'rejected', 'withdrawn']);
+  assert.deepEqual(workflowStatusOptions({ ...job, trackingStage: 'lead' }).map(({ value }) => value), ['lead', 'applied']);
 });

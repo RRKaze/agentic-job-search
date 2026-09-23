@@ -45,6 +45,9 @@ public sealed class ApiFixture : IAsyncLifetime
         return client;
     }
 
+    public void SetImportsEnabled(bool enabled) =>
+        application!.Services.GetRequiredService<IConfiguration>()["Imports:Enabled"] = enabled.ToString();
+
     public async Task RejectApplicationWritesAsync()
     {
         await using var scope = application!.Services.CreateAsyncScope();
@@ -125,7 +128,11 @@ public sealed class ApiFixture : IAsyncLifetime
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
-            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?> { ["Imports:Token"] = ImportToken }));
+            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Imports:Token"] = ImportToken,
+                ["Imports:Enabled"] = "true"
+            }));
             builder.ConfigureServices(services =>
             {
                 services.RemoveAll<AgenticJobSearch.Application.Imports.ISourceHeadVerifier>();

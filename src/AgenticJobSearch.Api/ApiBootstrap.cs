@@ -126,6 +126,27 @@ public static class ApiBootstrap
             }
         });
 
+        api.MapPut("/jobs/{id:guid}/workflow", async (
+            Guid id,
+            UpdateJobWorkflowRequest request,
+            UpdateJobWorkflowHandler handler,
+            CancellationToken cancellationToken) =>
+        {
+            try
+            {
+                return Results.Ok(await handler.HandleAsync(id, request, cancellationToken));
+            }
+            catch (WorkflowFailure exception)
+            {
+                return Results.Json(new { message = exception.Message }, statusCode: exception.StatusCode);
+            }
+        });
+
+        api.MapGet("/jobs/{id:guid}/workflow-history", async (
+            Guid id,
+            UpdateJobWorkflowHandler handler,
+            CancellationToken cancellationToken) => Results.Ok(await handler.HistoryAsync(id, cancellationToken)));
+
         api.MapGet("/health", () => Results.Ok(new { status = "ok", service = "agentic-job-search-api" })).AllowAnonymous();
 
         app.MapRecordImports();

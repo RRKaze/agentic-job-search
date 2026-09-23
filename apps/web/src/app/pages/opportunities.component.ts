@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AddJobRequest, dateTimestamp, formatDate, isSavedOpportunity, Job, jobStage, stageLabel, statusDateValue } from '../job.model';
+import { AddJobRequest, dateTimestamp, formatDate, isSavedOpportunity, Job, jobStage, stageLabel, statusDateValue, todayInput } from '../job.model';
 import { JobStore } from '../job-store.service';
 
 @Component({
@@ -26,6 +26,13 @@ export class OpportunitiesComponent {
   closeAddJob(): void { this.showAddJob.set(false); }
 
   selectJob(job: Job): void { this.selectedId.set(job.id); }
+  markApplied(job: Job): void {
+    const today = todayInput();
+    this.store.updateWorkflow(job.id, { status: 'applied', statusDate: today, submittedDate: today }).subscribe({
+      next: () => this.selectedId.set(null),
+      error: (response) => this.store.setError(response?.error?.message ?? 'The opportunity could not be moved to Applications.')
+    });
+  }
   stage(job: Job): string { return jobStage(job); }
   stageLabel(job: Job): string { return stageLabel(job); }
   statusDate(job: Job): string { return formatDate(statusDateValue(job)); }

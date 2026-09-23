@@ -2,6 +2,8 @@
 
 Status: implementation specification; API and workflow are not implemented by this document.
 
+Runtime status: retired by default after the database-owned workflow cutover. The import endpoints return `410 IMPORT_RETIRED` unless `Imports:Enabled=true` is deliberately supplied for isolated integration tests or an administrator-controlled recovery. Do not enable the importer against an actively edited workspace.
+
 ## Temporary bridge and eventual cutover
 
 GitHub is authoritative only during this bridge phase. The database will become the source of truth; the scheduled search and dashboard will then write through application APIs. No database-to-GitHub write-back is planned. At cutover, pause source writers, verify a final import, switch writers to the API, and disable this import capability and workflow. Keep core records and local feedback independent of the importer.

@@ -235,3 +235,7 @@ The manual-import API and disposable runner test artifact are described in [the 
 ## User accounts
 
 Register or sign in at the dashboard URL. First-time users choose **New graduate** or **Experienced worker** before entering the workspace. Use **Personal profile** in the navigation to view and update this information. See [account setup and existing workspace ownership](docs/accounts.md) for local proxy configuration and the explicit legacy-data owner assignment.
+
+## Application workflow
+
+Saved opportunities can now move directly into Applications. Application rows provide validated status changes, while the detail panel stores status and submission dates, resume version, follow-up, outcome, and notes. PostgreSQL owns these edits and records status history; the temporary GitHub importer is retired by default. See [database-owned application workflow](docs/application-workflow.md) for transitions and API behavior.

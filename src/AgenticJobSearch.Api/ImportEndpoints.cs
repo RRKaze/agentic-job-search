@@ -14,6 +14,7 @@ public static class ImportEndpoints
         group.AddEndpointFilter(async (context, next) =>
         {
             var config = context.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+            if (!config.GetValue<bool>("Imports:Enabled")) return Error(410, "IMPORT_RETIRED");
             var expected = config["Imports:Token"];
             var header = context.HttpContext.Request.Headers.Authorization.ToString();
             if (string.IsNullOrWhiteSpace(expected) || !header.StartsWith("Bearer ", StringComparison.Ordinal) ||

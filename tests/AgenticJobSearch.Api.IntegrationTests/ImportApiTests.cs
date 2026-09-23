@@ -32,6 +32,23 @@ public sealed class ImportApiTests(ApiFixture fixture) : IClassFixture<ApiFixtur
         return JsonDocument.Parse(text).RootElement.Clone();
     }
     [Fact]
+    public async Task Import_is_retired_when_the_database_owns_workflow_status()
+    {
+        fixture.SetImportsEnabled(false);
+        try
+        {
+            fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApiFixture.ImportToken);
+            using var response = await fixture.Client.PostAsJsonAsync(Endpoint, Request(), ImportJson.Options);
+            Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
+            var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+            Assert.Equal("IMPORT_RETIRED", body.GetProperty("error").GetProperty("code").GetString());
+        }
+        finally
+        {
+            fixture.SetImportsEnabled(true);
+        }
+    }
+    [Fact]
     public async Task Dry_run_leaves_checkpoint_and_jobs_untouched()
     {
         fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApiFixture.ImportToken);

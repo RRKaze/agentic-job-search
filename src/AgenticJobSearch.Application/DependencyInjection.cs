@@ -10,6 +10,7 @@ public static class DependencyInjection
     {
         services.AddScoped<GetCandidateProfileHandler>();
         services.AddScoped<AddJobHandler>();
+        services.AddScoped<UpdateJobWorkflowHandler>();
         services.AddScoped<JobNormalizer>();
         services.AddScoped<JobScoringService>();
 

@@ -16,6 +16,20 @@ body {
 .toolbar-summary { display: grid; gap: 3px; }
 .search-box, .search-box input { min-width: 0; }
 .search-box { min-height: 40px; }
+.application-row[role="button"] { cursor: pointer; }
+.application-row[role="button"]:focus-visible { outline: 2px solid #3970e5; outline-offset: -2px; }
+.status-select { min-width: 0; border: 1px solid #cdd7e5; border-radius: 8px; padding: 7px 28px 7px 9px; color: #355178; background: #fff; font: inherit; font-size: .72rem; font-weight: 800; }
+.status-select.compact { width: 105px; }
+.status-action { border: 0; cursor: pointer; }
+.workflow-form { display: grid; gap: 15px; margin-top: 22px; border-top: 1px solid #dfe5ee; padding-top: 20px; }
+.workflow-form .panel-heading { margin-bottom: 0; }
+.workflow-form label { display: grid; gap: 7px; color: #647188; font-size: .72rem; font-weight: 800; }
+.workflow-form input, .workflow-form select, .workflow-form textarea { min-width: 0; width: 100%; border: 1px solid #d4dce7; border-radius: 8px; padding: 10px 11px; color: #263248; background: #fff; font: inherit; resize: vertical; }
+.workflow-form input:focus, .workflow-form select:focus, .workflow-form textarea:focus { border-color: #3970e5; outline: 3px solid rgba(57,112,229,.12); }
+.workflow-history { display: grid; gap: 8px; margin-top: 22px; border-top: 1px solid #dfe5ee; padding-top: 18px; }
+.workflow-history h3 { margin-bottom: 2px; font-size: .82rem; }
+.workflow-history div { display: flex; justify-content: space-between; gap: 12px; color: #52617a; font-size: .74rem; }
+.workflow-history time { color: #8994a5; text-align: right; }
 .app-shell.signed-out { display: block; }
 .signed-out .workspace { padding: 0; }
 .auth-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; background: #fff; }
