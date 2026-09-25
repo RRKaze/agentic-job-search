@@ -214,6 +214,8 @@ Application startup applies pending migrations. Production deployment policy may
 
 The project favors explicit state, deterministic behavior where possible, measurable outcomes, small reviewable milestones, and infrastructure only when justified by actual requirements.
 
+See [`docs/architecture.md`](docs/architecture.md) for the dependency direction, module responsibilities, request flow, and conventions for extending the system.
+
 Resume/candidate claims must be backed by verified evidence. The system must not fabricate technologies, experience, ownership, metrics, scope, or outcomes to improve apparent job fit.
 
 ## Repository guidance
@@ -231,3 +233,11 @@ This project succeeds only if it does both:
 ## Temporary GitHub record import
 
 The manual-import API and disposable runner test artifact are described in [the import handoff](docs/import-api-handoff.md) and [v1 contract](docs/job-record-import-contract-v1.md). This is a temporary GitHub-to-database bridge; database-to-GitHub write-back is intentionally excluded. The dashboard integration and hosting are separate milestones.
+
+## User accounts
+
+Register or sign in at the dashboard URL. First-time users choose **New graduate** or **Experienced worker** before entering the workspace. Use **Personal profile** in the navigation to view and update this information. See [account setup and existing workspace ownership](docs/accounts.md) for local proxy configuration and the explicit legacy-data owner assignment.
+
+## Application workflow
+
+Saved opportunities can now move directly into Applications. Application rows provide validated status changes, while the detail panel stores status and submission dates, resume version, follow-up, outcome, and notes. PostgreSQL owns these edits and records status history; the temporary GitHub importer is retired by default. See [database-owned application workflow](docs/application-workflow.md) for transitions and API behavior.

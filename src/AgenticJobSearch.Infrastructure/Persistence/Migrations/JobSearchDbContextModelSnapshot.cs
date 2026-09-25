@@ -127,6 +127,9 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<Guid?>("OwnerId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("RequiresSponsorship")
                         .HasColumnType("boolean");
 
@@ -141,6 +144,9 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(500)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId")
+                        .IsUnique();
 
                     b.ToTable("CandidateProfiles");
                 });
@@ -231,6 +237,9 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<Guid?>("OwnerId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Priority")
                         .HasColumnType("text");
 
@@ -277,6 +286,8 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(40)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.HasIndex("SourceRepository", "ExternalId")
                         .IsUnique();
@@ -394,6 +405,75 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                     b.ToTable("TrackingChanges");
                 });
 
+            modelBuilder.Entity("AgenticJobSearch.Domain.UserAccount", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CareerStage")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("UserAccounts");
+                });
+
+            modelBuilder.Entity("AgenticJobSearch.Domain.WorkflowChange", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CurrentStatus")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<Guid>("JobId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PreviousStatus")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("OwnerId", "JobId", "ChangedAt");
+
+                    b.ToTable("WorkflowChanges");
+                });
+
             modelBuilder.Entity("AgenticJobSearch.Domain.Application", b =>
                 {
                     b.HasOne("AgenticJobSearch.Domain.Job", "Job")
@@ -447,6 +527,23 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("JobEvaluation");
+                });
+
+            modelBuilder.Entity("AgenticJobSearch.Domain.WorkflowChange", b =>
+                {
+                    b.HasOne("AgenticJobSearch.Domain.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AgenticJobSearch.Domain.UserAccount", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Job");
                 });
 
             modelBuilder.Entity("AgenticJobSearch.Domain.Application", b =>

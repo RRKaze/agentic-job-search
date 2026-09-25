@@ -1,0 +1,17 @@
+<section class="profile-page">
+  <header class="page-header"><div><p class="eyebrow">{{ onboarding ? 'Welcome to your workspace' : 'Your account' }}</p><h1>{{ onboarding ? 'Where are you in your career?' : 'Personal profile' }}</h1><p class="subheading">{{ onboarding ? 'Choose the option that fits you best. You can change it in your profile anytime.' : 'View your account and keep your career stage up to date.' }}</p></div></header>
+  <div class="profile-card">
+    @if (!onboarding) { <div class="profile-summary"><div class="profile-avatar" aria-hidden="true">{{ auth.user()?.displayName?.charAt(0)?.toUpperCase() }}</div><div><h2>{{ auth.user()?.displayName }}</h2><p>{{ auth.user()?.email }}</p><small>Member since {{ auth.user()?.createdAt | date:'MMMM yyyy' }}</small></div></div> }
+    @if (error) { <p class="error" role="alert">{{ error }}</p> }
+    @if (saved) { <p class="success-message" role="status">Your profile has been saved.</p> }
+    <form class="account-form" #form="ngForm" (ngSubmit)="save()" (input)="saved = false">
+      @if (!onboarding) { <label for="profile-name">Full name<input id="profile-name" name="displayName" [(ngModel)]="displayName" autocomplete="name" required maxlength="200" [disabled]="busy"></label> }
+      <fieldset [disabled]="busy"><legend>Career stage</legend>
+        <label class="career-option" [class.selected]="careerStage === 'new_graduate'"><input type="radio" name="careerStage" value="new_graduate" [(ngModel)]="careerStage" required><span><strong>New graduate</strong><small>I’m finishing my studies or starting my professional career.</small></span></label>
+        <label class="career-option" [class.selected]="careerStage === 'experienced_worker'"><input type="radio" name="careerStage" value="experienced_worker" [(ngModel)]="careerStage" required><span><strong>Experienced worker</strong><small>I have professional experience and I’m looking for my next role.</small></span></label>
+      </fieldset>
+      <p class="profile-hint">This is a starting point for your profile. Choose what feels closest, including if you’re changing careers.</p>
+      <button type="submit" class="primary-button" [disabled]="form.invalid || !careerStage || !displayName.trim() || busy">{{ busy ? 'Saving…' : onboarding ? 'Continue to dashboard' : 'Save changes' }}</button>
+    </form>
+  </div>
+</section>

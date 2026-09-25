@@ -28,12 +28,14 @@
         <div class="empty-state"><strong>No applications match this view.</strong><p>Try another status or search term.</p></div>
       } @else {
         @for (job of filteredJobs(); track job.id) {
-          <button type="button" class="application-row" [class.selected]="selectedJob()?.id === job.id" (click)="selectJob(job)">
+          <div class="application-row" role="button" tabindex="0" [class.selected]="selectedJob()?.id === job.id" (click)="selectJob(job)" (keydown.enter)="selectJob(job)">
             <span class="company-avatar">{{ job.company.slice(0, 1).toUpperCase() }}</span>
             <span class="job-identity"><strong>{{ job.title }}</strong><small>{{ job.company }} · {{ job.location }}</small></span>
-            <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>
+            <select class="status-select compact" aria-label="Update status for {{ job.title }}" [ngModel]="stage(job)" (ngModelChange)="quickStatus(job, $event)" (click)="$event.stopPropagation()" [disabled]="store.isSaving()">
+              @for (option of statusOptions(job); track option.value) { <option [value]="option.value">{{ option.label }}</option> }
+            </select>
             <span class="updated-date">{{ statusDate(job) }}</span>
-          </button>
+          </div>
         }
       }
     </div>
@@ -50,6 +52,30 @@
         @if (job.fitRationale) { <section class="detail-note"><h3>Why it fits</h3><p>{{ job.fitRationale }}</p></section> }
         @if (job.gapsNotes) { <section class="detail-note caution"><h3>Gaps and cautions</h3><p>{{ job.gapsNotes }}</p></section> }
         @if (job.application?.notes) { <section class="detail-note"><h3>Application notes</h3><p class="preserve-lines">{{ job.application?.notes }}</p></section> }
+        <form class="workflow-form" (ngSubmit)="saveSelected(job)">
+          <div class="panel-heading"><div><p class="eyebrow">Update progress</p><h3>Application details</h3></div></div>
+          @if (saveMessage()) { <p class="success-message" role="status">{{ saveMessage() }}</p> }
+          <div class="field-grid">
+            <label><span>Status</span><select name="workflowStatus" [ngModel]="workflowForm.status" (ngModelChange)="setStatus($event)" [disabled]="store.isSaving()">
+              @for (option of statusOptions(job); track option.value) { <option [value]="option.value">{{ option.label }}</option> }
+            </select></label>
+            <label><span>Status date</span><input name="statusDate" type="date" [(ngModel)]="workflowForm.statusDate" required [disabled]="store.isSaving()"></label>
+            <label><span>Submitted date</span><input name="submittedDate" type="date" [(ngModel)]="workflowForm.submittedDate" [disabled]="store.isSaving()"></label>
+            <label><span>Next follow-up</span><input name="nextFollowUp" type="date" [(ngModel)]="workflowForm.nextFollowUp" [disabled]="store.isSaving() || workflowForm.status === 'rejected' || workflowForm.status === 'withdrawn'"></label>
+            <label><span>Resume version</span><input name="resumeVersion" [(ngModel)]="workflowForm.resumeVersion" maxlength="2000" placeholder="Master resume v2" [disabled]="store.isSaving()"></label>
+            <label><span>Outcome or next action</span><input name="outcome" [(ngModel)]="workflowForm.outcome" maxlength="2000" placeholder="Recruiter screen scheduled" [disabled]="store.isSaving()"></label>
+          </div>
+          <label><span>Notes</span><textarea name="workflowNotes" [(ngModel)]="workflowForm.notes" maxlength="20000" rows="4" placeholder="Add context, contacts, or preparation notes" [disabled]="store.isSaving()"></textarea></label>
+          <div class="form-actions"><button class="primary-button" type="submit" [disabled]="store.isSaving() || !workflowForm.statusDate">{{ store.isSaving() ? 'Saving…' : 'Save changes' }}</button></div>
+        </form>
+        @if (history().length > 0) {
+          <section class="workflow-history" aria-label="Status history">
+            <h3>Status history</h3>
+            @for (change of history(); track change.changedAt) {
+              <div><span>{{ historyLabel(change.previousStatus) }} → {{ historyLabel(change.currentStatus) }}</span><time [attr.datetime]="change.changedAt">{{ historyDate(change.changedAt) }}</time></div>
+            }
+          </section>
+        }
       } @else { <div class="empty-state"><strong>Select an application</strong><p>Its dates, notes, and next action will appear here.</p></div> }
     </aside>
   </div>

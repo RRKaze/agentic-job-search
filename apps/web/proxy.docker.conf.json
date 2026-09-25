@@ -1,0 +1,3 @@
+{
+  "^/api(?:/|$)": { "target": "http://host.docker.internal:5156", "secure": false }
+}

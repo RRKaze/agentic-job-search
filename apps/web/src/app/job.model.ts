@@ -55,6 +55,10 @@ export function jobStage(job: Job): string {
   return state;
 }
 
+export function isSavedOpportunity(job: Job): boolean {
+  return !job.application && jobStage(job) === 'lead';
+}
+
 export function stageLabel(job: Job): string {
   const labels: Record<string, string> = {
     lead: 'Saved', applied: 'Applied', interviewing: 'Interviewing', offer: 'Offer', rejected: 'Rejected',
@@ -76,4 +80,12 @@ export function formatDate(value?: string): string {
   if (!value) return 'Not set';
   const date = new Date(value.length === 10 ? `${value}T12:00:00` : value);
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
+}
+
+export function todayInput(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }

@@ -1,5 +1,8 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+
+import { AuthService } from './auth.service';
+import { JobStore } from './job-store.service';
 
 @Component({
   selector: 'app-root',
@@ -9,4 +12,13 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.Eager
 })
-export class AppComponent {}
+export class AppComponent {
+  readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly jobs = inject(JobStore);
+  signingOut = false; signOutError = '';
+  signOut(): void {
+    this.signingOut = true; this.signOutError = '';
+    this.auth.logout().subscribe({ next: () => { this.jobs.jobs.set([]); this.signingOut = false; void this.router.navigateByUrl('/sign-in'); }, error: () => { this.signingOut = false; this.signOutError = 'Could not sign out. Please try again.'; } });
+  }
+}

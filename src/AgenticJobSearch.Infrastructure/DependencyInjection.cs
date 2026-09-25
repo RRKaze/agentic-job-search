@@ -1,5 +1,6 @@
 using AgenticJobSearch.Application.Abstractions;
 using AgenticJobSearch.Infrastructure.Persistence;
+using AgenticJobSearch.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,8 @@ public static class DependencyInjection
         services.AddDbContext<JobSearchDbContext>(options => options.UseNpgsql(connectionString));
         services.AddScoped<ICandidateProfileRepository, CandidateProfileRepository>();
         services.AddScoped<IJobRepository, JobRepository>();
+        services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddSingleton<IPasswordService, PasswordService>();
 
         return services;
     }

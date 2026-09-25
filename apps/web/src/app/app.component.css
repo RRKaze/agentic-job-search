@@ -44,10 +44,9 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .modal-close { display: grid; place-items: center; flex: 0 0 34px; width: 34px; height: 34px; border: 1px solid #d7deea; border-radius: 9px; color: #667287; background: #fff; font-size: 1.4rem; line-height: 1; }
 .modal-close:hover { color: #263248; background: #f5f7fb; }
 .tracker-toolbar { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid #e7ebf2; padding: 14px 16px; }
-.tracker-toolbar > div:first-child { display: grid; gap: 3px; }
 .tracker-toolbar strong { color: #354158; font-size: .86rem; }
 .toolbar-copy { color: #8994a5; font-size: .72rem; }
-.filters { display: flex; gap: 5px; overflow-x: auto; }
+.filters { display: flex; flex: 1 1 auto; min-width: 0; max-width: 100%; gap: 5px; overflow-x: auto; }
 .filters button { flex: 0 0 auto; border: 0; border-radius: 8px; padding: 8px 10px; color: #718096; background: transparent; font-size: .8rem; font-weight: 750; }
 .filters button.active { color: #2457d6; background: #edf3ff; }
 .filters button span { margin-left: 3px; border-radius: 99px; padding: 2px 5px; background: rgba(130, 145, 170, .12); font-size: .67rem; }

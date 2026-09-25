@@ -33,7 +33,7 @@ try:
            '-e', 'POSTGRES_PASSWORD=fictional-test-password', '-e', 'POSTGRES_DB=import_test', 'postgres:16-alpine')
     wait_for(lambda: docker('exec', database, 'pg_isready', '-h', '127.0.0.1', '-U', 'postgres'))
     docker('run', '-d', '--platform', 'linux/amd64', '--name', api, '--network', network,
-           '-p', '127.0.0.1::8080', '-e', f'Imports__Token={token}', '-e', f'TestSource__Head={sha}',
+           '-p', '127.0.0.1::8080', '-e', f'Imports__Token={token}', '-e', 'Imports__Enabled=true', '-e', f'TestSource__Head={sha}',
            '-e', f'ConnectionStrings__JobSearch=Host={database};Database=import_test;Username=postgres;Password=fictional-test-password', args.image)
     port = docker('port', api, '8080/tcp').split(':')[-1]
     origin = f'http://127.0.0.1:{port}'
@@ -57,7 +57,9 @@ try:
     assert call(path, payload)['result'] == 'imported'
     assert call(path, payload)['result'] == 'already_imported'
     assert call(path + '/checkpoint')['source_commit'] == sha
-    assert len(call('/api/jobs')) == 1
+    # Imports use a separate machine token and must not grant browser-account access.
+    count = docker('exec', database, 'psql', '-U', 'postgres', '-d', 'import_test', '-tAc', 'SELECT count(*) FROM "Jobs"')
+    assert count == '1'
     print('Docker HTTP smoke test passed: dry-run, apply, retry, checkpoint, single job.')
 finally:
     for name in (api, database):
