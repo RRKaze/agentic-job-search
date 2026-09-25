@@ -25,4 +25,11 @@ public sealed class CandidateProfileRepository(JobSearchDbContext dbContext, ICu
         await dbContext.SaveChangesAsync(cancellationToken);
         return profile;
     }
+
+    public async Task SaveAsync(CandidateProfile profile, CancellationToken cancellationToken)
+    {
+        var ownerId = currentUser.Id ?? throw new InvalidOperationException("Sign in first.");
+        if (profile.OwnerId != ownerId) throw new InvalidOperationException("This profile does not belong to the current account.");
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

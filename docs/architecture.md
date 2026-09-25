@@ -48,6 +48,7 @@ The Angular application separates shared transport state from feature behavior:
 - `auth.service.ts` owns the browser session and current account.
 - `job-store.service.ts` owns the loaded job collection and API mutations.
 - `features/applications/application-workflow.model.ts` owns application workflow form mapping and presentation options.
+- `features/profile` owns the candidate-profile contract, completeness calculation, and API state.
 - page components own view state such as selection, filtering, and sorting.
 - `job.model.ts` contains the shared API-facing job model and broadly reused job helpers.
 
