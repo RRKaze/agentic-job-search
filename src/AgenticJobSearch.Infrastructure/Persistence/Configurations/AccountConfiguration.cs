@@ -21,8 +21,24 @@ public sealed class CandidateProfileConfiguration : IEntityTypeConfiguration<Can
     {
         entity.HasIndex(x => x.OwnerId).IsUnique();
         entity.Property(x => x.DisplayName).HasMaxLength(200);
+        entity.Property(x => x.Headline).HasMaxLength(300);
+        entity.Property(x => x.ProfessionalSummary).HasMaxLength(3000);
         entity.Property(x => x.TargetLevel).HasMaxLength(120);
         entity.Property(x => x.TargetRoleFamilies).HasMaxLength(500);
+        entity.Property(x => x.TargetIndustries).HasMaxLength(500);
+        entity.Property(x => x.PreferredLocations).HasMaxLength(500);
+        entity.Property(x => x.WorkModePreference).HasMaxLength(100);
+        entity.Property(x => x.EmploymentTypePreference).HasMaxLength(100);
+        entity.Property(x => x.Skills).HasMaxLength(3000);
+        entity.Property(x => x.WorkAuthorization).HasMaxLength(200);
+        entity.Property(x => x.LinkedInUrl).HasMaxLength(2048);
+        entity.Property(x => x.PortfolioUrl).HasMaxLength(2048);
+        entity.Property(x => x.ResumeText).HasMaxLength(30000);
+        entity.Property(x => x.Institution).HasMaxLength(300);
+        entity.Property(x => x.Degree).HasMaxLength(200);
+        entity.Property(x => x.FieldOfStudy).HasMaxLength(200);
+        entity.Property(x => x.RecentEmployer).HasMaxLength(300);
+        entity.Property(x => x.RecentJobTitle).HasMaxLength(300);
         entity.HasMany(x => x.Evidence).WithOne(x => x.CandidateProfile)
             .HasForeignKey(x => x.CandidateProfileId).OnDelete(DeleteBehavior.Cascade);
     }

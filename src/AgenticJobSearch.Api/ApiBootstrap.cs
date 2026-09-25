@@ -81,7 +81,9 @@ public static class ApiBootstrap
         // CORS only grants preflight access to the trusted frontend origins above.
         app.Use(async (context, next) =>
         {
-            if ((context.Request.Path.StartsWithSegments("/api/account") || context.Request.Path.StartsWithSegments("/api/jobs")) &&
+            if ((context.Request.Path.StartsWithSegments("/api/account") ||
+                 context.Request.Path.StartsWithSegments("/api/jobs") ||
+                 context.Request.Path.StartsWithSegments("/api/candidate-profile")) &&
                 context.Request.Method is "POST" or "PUT" or "PATCH" or "DELETE" &&
                 context.Request.Headers["X-Agentic-Request"] != "1")
             { context.Response.StatusCode = 403; return; }

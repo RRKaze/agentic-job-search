@@ -1,17 +1,112 @@
-<section class="profile-page">
-  <header class="page-header"><div><p class="eyebrow">{{ onboarding ? 'Welcome to your workspace' : 'Your account' }}</p><h1>{{ onboarding ? 'Where are you in your career?' : 'Personal profile' }}</h1><p class="subheading">{{ onboarding ? 'Choose the option that fits you best. You can change it in your profile anytime.' : 'View your account and keep your career stage up to date.' }}</p></div></header>
+<section class="profile-page" [class.profile-page-wide]="!onboarding">
+  <header class="page-header">
+    <div><p class="eyebrow">{{ onboarding ? 'Welcome to your workspace' : 'Your career profile' }}</p><h1>{{ onboarding ? 'Where are you in your career?' : 'Personal profile' }}</h1><p class="subheading">{{ onboarding ? 'Choose the option that fits you best. You can change it anytime.' : 'Tell the system what you have done and what you want next. These details will drive personalized opportunity scoring.' }}</p></div>
+    @if (!onboarding) { <div class="completion-card"><strong>{{ completion }}%</strong><span>Profile complete</span></div> }
+  </header>
+
   <div class="profile-card">
-    @if (!onboarding) { <div class="profile-summary"><div class="profile-avatar" aria-hidden="true">{{ auth.user()?.displayName?.charAt(0)?.toUpperCase() }}</div><div><h2>{{ auth.user()?.displayName }}</h2><p>{{ auth.user()?.email }}</p><small>Member since {{ auth.user()?.createdAt | date:'MMMM yyyy' }}</small></div></div> }
+    @if (!onboarding) {
+      <div class="profile-summary"><div class="profile-avatar" aria-hidden="true">{{ auth.user()?.displayName?.charAt(0)?.toUpperCase() }}</div><div><h2>{{ auth.user()?.displayName }}</h2><p>{{ auth.user()?.email }}</p><small>Member since {{ auth.user()?.createdAt | date:'MMMM yyyy' }}</small></div></div>
+    }
     @if (error) { <p class="error" role="alert">{{ error }}</p> }
     @if (saved) { <p class="success-message" role="status">Your profile has been saved.</p> }
-    <form class="account-form" #form="ngForm" (ngSubmit)="save()" (input)="saved = false">
-      @if (!onboarding) { <label for="profile-name">Full name<input id="profile-name" name="displayName" [(ngModel)]="displayName" autocomplete="name" required maxlength="200" [disabled]="busy"></label> }
-      <fieldset [disabled]="busy"><legend>Career stage</legend>
-        <label class="career-option" [class.selected]="careerStage === 'new_graduate'"><input type="radio" name="careerStage" value="new_graduate" [(ngModel)]="careerStage" required><span><strong>New graduate</strong><small>I’m finishing my studies or starting my professional career.</small></span></label>
-        <label class="career-option" [class.selected]="careerStage === 'experienced_worker'"><input type="radio" name="careerStage" value="experienced_worker" [(ngModel)]="careerStage" required><span><strong>Experienced worker</strong><small>I have professional experience and I’m looking for my next role.</small></span></label>
-      </fieldset>
-      <p class="profile-hint">This is a starting point for your profile. Choose what feels closest, including if you’re changing careers.</p>
-      <button type="submit" class="primary-button" [disabled]="form.invalid || !careerStage || !displayName.trim() || busy">{{ busy ? 'Saving…' : onboarding ? 'Continue to dashboard' : 'Save changes' }}</button>
+    @if (!onboarding && candidate.isLoading()) { <p class="profile-loading">Loading your career profile…</p> }
+
+    <form class="account-form candidate-profile-form" #form="ngForm" (ngSubmit)="save()" (input)="saved = false">
+      @if (!onboarding) {
+        <section class="profile-section">
+          <div class="section-heading"><div><p class="eyebrow">About you</p><h2>Professional identity</h2></div><p>Use language that applies to your profession or field.</p></div>
+          <div class="profile-field-grid">
+            <label>Full name<input name="displayName" [(ngModel)]="displayName" autocomplete="name" required maxlength="200" [disabled]="busy"></label>
+            <label>Professional headline<input name="headline" [(ngModel)]="draft.headline" maxlength="300" placeholder="e.g. Operations leader focused on healthcare delivery" [disabled]="busy"></label>
+          </div>
+          <label>Professional summary<textarea name="professionalSummary" [(ngModel)]="draft.professionalSummary" maxlength="3000" rows="5" placeholder="Summarize your background, strengths, and the problems you are best at solving." [disabled]="busy"></textarea></label>
+        </section>
+      }
+
+      <section class="profile-section">
+        <div class="section-heading"><div><p class="eyebrow">Career stage</p><h2>{{ onboarding ? 'Choose your starting point' : 'Current stage' }}</h2></div></div>
+        <fieldset [disabled]="busy">
+          <legend class="visually-hidden">Career stage</legend>
+          <div class="career-options-grid">
+            <label class="career-option" [class.selected]="careerStage === 'new_graduate'"><input type="radio" name="careerStage" value="new_graduate" [(ngModel)]="careerStage" required><span><strong>New graduate</strong><small>I’m finishing my studies or starting my professional career.</small></span></label>
+            <label class="career-option" [class.selected]="careerStage === 'experienced_worker'"><input type="radio" name="careerStage" value="experienced_worker" [(ngModel)]="careerStage" required><span><strong>Experienced worker</strong><small>I have professional experience or I’m changing careers.</small></span></label>
+          </div>
+        </fieldset>
+        @if (onboarding) { <p class="profile-hint">This choice adapts your profile questions. It does not limit the types of roles you can pursue.</p> }
+      </section>
+
+      @if (!onboarding && !candidate.isLoading()) {
+        <section class="profile-section">
+          <div class="section-heading"><div><p class="eyebrow">Direction</p><h2>Career goals</h2></div><p>Separate multiple items with commas.</p></div>
+          <div class="profile-field-grid">
+            <label>Target roles<input name="targetRoles" [(ngModel)]="draft.targetRoleFamilies" maxlength="500" placeholder="Program Manager, Customer Success Manager" [disabled]="busy"></label>
+            <label>Target level<input name="targetLevel" [(ngModel)]="draft.targetLevel" maxlength="120" placeholder="Entry level, Manager, Senior" [disabled]="busy"></label>
+            <label>Industries<input name="targetIndustries" [(ngModel)]="draft.targetIndustries" maxlength="500" placeholder="Healthcare, Education, Financial services" [disabled]="busy"></label>
+            <label>Preferred locations<input name="preferredLocations" [(ngModel)]="draft.preferredLocations" maxlength="500" placeholder="New York, Remote, Boston" [disabled]="busy"></label>
+            <label>Work arrangement<select name="workMode" [(ngModel)]="draft.workModePreference" [disabled]="busy"><option value="">No preference</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option><option value="onsite">On-site</option><option value="flexible">Flexible</option></select></label>
+            <label>Employment type<select name="employmentType" [(ngModel)]="draft.employmentTypePreference" [disabled]="busy"><option value="">No preference</option><option value="full_time">Full-time</option><option value="part_time">Part-time</option><option value="contract">Contract</option><option value="internship">Internship</option><option value="flexible">Flexible</option></select></label>
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <div class="section-heading"><div><p class="eyebrow">Background</p><h2>{{ careerStage === 'new_graduate' ? 'Education' : 'Recent experience' }}</h2></div></div>
+          @if (careerStage === 'new_graduate') {
+            <div class="profile-field-grid">
+              <label>School or institution<input name="institution" [(ngModel)]="draft.institution" maxlength="300" [disabled]="busy"></label>
+              <label>Degree or credential<input name="degree" [(ngModel)]="draft.degree" maxlength="200" placeholder="BA, Certificate, Diploma" [disabled]="busy"></label>
+              <label>Field of study<input name="fieldOfStudy" [(ngModel)]="draft.fieldOfStudy" maxlength="200" [disabled]="busy"></label>
+              <label>Graduation year<input name="graduationYear" type="number" [(ngModel)]="draft.graduationYear" min="1900" [max]="maxGraduationYear" [disabled]="busy"></label>
+            </div>
+          } @else {
+            <div class="profile-field-grid">
+              <label>Most recent job title<input name="recentJobTitle" [(ngModel)]="draft.recentJobTitle" maxlength="300" [disabled]="busy"></label>
+              <label>Most recent employer<input name="recentEmployer" [(ngModel)]="draft.recentEmployer" maxlength="300" [disabled]="busy"></label>
+              <label>Years of professional experience<input name="yearsExperience" type="number" [(ngModel)]="draft.yearsExperience" min="0" max="70" [disabled]="busy"></label>
+            </div>
+          }
+        </section>
+
+        <section class="profile-section">
+          <div class="section-heading"><div><p class="eyebrow">Qualifications</p><h2>Skills and eligibility</h2></div></div>
+          <label>Skills, tools, methods, or specialties<textarea name="skills" [(ngModel)]="draft.skills" maxlength="3000" rows="4" placeholder="List the capabilities that should be matched against opportunities." [disabled]="busy"></textarea></label>
+          <div class="profile-field-grid">
+            <label>Work authorization<input name="workAuthorization" [(ngModel)]="draft.workAuthorization" maxlength="200" placeholder="e.g. Authorized to work in the United States" [disabled]="busy"></label>
+            <label class="checkbox-field"><input name="requiresSponsorship" type="checkbox" [(ngModel)]="draft.requiresSponsorship" [disabled]="busy"><span>I require employer sponsorship</span></label>
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <div class="section-heading"><div><p class="eyebrow">Documents</p><h2>Links and resume</h2></div><p>Resume text stays private to your account.</p></div>
+          <div class="profile-field-grid">
+            <label>LinkedIn URL<input name="linkedInUrl" type="url" [(ngModel)]="draft.linkedInUrl" maxlength="2048" placeholder="https://linkedin.com/in/…" [disabled]="busy"></label>
+            <label>Portfolio or professional website<input name="portfolioUrl" type="url" [(ngModel)]="draft.portfolioUrl" maxlength="2048" placeholder="https://…" [disabled]="busy"></label>
+          </div>
+          <label>Resume text<textarea name="resumeText" [(ngModel)]="draft.resumeText" maxlength="30000" rows="10" placeholder="Paste your current resume text. File upload can be added after secure document storage is introduced." [disabled]="busy"></textarea></label>
+        </section>
+
+        <section class="profile-section">
+          <div class="section-heading"><div><p class="eyebrow">Evidence</p><h2>Verified accomplishments</h2></div><p>Record only claims you can support. Unverified items will not be used as confirmed resume evidence.</p></div>
+          @for (item of draft.evidence; track $index; let i = $index) {
+            <div class="evidence-editor">
+              <div class="profile-field-grid">
+                <label>Category<input [name]="'evidenceCategory' + i" [(ngModel)]="item.category" maxlength="100" required placeholder="Leadership, Research, Customer service" [disabled]="busy"></label>
+                <label>Verification<select [name]="'evidenceStatus' + i" [(ngModel)]="item.verificationStatus" [disabled]="busy"><option value="Unverified">Unverified</option><option value="NeedsReview">Needs review</option><option value="Verified">Verified</option></select></label>
+              </div>
+              <label>Evidence statement<textarea [name]="'evidenceStatement' + i" [(ngModel)]="item.statement" maxlength="1200" rows="3" required [disabled]="busy"></textarea></label>
+              <label>Source<input [name]="'evidenceSource' + i" [(ngModel)]="item.source" maxlength="300" placeholder="Resume, transcript, portfolio, manager feedback" [disabled]="busy"></label>
+              <button type="button" class="text-button danger-text" (click)="removeEvidence(i)" [disabled]="busy">Remove evidence</button>
+            </div>
+          }
+          @if (draft.evidence.length === 0) { <p class="empty-evidence">No evidence statements yet. Add claims only when you can identify their source.</p> }
+          <button type="button" class="secondary-button add-evidence" (click)="addEvidence()" [disabled]="busy || draft.evidence.length >= 25">+ Add evidence</button>
+        </section>
+      }
+
+      <div class="profile-save-bar">
+        <span>{{ onboarding ? 'You can complete the rest of your profile later.' : completion + '% complete · More detail improves matching.' }}</span>
+        <button type="submit" class="primary-button" [disabled]="form.invalid || !careerStage || !displayName.trim() || busy || candidate.isLoading()">{{ busy ? 'Saving…' : onboarding ? 'Continue to dashboard' : 'Save profile' }}</button>
+      </div>
     </form>
   </div>
 </section>
