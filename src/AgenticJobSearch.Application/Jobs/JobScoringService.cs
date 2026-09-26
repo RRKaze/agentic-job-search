@@ -1,9 +1,13 @@
 using AgenticJobSearch.Domain;
+using System.Text.Json;
 
 namespace AgenticJobSearch.Application.Jobs;
 
 public sealed class JobScoringService
 {
+    public const string CurrentVersion = "deterministic-v1";
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+
     public JobEvaluation Evaluate(Job job, CandidateProfile candidateProfile)
     {
         var source = job.SourceText;
@@ -63,6 +67,7 @@ public sealed class JobScoringService
 
         fitScore = Clamp(fitScore);
         priority = Clamp(priority);
+        AttachVerifiedEvidence(factors, candidateProfile);
 
         return new JobEvaluation
         {
@@ -73,6 +78,8 @@ public sealed class JobScoringService
             ApplicationPriority = priority,
             Recommendation = BuildRecommendation(eligibility, fitScore, priority),
             Explanation = BuildExplanation(job, candidateProfile, eligibility, fitScore, priority, factors),
+            ScoringVersion = CurrentVersion,
+            ProfileSnapshot = JsonSerializer.Serialize(CandidateScoringSnapshot.From(candidateProfile), JsonOptions),
             Factors = factors,
             EvaluatedAt = DateTimeOffset.UtcNow
         };
@@ -94,6 +101,59 @@ public sealed class JobScoringService
             Rationale = rationale
         });
     }
+
+    private static void AttachVerifiedEvidence(IEnumerable<JobEvaluationFactor> factors, CandidateProfile profile)
+    {
+        var verified = profile.Evidence
+            .Where(evidence => evidence.VerificationStatus == EvidenceVerificationStatus.Verified)
+            .ToList();
+
+        foreach (var factor in factors.Where(factor => factor.ScoreImpact > 0))
+        {
+            var keywords = EvidenceKeywords(factor.Name);
+            if (keywords.Length == 0) continue;
+
+            factor.Evidence = verified
+                .Where(evidence => keywords.Any(keyword => ContainsWholeTerm(
+                    $"{evidence.Category} {evidence.Statement}", keyword)))
+                .Select(evidence => new JobEvaluationEvidenceSnapshot
+                {
+                    Id = Guid.NewGuid(),
+                    SourceEvidenceId = evidence.Id,
+                    Category = evidence.Category,
+                    Statement = evidence.Statement,
+                    Source = evidence.Source
+                })
+                .ToList();
+        }
+    }
+
+    private static bool ContainsWholeTerm(string source, string term)
+    {
+        for (var start = 0; start < source.Length;)
+        {
+            var index = source.IndexOf(term, start, StringComparison.OrdinalIgnoreCase);
+            if (index < 0) return false;
+
+            var end = index + term.Length;
+            var startsAtBoundary = index == 0 || !char.IsLetterOrDigit(source[index - 1]);
+            var endsAtBoundary = end == source.Length || !char.IsLetterOrDigit(source[end]);
+            if (startsAtBoundary && endsAtBoundary) return true;
+            start = index + 1;
+        }
+
+        return false;
+    }
+
+    private static string[] EvidenceKeywords(string factorName) => factorName switch
+    {
+        "Backend/platform alignment" => ["backend", "platform", "api", "distributed", "service"],
+        "C#/.NET match" => ["c#", ".net", "asp.net", "dotnet"],
+        "Authentication or identity domain" => ["authentication", "identity", "oauth", "oidc", "sso", "authorization"],
+        "SQL and data workflows" => ["sql", "postgres", "postgresql", "database", "data migration"],
+        "Frontend expectation" => ["react", "typescript", "javascript", "angular"],
+        _ => []
+    };
 
     private static string BuildRecommendation(EligibilityDecision eligibility, int fitScore, int priority)
     {

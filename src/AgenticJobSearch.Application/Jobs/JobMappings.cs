@@ -47,7 +47,12 @@ public static class JobMappings
                     factor.Name,
                     factor.Weight,
                     factor.ScoreImpact,
-                    factor.Rationale))
+                    factor.Rationale,
+                    factor.Evidence.Select(item => new JobEvaluationEvidenceDto(
+                        item.SourceEvidenceId,
+                        item.Category,
+                        item.Statement,
+                        item.Source)).ToList()))
                 .ToList() ?? [],
             job.CreatedAt);
     }

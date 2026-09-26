@@ -15,7 +15,7 @@ public sealed class AddJobHandler(
         var job = normalizer.Normalize(request);
         var evaluation = scoring.Evaluate(job, candidateProfile);
 
-        job.Evaluation = evaluation;
+        job.Evaluations.Add(evaluation);
         job.LifecycleState = evaluation.Eligibility == EligibilityDecision.Ineligible
             ? JobLifecycleState.Rejected
             : JobLifecycleState.Analyzed;

@@ -63,6 +63,36 @@ public sealed class JobScoringServiceTests
         Assert.Contains(result.Factors, factor => factor.Name == "Support/on-call load" && factor.ScoreImpact < 0);
     }
 
+    [Fact]
+    public void Evaluate_does_not_attribute_evidence_from_partial_keyword_matches()
+    {
+        var candidate = Candidate();
+        candidate.Evidence =
+        [
+            new CandidateEvidence
+            {
+                Id = Guid.NewGuid(), Category = "Planning", Statement = "Led annual capital planning.",
+                VerificationStatus = EvidenceVerificationStatus.Verified, Source = "Review"
+            },
+            new CandidateEvidence
+            {
+                Id = Guid.NewGuid(), Category = "Backend", Statement = "Built C# APIs.",
+                VerificationStatus = EvidenceVerificationStatus.Verified, Source = "Resume"
+            }
+        ];
+        var job = new Job
+        {
+            Id = Guid.NewGuid(), Title = "Backend Engineer", Company = "ExampleCo",
+            SourceText = "Build backend APIs in C#.", WorkMode = JobWorkMode.Remote
+        };
+
+        var result = new JobScoringService().Evaluate(job, candidate);
+        var backend = Assert.Single(result.Factors, factor => factor.Name == "Backend/platform alignment");
+
+        Assert.Single(backend.Evidence);
+        Assert.Equal("Built C# APIs.", backend.Evidence[0].Statement);
+    }
+
     private static CandidateProfile Candidate()
     {
         return new CandidateProfile

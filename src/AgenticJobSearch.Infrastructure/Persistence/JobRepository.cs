@@ -17,10 +17,29 @@ public sealed class JobRepository(JobSearchDbContext dbContext, ICurrentUser cur
     public async Task<Job?> GetOwnedAsync(Guid id, CancellationToken cancellationToken)
     {
         return await OwnedJobs()
-            .Include(job => job.Evaluation)
-            .ThenInclude(evaluation => evaluation!.Factors)
+            .Include(job => job.Evaluations)
+            .ThenInclude(evaluation => evaluation.Factors)
+            .ThenInclude(factor => factor.Evidence)
             .Include(job => job.Application)
             .SingleOrDefaultAsync(job => job.Id == id, cancellationToken);
+    }
+
+    public async Task SaveEvaluationAsync(JobEvaluation evaluation, CancellationToken cancellationToken)
+    {
+        dbContext.JobEvaluations.Add(evaluation);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<JobEvaluation>> ListEvaluationsAsync(Guid jobId, CancellationToken cancellationToken)
+    {
+        if (!await OwnedJobs().AnyAsync(job => job.Id == jobId, cancellationToken)) return [];
+        return await dbContext.JobEvaluations.AsNoTracking()
+            .Where(evaluation => evaluation.JobId == jobId)
+            .Include(evaluation => evaluation.Factors)
+            .ThenInclude(factor => factor.Evidence)
+            .OrderByDescending(evaluation => evaluation.EvaluatedAt)
+            .ThenByDescending(evaluation => evaluation.Id)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task SaveWorkflowChangeAsync(Job job, WorkflowChange? change, bool applicationCreated, CancellationToken cancellationToken)
@@ -55,8 +74,9 @@ public sealed class JobRepository(JobSearchDbContext dbContext, ICurrentUser cur
     {
         return await OwnedJobs()
             .AsNoTracking()
-            .Include(job => job.Evaluation)
-            .ThenInclude(evaluation => evaluation!.Factors)
+            .Include(job => job.Evaluations)
+            .ThenInclude(evaluation => evaluation.Factors)
+            .ThenInclude(factor => factor.Evidence)
             .Include(job => job.Application)
             .OrderByDescending(job => job.CreatedAt)
             .Take(count)
