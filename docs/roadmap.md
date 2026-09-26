@@ -28,7 +28,7 @@ Deliverables:
 - [x] Preserve versioned job-evaluation history, scoring inputs, and verified evidence attribution.
 - [ ] Move local configuration into documented environment-based settings.
 - [ ] Add structured logs and correlation identifiers for a submitted job.
-- [ ] Add a small, versioned scoring fixture set to detect ranking regressions.
+- [x] Add a small, versioned scoring fixture set to detect ranking regressions.
 - [x] Add CI that builds the API and UI and runs tests for every pull request.
 
 Exit criteria:
