@@ -9,4 +9,5 @@ public sealed class JobEvaluationFactor
     public int Weight { get; set; }
     public int ScoreImpact { get; set; }
     public string Rationale { get; set; } = string.Empty;
+    public List<JobEvaluationEvidenceSnapshot> Evidence { get; set; } = [];
 }

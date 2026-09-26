@@ -3,6 +3,7 @@ using System;
 using AgenticJobSearch.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(JobSearchDbContext))]
-    partial class JobSearchDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260926153256_VersionedJobEvaluations")]
+    partial class VersionedJobEvaluations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -430,40 +433,6 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                     b.ToTable("JobEvaluations");
                 });
 
-            modelBuilder.Entity("AgenticJobSearch.Domain.JobEvaluationEvidenceSnapshot", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
-
-                    b.Property<Guid>("JobEvaluationFactorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<Guid>("SourceEvidenceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Statement")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobEvaluationFactorId");
-
-                    b.ToTable("JobEvaluationEvidenceSnapshots");
-                });
-
             modelBuilder.Entity("AgenticJobSearch.Domain.JobEvaluationFactor", b =>
                 {
                     b.Property<Guid>("Id")
@@ -646,17 +615,6 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                     b.Navigation("Job");
                 });
 
-            modelBuilder.Entity("AgenticJobSearch.Domain.JobEvaluationEvidenceSnapshot", b =>
-                {
-                    b.HasOne("AgenticJobSearch.Domain.JobEvaluationFactor", "JobEvaluationFactor")
-                        .WithMany("Evidence")
-                        .HasForeignKey("JobEvaluationFactorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("JobEvaluationFactor");
-                });
-
             modelBuilder.Entity("AgenticJobSearch.Domain.JobEvaluationFactor", b =>
                 {
                     b.HasOne("AgenticJobSearch.Domain.JobEvaluation", "JobEvaluation")
@@ -705,11 +663,6 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("AgenticJobSearch.Domain.JobEvaluation", b =>
                 {
                     b.Navigation("Factors");
-                });
-
-            modelBuilder.Entity("AgenticJobSearch.Domain.JobEvaluationFactor", b =>
-                {
-                    b.Navigation("Evidence");
                 });
 #pragma warning restore 612, 618
         }

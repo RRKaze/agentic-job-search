@@ -19,8 +19,9 @@ public sealed class JobConfiguration : IEntityTypeConfiguration<Job>
         entity.Property(x => x.Seniority).HasMaxLength(80);
         entity.Property(x => x.WorkMode).HasConversion<string>().HasMaxLength(40);
         entity.Property(x => x.LifecycleState).HasConversion<string>().HasMaxLength(40);
-        entity.HasOne(x => x.Evaluation).WithOne(x => x.Job)
-            .HasForeignKey<JobEvaluation>(x => x.JobId).OnDelete(DeleteBehavior.Cascade);
+        entity.Ignore(x => x.Evaluation);
+        entity.HasMany(x => x.Evaluations).WithOne(x => x.Job)
+            .HasForeignKey(x => x.JobId).OnDelete(DeleteBehavior.Cascade);
         entity.HasOne(x => x.Application).WithOne(x => x.Job)
             .HasForeignKey<Domain.Application>(x => x.JobId).OnDelete(DeleteBehavior.Cascade);
     }
@@ -33,6 +34,8 @@ public sealed class JobEvaluationConfiguration : IEntityTypeConfiguration<JobEva
         entity.Property(x => x.Eligibility).HasConversion<string>().HasMaxLength(40);
         entity.Property(x => x.Recommendation).HasMaxLength(120);
         entity.Property(x => x.Explanation).HasMaxLength(3000);
+        entity.Property(x => x.ScoringVersion).HasMaxLength(80);
+        entity.Property(x => x.ProfileSnapshot).HasColumnType("jsonb");
         entity.HasMany(x => x.Factors).WithOne(x => x.JobEvaluation)
             .HasForeignKey(x => x.JobEvaluationId).OnDelete(DeleteBehavior.Cascade);
     }
@@ -44,5 +47,17 @@ public sealed class JobEvaluationFactorConfiguration : IEntityTypeConfiguration<
     {
         entity.Property(x => x.Name).HasMaxLength(120);
         entity.Property(x => x.Rationale).HasMaxLength(1000);
+        entity.HasMany(x => x.Evidence).WithOne(x => x.JobEvaluationFactor)
+            .HasForeignKey(x => x.JobEvaluationFactorId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class JobEvaluationEvidenceSnapshotConfiguration : IEntityTypeConfiguration<JobEvaluationEvidenceSnapshot>
+{
+    public void Configure(EntityTypeBuilder<JobEvaluationEvidenceSnapshot> entity)
+    {
+        entity.Property(x => x.Category).HasMaxLength(120);
+        entity.Property(x => x.Statement).HasMaxLength(2000);
+        entity.Property(x => x.Source).HasMaxLength(500);
     }
 }
