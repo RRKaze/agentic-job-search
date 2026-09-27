@@ -69,4 +69,45 @@ public sealed class AccountApiTests(ApiFixture fixture) : IClassFixture<ApiFixtu
         Assert.Equal(HttpStatusCode.Forbidden, (await client.PostAsJsonAsync("/api/account/logout", new {})).StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, (await client.PutAsJsonAsync("/api/account/profile", new { displayName = "Name", careerStage = "new_graduate" })).StatusCode);
     }
+
+    [Fact]
+    public async Task Hosted_registration_requires_the_bootstrap_token_and_can_be_closed()
+    {
+        const string token = "fictional-bootstrap-token-at-least-32-characters";
+        fixture.SetRegistration(true, token);
+        try
+        {
+            using var client = fixture.CreateClient();
+            var missing = await client.PostAsJsonAsync("/api/account/register", new
+            {
+                displayName = "Private Owner", email = "missing-token@example.test", password = Password
+            });
+            var wrong = await client.PostAsJsonAsync("/api/account/register", new
+            {
+                displayName = "Private Owner", email = "wrong-token@example.test", password = Password,
+                bootstrapToken = "incorrect"
+            });
+            var accepted = await client.PostAsJsonAsync("/api/account/register", new
+            {
+                displayName = "Private Owner", email = "bootstrap-owner@example.test", password = Password,
+                bootstrapToken = token
+            });
+
+            Assert.Equal(HttpStatusCode.Forbidden, missing.StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, wrong.StatusCode);
+            Assert.Equal(HttpStatusCode.Created, accepted.StatusCode);
+
+            fixture.SetRegistration(false);
+            var closed = await client.PostAsJsonAsync("/api/account/register", new
+            {
+                displayName = "Another Owner", email = "closed@example.test", password = Password,
+                bootstrapToken = token
+            });
+            Assert.Equal(HttpStatusCode.NotFound, closed.StatusCode);
+        }
+        finally
+        {
+            fixture.SetRegistration(true);
+        }
+    }
 }

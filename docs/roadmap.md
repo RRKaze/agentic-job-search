@@ -28,8 +28,8 @@ Deliverables:
 - [x] Add request validation and consistent API error responses.
 - [x] Upgrade Angular and gate high/critical production dependency advisories in CI.
 - [x] Preserve versioned job-evaluation history, scoring inputs, and verified evidence attribution.
-- [ ] Move local configuration into documented environment-based settings.
-- [ ] Add structured logs and correlation identifiers for a submitted job.
+- [x] Move local and production configuration into documented environment-based settings.
+- [x] Add structured request logs and correlation identifiers.
 - [x] Add a small, versioned scoring fixture set to detect ranking regressions.
 - [x] Add CI that builds the API and UI and runs tests for every pull request.
 
@@ -47,10 +47,10 @@ The initial deployment uses one Render free web service for the ASP.NET Core API
 
 Deliverables:
 
-1. [ ] Add a production container that serves the API and Angular application from one HTTPS origin.
-2. [ ] Add validated environment configuration, proxy handling, health checks, structured logs, and correlation identifiers.
-3. [ ] Add a controlled migration command for hosted releases.
-4. [ ] Add private registration/bootstrap controls and persistent protected session keys.
+1. [x] Add a production container that serves the API and Angular application from one HTTPS origin.
+2. [x] Add validated environment configuration, proxy handling, health checks, structured logs, and correlation identifiers.
+3. [x] Add a controlled migration command for hosted releases.
+4. [x] Add private registration/bootstrap controls and persistent protected session keys.
 5. [ ] Make the Angular application installable with a manifest, service worker, icons, update handling, and standalone display.
 6. [ ] Complete a mobile usability pass and test current iOS Safari and Android Chrome.
 7. [ ] Add a repeatable Render configuration and Neon setup runbook without committing credentials.

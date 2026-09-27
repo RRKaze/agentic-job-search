@@ -64,3 +64,28 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  container:
+    name: Production container
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [backend, frontend]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build production image
+        run: docker build --tag agentic-job-search:ci .
+
+      - name: Smoke test image
+        run: |
+          docker run --detach --name agentic-job-search-ci \
+            --publish 18080:8080 \
+            --env ASPNETCORE_ENVIRONMENT=Testing \
+            agentic-job-search:ci
+          trap 'docker rm --force agentic-job-search-ci' EXIT
+          curl --fail --retry 12 --retry-delay 2 --retry-connrefused \
+            http://127.0.0.1:18080/api/health/live || { docker logs agentic-job-search-ci; exit 1; }
+          curl --fail http://127.0.0.1:18080/ | grep --quiet '<app-root>' || \
+            { docker logs agentic-job-search-ci; exit 1; }
