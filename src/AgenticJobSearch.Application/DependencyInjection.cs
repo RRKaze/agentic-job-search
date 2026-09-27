@@ -16,6 +16,7 @@ public static class DependencyInjection
         services.AddScoped<GetCandidateProfileHandler>();
         services.AddScoped<UpdateCandidateProfileHandler>();
         services.AddScoped<AddJobHandler>();
+        services.AddScoped<ReevaluateJobHandler>();
         services.AddScoped<UpdateJobWorkflowHandler>();
         services.AddSingleton<JobWorkflowPolicy>();
         services.AddScoped<JobNormalizer>();

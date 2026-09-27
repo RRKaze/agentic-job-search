@@ -11,6 +11,7 @@ public sealed class JobSearchDbContext(DbContextOptions<JobSearchDbContext> opti
     public DbSet<Job> Jobs => Set<Job>();
     public DbSet<JobEvaluation> JobEvaluations => Set<JobEvaluation>();
     public DbSet<JobEvaluationFactor> JobEvaluationFactors => Set<JobEvaluationFactor>();
+    public DbSet<JobEvaluationEvidenceSnapshot> JobEvaluationEvidenceSnapshots => Set<JobEvaluationEvidenceSnapshot>();
     public DbSet<Domain.Application> Applications => Set<Domain.Application>();
     public DbSet<Feedback> Feedback => Set<Feedback>();
 

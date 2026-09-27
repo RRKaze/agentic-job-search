@@ -32,6 +32,27 @@ public static class JobEndpoints
             }
         });
 
+        jobs.MapPost("/{id:guid}/evaluations", async (
+            Guid id,
+            ReevaluateJobHandler handler,
+            CancellationToken cancellationToken) =>
+        {
+            try
+            {
+                var evaluation = await handler.HandleAsync(id, cancellationToken);
+                return Results.Created($"/api/jobs/{id}/evaluations/{evaluation.Id}", evaluation);
+            }
+            catch (EvaluationFailure exception)
+            {
+                return Results.Json(new { message = exception.Message }, statusCode: exception.StatusCode);
+            }
+        });
+
+        jobs.MapGet("/{id:guid}/evaluations", async (
+            Guid id,
+            ReevaluateJobHandler handler,
+            CancellationToken cancellationToken) => Results.Ok(await handler.HistoryAsync(id, cancellationToken)));
+
         jobs.MapPut("/{id:guid}/workflow", async (
             Guid id,
             UpdateJobWorkflowRequest request,

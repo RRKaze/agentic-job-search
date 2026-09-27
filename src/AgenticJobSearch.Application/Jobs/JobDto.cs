@@ -41,4 +41,11 @@ public sealed record JobEvaluationFactorDto(
     string Name,
     int Weight,
     int ScoreImpact,
-    string Rationale);
+    string Rationale,
+    IReadOnlyList<JobEvaluationEvidenceDto> Evidence);
+
+public sealed record JobEvaluationEvidenceDto(
+    Guid SourceEvidenceId,
+    string Category,
+    string Statement,
+    string Source);

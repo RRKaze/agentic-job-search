@@ -10,6 +10,8 @@ public sealed class JobEvaluation
     public int ApplicationPriority { get; set; }
     public string Recommendation { get; set; } = string.Empty;
     public string Explanation { get; set; } = string.Empty;
+    public string ScoringVersion { get; set; } = string.Empty;
+    public string ProfileSnapshot { get; set; } = "{}";
     public List<JobEvaluationFactor> Factors { get; set; } = [];
     public DateTimeOffset EvaluatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

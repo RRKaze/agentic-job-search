@@ -25,6 +25,8 @@ The profile page never creates accomplishments from job descriptions or inferred
 
 The profile and its evidence are persisted in PostgreSQL. Resume text is stored as account-owned profile data. File upload is intentionally deferred until private document storage, content validation, and retention rules are designed.
 
-## Next integration
+## Scoring integration
 
-The next milestone should feed profile goals, preferences, skills, and verified evidence into deterministic opportunity scoring. Existing scoring behavior remains unchanged until that work is implemented and tested separately.
+Each job evaluation now preserves the profile fields used by scoring and immutable copies of verified evidence attached to its positive factors. Historical explanations therefore remain inspectable after the profile changes. See [versioned job evaluations](scoring-evaluations.md).
+
+The next milestone should make profile goals, preferences, and skills control deterministic opportunity scoring. Existing scoring weights remain unchanged until that work is covered by a versioned regression fixture set.

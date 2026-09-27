@@ -24,6 +24,10 @@ public sealed class Job
     public JobLifecycleState LifecycleState { get; set; } = JobLifecycleState.Discovered;
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
-    public JobEvaluation? Evaluation { get; set; }
+    public List<JobEvaluation> Evaluations { get; set; } = [];
+    public JobEvaluation? Evaluation => Evaluations
+        .OrderByDescending(evaluation => evaluation.EvaluatedAt)
+        .ThenByDescending(evaluation => evaluation.Id)
+        .FirstOrDefault();
     public Application? Application { get; set; }
 }

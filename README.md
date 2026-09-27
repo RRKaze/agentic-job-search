@@ -155,6 +155,8 @@ This reset command is destructive and cannot recover the deleted local data.
 
 The current scorer is deterministic and inspectable. It does not yet call an LLM or tailor resumes.
 
+Submitting a job creates a versioned evaluation. Re-evaluating it preserves the previous result, the candidate-profile inputs used, and immutable copies of verified evidence that supported positive factors. See [`docs/scoring-evaluations.md`](docs/scoring-evaluations.md) for the API and persistence behavior.
+
 ## Verify the project
 
 Run backend tests from the repository root:
