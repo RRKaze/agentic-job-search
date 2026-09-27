@@ -27,16 +27,19 @@ Browser/application automation comes later, after scoring and tracking are relia
 | Area | Status |
 | --- | --- |
 | Goals & success criteria | Complete |
-| System architecture | In progress (~40%) |
-| Data contracts / schemas | Initial models implemented |
-| Scoring engine | Deterministic V0.1 implemented |
-| Persistence | PostgreSQL/EF Core implemented |
+| System architecture | Local modular monolith implemented; hosted runtime planned |
+| Data contracts / schemas | Core account, profile, evidence, job, evaluation, and application models implemented |
+| Scoring engine | Profile-driven deterministic V2 with versioned fixtures |
+| Persistence | PostgreSQL/EF Core migrations and owner-scoped repositories implemented |
+| Application workflow | Database-owned tracking and dashboard implemented |
+| Hosted mobile beta | Planned on a zero-subscription stack |
+| Candidate evidence | Editable and attributed; reviewed resume import remains |
 | Resume tailoring | Not started |
 | Browser automation | Deferred / low priority |
 
 ### Current milestone
 
-Harden the implemented manual intake slice, then add an editable, evidence-backed candidate profile. See [`docs/roadmap.md`](docs/roadmap.md) for the ordered plan.
+Prepare a private, zero-subscription hosted beta that can be installed on a phone and used as the primary daily job-search tracker. The execution plan uses a free application host and durable free PostgreSQL while explicitly covering registration control, session-key persistence, backups, mobile usability, and recovery. See [`docs/hosted-beta-plan.md`](docs/hosted-beta-plan.md) and [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Run locally
 

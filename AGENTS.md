@@ -51,15 +51,18 @@ Browser/application automation is intentionally low priority. Build scoring, sta
 
 ## Current Engineering Progress
 - Goals & success criteria — Complete
-- System architecture — In Progress
-- Data contracts/schemas — Started
-- Scoring engine — Started
-- Persistence — Started
+- System architecture — Layered modular monolith implemented; hosted runtime not started
+- Data contracts/schemas — Core profile, job, evaluation, application, feedback, account, and history models implemented
+- Scoring engine — Profile-driven deterministic v2 with versioned regression fixtures
+- Persistence — PostgreSQL/EF Core migrations and owner-scoped repositories implemented
+- Application workflow — Database-owned lifecycle, follow-ups, outcomes, and dashboard implemented
+- Candidate evidence — Editable profile and verified evidence implemented; reviewed resume import not started
+- Hosted daily-use beta — Planned; not started
 - Resume tailoring — Not Started
 - Browser automation — Not Started; intentionally low priority
 
 ## Immediate Milestone
-Define v0.1 system boundaries and data flow, then define schemas/contracts for CandidateProfile, Job, Application, and Feedback before implementing substantial application code.
+Publish a private daily-use beta on a zero-subscription stack. Serve the Angular PWA and ASP.NET Core API from one HTTPS origin, use managed PostgreSQL for durable data, close registration after owner bootstrap, preserve session keys, add backup and restore tooling, and validate the core workflow on mobile. Follow `docs/hosted-beta-plan.md`.
 
 ## Working Rules for Codex
 1. Read this file first.
@@ -74,4 +77,4 @@ Define v0.1 system boundaries and data flow, then define schemas/contracts for C
 10. Never generate candidate claims unsupported by verified evidence.
 
 ## Current Next Action
-Continue the v0.1 vertical slice from the implemented manual job intake path: improve API/UI usability, add persistence migrations, and keep deterministic scoring covered by tests before adding LLM-assisted evaluation.
+Implement the production hosting baseline described in `docs/hosted-beta-plan.md` as small reviewable pull requests. Complete the hosted daily-use pilot before semantic scoring, resume tailoring, or browser-driven application submission.
