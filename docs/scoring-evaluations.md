@@ -14,4 +14,4 @@ The job list presents the newest evaluation while retaining earlier results for 
 
 Evidence snapshots deliberately copy the category, statement, and source instead of using a live foreign key. Editing or deleting candidate evidence therefore cannot rewrite the explanation for a historical score. Unverified and needs-review evidence cannot be attached as factor support.
 
-The `deterministic-v1` version identifies the current hard-coded scoring policy. The next scoring milestone will make that policy profile-driven and cover it with a versioned fixture set; changing scoring behavior must increment the version.
+The current `deterministic-v2` policy uses the saved target level, role families, skills, work mode, locations, employment type, work authorization, sponsorship need, and verified evidence. Changing scoring behavior must increment the version and add or update a versioned fixture set.

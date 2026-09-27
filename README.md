@@ -153,7 +153,7 @@ This reset command is destructive and cannot recover the deleted local data.
 5. Review eligibility, fit score, application priority, recommendation, explanation, and scoring factors.
 6. Select earlier jobs from the recent-jobs list to compare results.
 
-The current scorer is deterministic and inspectable. It does not yet call an LLM or tailor resumes.
+The current scorer is deterministic, profile-driven, and inspectable. It uses the signed-in candidate's goals, skills, preferences, eligibility constraints, and verified evidence. It does not yet call an LLM or tailor resumes.
 
 Submitting a job creates a versioned evaluation. Re-evaluating it preserves the previous result, the candidate-profile inputs used, and immutable copies of verified evidence that supported positive factors. See [`docs/scoring-evaluations.md`](docs/scoring-evaluations.md) for the API and persistence behavior.
 

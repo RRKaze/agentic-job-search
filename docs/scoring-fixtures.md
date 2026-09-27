@@ -1,6 +1,6 @@
 # Scoring regression fixtures
 
-`tests/AgenticJobSearch.Tests/Fixtures/scoring-v1.json` is the replayable baseline for deterministic scoring. It contains fictional candidate profiles, job descriptions, and expected outcomes without any real candidate information.
+Files under `tests/AgenticJobSearch.Tests/Fixtures/` preserve replayable baselines for deterministic scoring. They contain fictional candidate profiles, job descriptions, and expected outcomes without any real candidate information. `scoring-v1.json` records the original fixed-stack behavior; `scoring-v2.json` is the active profile-driven suite.
 
 Each case checks:
 
@@ -12,4 +12,4 @@ Each case checks:
 
 Ranges preserve meaningful ranking behavior without coupling the suite to every arithmetic implementation detail. A scoring change that intentionally moves a result outside its range must update the implementation version and fixture set together, with the reason documented in the pull request.
 
-The initial cases cover strong technical alignment, weak alignment, seniority mismatch, sponsorship ambiguity, unusually heavy on-call work, and a high-fit role above the target level. Candidate profiles already include preferences and verified evidence so the same fixture format can exercise profile-driven rules in the next milestone.
+The active cases cover role and skill alignment, symmetric seniority mismatches, work mode and location preferences, employment type, sponsorship and authorization restrictions, unusually heavy on-call work, and a high-fit role above the target level.

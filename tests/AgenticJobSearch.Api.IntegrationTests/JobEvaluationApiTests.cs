@@ -20,7 +20,7 @@ public sealed class JobEvaluationApiTests(ApiFixture fixture) : IClassFixture<Ap
         var history = await fixture.Client.GetFromJsonAsync<JsonElement[]>($"/api/jobs/{jobId}/evaluations");
         Assert.NotNull(history);
         Assert.Equal(2, history.Length);
-        Assert.All(history, evaluation => Assert.Equal("deterministic-v1", evaluation.GetProperty("scoringVersion").GetString()));
+        Assert.All(history, evaluation => Assert.Equal("deterministic-v2", evaluation.GetProperty("scoringVersion").GetString()));
         Assert.Equal("Staff Engineer", history[0].GetProperty("profileSnapshot").GetProperty("targetLevel").GetString());
         Assert.Equal("Senior Engineer", history[1].GetProperty("profileSnapshot").GetProperty("targetLevel").GetString());
         Assert.True(history[0].GetProperty("evaluatedAt").GetDateTimeOffset() >= history[1].GetProperty("evaluatedAt").GetDateTimeOffset());
@@ -41,7 +41,7 @@ public sealed class JobEvaluationApiTests(ApiFixture fixture) : IClassFixture<Ap
         var evaluation = Assert.Single(history!);
         var dotnetFactor = Assert.Single(
             evaluation.GetProperty("factors").EnumerateArray(),
-            factor => factor.GetProperty("name").GetString() == "C#/.NET match");
+            factor => factor.GetProperty("name").GetString() == "Skills alignment");
         var evidence = Assert.Single(dotnetFactor.GetProperty("evidence").EnumerateArray());
 
         Assert.Equal("Built C# and .NET backend APIs.", evidence.GetProperty("statement").GetString());
@@ -67,6 +67,24 @@ public sealed class JobEvaluationApiTests(ApiFixture fixture) : IClassFixture<Ap
         Assert.Empty((await other.GetFromJsonAsync<JsonElement[]>($"/api/jobs/{jobId}/evaluations"))!);
     }
 
+    [Fact]
+    public async Task Updated_profile_changes_the_next_persisted_evaluation()
+    {
+        await SaveProfileAsync("Senior Engineer");
+        var created = await CreateJobAsync();
+        var jobId = created.GetProperty("id").GetGuid();
+        var originalFit = created.GetProperty("fitScore").GetInt32();
+
+        await SaveProfileAsync("Program Manager", "Program Management", "Budgeting, Vendor Management");
+        var response = await fixture.Client.PostAsync($"/api/jobs/{jobId}/evaluations", null);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var revised = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+        Assert.True(revised.GetProperty("fitScore").GetInt32() <= originalFit - 20);
+        Assert.Equal("deterministic-v2", revised.GetProperty("scoringVersion").GetString());
+        Assert.Equal("Program Management", revised.GetProperty("profileSnapshot").GetProperty("targetRoleFamilies").GetString());
+    }
+
     private async Task<JsonElement> CreateJobAsync()
     {
         var response = await fixture.Client.PostAsJsonAsync("/api/jobs", new
@@ -80,19 +98,22 @@ public sealed class JobEvaluationApiTests(ApiFixture fixture) : IClassFixture<Ap
         return await response.Content.ReadFromJsonAsync<JsonElement>();
     }
 
-    private async Task SaveProfileAsync(string targetLevel)
+    private async Task SaveProfileAsync(
+        string targetLevel,
+        string targetRoleFamilies = "Backend, Platform",
+        string skills = "C#, .NET, PostgreSQL")
     {
         var response = await fixture.Client.PutAsJsonAsync("/api/candidate-profile", new
         {
             headline = "Backend engineer",
             professionalSummary = "Builds reliable services.",
             targetLevel,
-            targetRoleFamilies = "Backend, Platform",
+            targetRoleFamilies,
             targetIndustries = "Technology",
             preferredLocations = "Remote",
             workModePreference = "remote",
             employmentTypePreference = "full_time",
-            skills = "C#, .NET, PostgreSQL",
+            skills,
             workAuthorization = "Authorized",
             requiresSponsorship = false,
             linkedInUrl = "",

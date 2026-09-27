@@ -43,11 +43,11 @@ Goal: replace hard-coded candidate context with evidence that the user can inspe
 
 Deliverables:
 
-1. Define evidence source, provenance, verification status, confidence, and timestamps.
-2. Add candidate-profile and evidence API endpoints.
-3. Add Angular screens for reviewing and editing profile preferences and evidence.
-4. Require scoring explanations to identify the evidence they used.
-5. Import structured evidence from a resume without silently accepting generated claims.
+1. [x] Define evidence source, provenance, and verification status.
+2. [x] Add candidate-profile and evidence API endpoints.
+3. [x] Add Angular screens for reviewing and editing profile preferences and evidence.
+4. [x] Require scoring explanations to identify the verified evidence they used.
+5. [ ] Import structured evidence from a resume without silently accepting generated claims.
 
 Exit criteria:
 
