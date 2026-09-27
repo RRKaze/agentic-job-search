@@ -1,0 +1,230 @@
+{
+  "version": "deterministic-v2",
+  "profiles": {
+    "senior-backend": {
+      "targetLevel": "Senior Software Engineer",
+      "targetRoleFamilies": "Backend, Platform, Identity",
+      "preferredLocations": "Remote, New York",
+      "workModePreference": "remote",
+      "employmentTypePreference": "full_time",
+      "skills": "C#, .NET, PostgreSQL, distributed systems, authentication",
+      "workAuthorization": "Authorized to work in the United States",
+      "requiresSponsorship": false,
+      "evidence": [
+        {
+          "category": "Backend",
+          "statement": "Built C# and .NET backend APIs backed by PostgreSQL.",
+          "verificationStatus": "Verified",
+          "source": "Resume"
+        }
+      ]
+    },
+    "new-graduate": {
+      "targetLevel": "Entry Level",
+      "targetRoleFamilies": "Software Engineering",
+      "preferredLocations": "Remote",
+      "workModePreference": "remote",
+      "employmentTypePreference": "full_time",
+      "skills": "React, TypeScript",
+      "workAuthorization": "Authorized to work in the United States",
+      "requiresSponsorship": false,
+      "evidence": []
+    },
+    "onsite-boston": {
+      "targetLevel": "Senior Software Engineer",
+      "targetRoleFamilies": "Backend",
+      "preferredLocations": "Boston, MA",
+      "workModePreference": "onsite",
+      "employmentTypePreference": "full_time",
+      "skills": "C#, .NET",
+      "workAuthorization": "Authorized to work in the United States",
+      "requiresSponsorship": false,
+      "evidence": []
+    },
+    "needs-sponsorship": {
+      "targetLevel": "Senior Software Engineer",
+      "targetRoleFamilies": "Backend",
+      "preferredLocations": "Remote",
+      "workModePreference": "remote",
+      "employmentTypePreference": "full_time",
+      "skills": "C#, .NET",
+      "workAuthorization": "Requires employer sponsorship",
+      "requiresSponsorship": true,
+      "evidence": []
+    }
+  },
+  "fixtures": [
+    {
+      "name": "strong profile-specific role and skill alignment",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Senior Backend Engineer",
+        "company": "Example Systems",
+        "sourceText": "Build remote authentication APIs and distributed backend services in C# and .NET with PostgreSQL.",
+        "workMode": "Remote"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 90,
+        "maxFitScore": 100,
+        "minPriority": 75,
+        "maxPriority": 90,
+        "recommendation": "Strong target",
+        "requiredFactors": ["Target role alignment", "Skills alignment", "Work mode preference"]
+      }
+    },
+    {
+      "name": "weak role alignment and work mode mismatch remain low priority",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Operations Coordinator",
+        "company": "Example Services",
+        "sourceText": "Coordinate vendor schedules, prepare reports, and organize office events.",
+        "workMode": "Onsite"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 35,
+        "maxFitScore": 50,
+        "minPriority": 25,
+        "maxPriority": 40,
+        "recommendation": "Low priority",
+        "requiredFactors": ["Work mode preference"]
+      }
+    },
+    {
+      "name": "entry-level profile can target a junior role",
+      "profile": "new-graduate",
+      "job": {
+        "title": "Junior Software Engineer",
+        "company": "Example Labs",
+        "sourceText": "Junior entry level engineer building React and TypeScript applications.",
+        "workMode": "Remote"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 75,
+        "maxFitScore": 90,
+        "minPriority": 65,
+        "maxPriority": 80,
+        "recommendation": "Strong target",
+        "requiredFactors": ["Skills alignment", "Target level alignment"]
+      }
+    },
+    {
+      "name": "ambiguous sponsorship wording requires review",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Backend Engineer",
+        "company": "Example Finance",
+        "sourceText": "Backend role building services. Visa sponsorship required.",
+        "workMode": "Onsite"
+      },
+      "expected": {
+        "eligibility": "NeedsReview",
+        "minFitScore": 40,
+        "maxFitScore": 55,
+        "minPriority": 30,
+        "maxPriority": 45,
+        "recommendation": "Low priority",
+        "requiredFactors": ["Sponsorship wording", "Work mode preference"]
+      }
+    },
+    {
+      "name": "heavy on call separates fit from application priority",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Senior Platform Engineer",
+        "company": "Example Cloud",
+        "sourceText": "Build backend distributed services in C# and .NET. Includes 24/7 heavy on-call and customer support rotation.",
+        "workMode": "Remote"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 75,
+        "maxFitScore": 90,
+        "minPriority": 55,
+        "maxPriority": 65,
+        "recommendation": "Review and consider",
+        "requiredFactors": ["Support/on-call load"]
+      }
+    },
+    {
+      "name": "staff level and work mode risks lower priority",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Staff Platform Engineer",
+        "company": "Example Infrastructure",
+        "sourceText": "Staff platform engineer building backend services in .NET.",
+        "workMode": "Hybrid"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 60,
+        "maxFitScore": 70,
+        "minPriority": 30,
+        "maxPriority": 45,
+        "recommendation": "Review and consider",
+        "requiredFactors": ["Level mismatch risk", "Work mode preference"]
+      }
+    },
+    {
+      "name": "onsite location preference can match",
+      "profile": "onsite-boston",
+      "job": {
+        "title": "Senior Backend Engineer",
+        "company": "Example Boston",
+        "location": "Boston, MA",
+        "sourceText": "Build backend APIs in C# and .NET.",
+        "workMode": "Onsite"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 80,
+        "maxFitScore": 95,
+        "minPriority": 75,
+        "maxPriority": 90,
+        "recommendation": "Strong target",
+        "requiredFactors": ["Location preference", "Work mode preference"]
+      }
+    },
+    {
+      "name": "full-time preference lowers contract priority",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Backend Engineer",
+        "company": "Example Contracting",
+        "sourceText": "Six month contract role building backend APIs in C#.",
+        "workMode": "Remote"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 65,
+        "maxFitScore": 85,
+        "minPriority": 50,
+        "maxPriority": 65,
+        "recommendation": "Review and consider",
+        "requiredFactors": ["Employment type preference"]
+      }
+    },
+    {
+      "name": "sponsorship requirement blocks an explicitly unsupported role",
+      "profile": "needs-sponsorship",
+      "job": {
+        "title": "Backend Engineer",
+        "company": "Example Restricted",
+        "sourceText": "Build backend APIs in C# and .NET. Applicants must work without current or future sponsorship.",
+        "workMode": "Remote"
+      },
+      "expected": {
+        "eligibility": "Ineligible",
+        "minFitScore": 45,
+        "maxFitScore": 65,
+        "minPriority": 0,
+        "maxPriority": 20,
+        "recommendation": "Do not apply",
+        "requiredFactors": ["Sponsorship eligibility"]
+      }
+    }
+  ]
+}

@@ -12,6 +12,7 @@ public sealed class JobNormalizer
         }
 
         var source = request.SourceText.Trim();
+        var location = FirstNonEmpty(request.Location, ExtractLabeledValue(source, "location"), InferLocation(source));
 
         return new Job
         {
@@ -20,9 +21,9 @@ public sealed class JobNormalizer
             SourceUrl = string.IsNullOrWhiteSpace(request.SourceUrl) ? null : request.SourceUrl.Trim(),
             Title = FirstNonEmpty(request.Title, ExtractLabeledValue(source, "title"), InferTitle(source)),
             Company = FirstNonEmpty(request.Company, ExtractLabeledValue(source, "company"), "Unknown company"),
-            Location = FirstNonEmpty(request.Location, ExtractLabeledValue(source, "location"), InferLocation(source)),
+            Location = location,
             Seniority = InferSeniority(source),
-            WorkMode = InferWorkMode(source),
+            WorkMode = InferWorkMode($"{location}\n{source}"),
             LifecycleState = JobLifecycleState.Discovered,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow

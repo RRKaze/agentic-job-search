@@ -10,13 +10,13 @@ public sealed class ScoringFixtureTests
     [Fact]
     public void Versioned_fixture_set_preserves_expected_ranking_behavior()
     {
-        var path = Path.Combine(AppContext.BaseDirectory, "Fixtures", "scoring-v1.json");
+        var path = Path.Combine(AppContext.BaseDirectory, "Fixtures", "scoring-v2.json");
         var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
         options.Converters.Add(new JsonStringEnumConverter());
         var fixtureSet = JsonSerializer.Deserialize<ScoringFixtureSet>(File.ReadAllText(path), options);
 
         Assert.NotNull(fixtureSet);
-        Assert.Equal("deterministic-v1", fixtureSet.Version);
+        Assert.Equal(JobScoringService.CurrentVersion, fixtureSet.Version);
         Assert.NotEmpty(fixtureSet.Profiles);
         Assert.NotEmpty(fixtureSet.Fixtures);
         Assert.Equal(fixtureSet.Fixtures.Count, fixtureSet.Fixtures.Select(fixture => fixture.Name).Distinct().Count());
@@ -84,13 +84,14 @@ public sealed class ScoringFixtureTests
         };
     }
 
-    private sealed record JobFixture(string Title, string Company, string SourceText, JobWorkMode WorkMode)
+    private sealed record JobFixture(string Title, string Company, string? Location, string SourceText, JobWorkMode WorkMode)
     {
         public Job ToDomain() => new()
         {
             Id = Guid.NewGuid(),
             Title = Title,
             Company = Company,
+            Location = Location ?? string.Empty,
             SourceText = SourceText,
             WorkMode = WorkMode
         };

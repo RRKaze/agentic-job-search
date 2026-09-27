@@ -28,4 +28,16 @@ public sealed class JobNormalizerTests
     {
         Assert.Throws<ArgumentException>(() => new JobNormalizer().Normalize(new AddJobRequest(" ")));
     }
+
+    [Fact]
+    public void Normalize_infers_work_mode_from_explicit_location()
+    {
+        var request = new AddJobRequest(
+            "Build APIs in .NET.",
+            Location: "Remote");
+
+        var result = new JobNormalizer().Normalize(request);
+
+        Assert.Equal(JobWorkMode.Remote, result.WorkMode);
+    }
 }
