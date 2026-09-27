@@ -1,0 +1,150 @@
+{
+  "version": "deterministic-v1",
+  "profiles": {
+    "senior-backend": {
+      "targetLevel": "Senior Software Engineer",
+      "targetRoleFamilies": "Backend, Platform, Identity",
+      "preferredLocations": "Remote, New York",
+      "workModePreference": "remote",
+      "employmentTypePreference": "full_time",
+      "skills": "C#, .NET, PostgreSQL, distributed systems, authentication",
+      "workAuthorization": "Authorized to work in the United States",
+      "requiresSponsorship": false,
+      "evidence": [
+        {
+          "category": "Backend",
+          "statement": "Built C# and .NET backend APIs backed by SQL.",
+          "verificationStatus": "Verified",
+          "source": "Resume"
+        }
+      ]
+    },
+    "new-graduate": {
+      "targetLevel": "Entry Level",
+      "targetRoleFamilies": "Software Engineering",
+      "preferredLocations": "Remote",
+      "workModePreference": "remote",
+      "employmentTypePreference": "full_time",
+      "skills": "React, TypeScript",
+      "workAuthorization": "Authorized to work in the United States",
+      "requiresSponsorship": false,
+      "evidence": []
+    }
+  },
+  "fixtures": [
+    {
+      "name": "strong backend identity and dotnet alignment",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Senior Backend Engineer",
+        "company": "Example Systems",
+        "sourceText": "Build remote authentication APIs and distributed backend services in C# and .NET with PostgreSQL.",
+        "workMode": "Remote"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 95,
+        "maxFitScore": 100,
+        "minPriority": 75,
+        "maxPriority": 100,
+        "recommendation": "Strong target",
+        "requiredFactors": ["Backend/platform alignment", "C#/.NET match", "Authentication or identity domain", "SQL and data workflows"]
+      }
+    },
+    {
+      "name": "weak role alignment remains low priority",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Operations Coordinator",
+        "company": "Example Services",
+        "sourceText": "Coordinate vendor schedules, prepare reports, and organize office events.",
+        "workMode": "Onsite"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 40,
+        "maxFitScore": 55,
+        "minPriority": 40,
+        "maxPriority": 55,
+        "recommendation": "Low priority",
+        "requiredFactors": []
+      }
+    },
+    {
+      "name": "junior wording is currently an absolute seniority mismatch",
+      "profile": "new-graduate",
+      "job": {
+        "title": "Junior Software Engineer",
+        "company": "Example Labs",
+        "sourceText": "Junior entry level engineer building React applications.",
+        "workMode": "Remote"
+      },
+      "expected": {
+        "eligibility": "Ineligible",
+        "minFitScore": 25,
+        "maxFitScore": 40,
+        "minPriority": 0,
+        "maxPriority": 20,
+        "recommendation": "Do not apply",
+        "requiredFactors": ["Seniority mismatch"]
+      }
+    },
+    {
+      "name": "ambiguous sponsorship wording requires review",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Backend Engineer",
+        "company": "Example Finance",
+        "sourceText": "Backend role building services. Visa sponsorship required.",
+        "workMode": "Onsite"
+      },
+      "expected": {
+        "eligibility": "NeedsReview",
+        "minFitScore": 50,
+        "maxFitScore": 65,
+        "minPriority": 50,
+        "maxPriority": 65,
+        "recommendation": "Low priority",
+        "requiredFactors": ["Sponsorship wording"]
+      }
+    },
+    {
+      "name": "heavy on call separates fit from application priority",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Senior Platform Engineer",
+        "company": "Example Cloud",
+        "sourceText": "Build backend distributed services in C# and .NET. Includes 24/7 heavy on-call and customer support rotation.",
+        "workMode": "Remote"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 70,
+        "maxFitScore": 80,
+        "minPriority": 45,
+        "maxPriority": 60,
+        "recommendation": "Review and consider",
+        "requiredFactors": ["Support/on-call load"]
+      }
+    },
+    {
+      "name": "staff level risk lowers priority despite technical fit",
+      "profile": "senior-backend",
+      "job": {
+        "title": "Staff Platform Engineer",
+        "company": "Example Infrastructure",
+        "sourceText": "Staff platform engineer building backend services in .NET.",
+        "workMode": "Hybrid"
+      },
+      "expected": {
+        "eligibility": "Eligible",
+        "minFitScore": 75,
+        "maxFitScore": 85,
+        "minPriority": 55,
+        "maxPriority": 65,
+        "recommendation": "Review and consider",
+        "requiredFactors": ["Level mismatch risk"]
+      }
+    }
+  ]
+}

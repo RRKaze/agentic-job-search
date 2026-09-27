@@ -29,4 +29,4 @@ The profile and its evidence are persisted in PostgreSQL. Resume text is stored 
 
 Each job evaluation now preserves the profile fields used by scoring and immutable copies of verified evidence attached to its positive factors. Historical explanations therefore remain inspectable after the profile changes. See [versioned job evaluations](scoring-evaluations.md).
 
-The next milestone should make profile goals, preferences, and skills control deterministic opportunity scoring. Existing scoring weights remain unchanged until that work is covered by a versioned regression fixture set.
+Deterministic v2 uses profile goals, preferences, skills, work authorization, sponsorship need, and verified evidence when scoring an opportunity. The same job can therefore receive a different result after the profile changes, while evaluation history preserves both versions. The active behavior is covered by the versioned scoring fixture set.
