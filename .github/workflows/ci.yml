@@ -85,7 +85,8 @@ jobs:
             --env ASPNETCORE_ENVIRONMENT=Testing \
             agentic-job-search:ci
           trap 'docker rm --force agentic-job-search-ci' EXIT
-          curl --fail --retry 12 --retry-delay 2 --retry-connrefused \
+          curl --fail --retry 12 --retry-delay 2 --retry-all-errors \
             http://127.0.0.1:18080/api/health/live || { docker logs agentic-job-search-ci; exit 1; }
-          curl --fail http://127.0.0.1:18080/ | grep --quiet '<app-root>' || \
+          curl --fail --retry 3 --retry-delay 1 --retry-all-errors \
+            http://127.0.0.1:18080/ | grep --quiet '<app-root>' || \
             { docker logs agentic-job-search-ci; exit 1; }
