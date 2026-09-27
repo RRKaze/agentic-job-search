@@ -6,13 +6,15 @@ This roadmap keeps the real job-search workflow as the first test case while pre
 
 V0.1 currently supports:
 
-- a seeded candidate profile built from verified evidence
+- account registration, sign-in, and first-login onboarding
+- an editable candidate profile built from verified evidence
 - manual job entry
 - basic field normalization
-- deterministic eligibility, fit, and application-priority scoring
-- inspectable explanations and scoring factors
+- profile-driven deterministic eligibility, fit, and application-priority scoring
+- versioned evaluations with inspectable explanations and evidence snapshots
 - PostgreSQL persistence through EF Core
-- an Angular review interface
+- database-owned application workflow and outcome tracking
+- an Angular dashboard, opportunity tracker, application tracker, and profile editor
 - a local browser-based database viewer
 
 ## Next: V0.1 hardening
@@ -36,6 +38,35 @@ Exit criteria:
 - a clean database can be created entirely from migrations
 - API and scoring behavior are covered by automated tests
 - a pull request cannot merge when builds or tests fail
+
+## Immediate next: free hosted daily-use beta
+
+Goal: publish a private, installable version of the application that can be used from desktop and mobile every day without a hosting subscription.
+
+The initial deployment uses one Render free web service for the ASP.NET Core API and compiled Angular frontend, plus Neon free PostgreSQL for durable application data. It accepts free-tier cold starts and quotas during the personal pilot. It does not accept expiring database storage, open registration, exposed administration services, or untested recovery.
+
+Deliverables:
+
+1. [ ] Add a production container that serves the API and Angular application from one HTTPS origin.
+2. [ ] Add validated environment configuration, proxy handling, health checks, structured logs, and correlation identifiers.
+3. [ ] Add a controlled migration command for hosted releases.
+4. [ ] Add private registration/bootstrap controls and persistent protected session keys.
+5. [ ] Make the Angular application installable with a manifest, service worker, icons, update handling, and standalone display.
+6. [ ] Complete a mobile usability pass and test current iOS Safari and Android Chrome.
+7. [ ] Add a repeatable Render configuration and Neon setup runbook without committing credentials.
+8. [ ] Add logical backup and restore tooling and complete a restore exercise.
+9. [ ] Use the hosted application daily for two weeks and turn repeated friction into prioritized issues.
+
+Exit criteria:
+
+- the owner can install the application on a phone and complete the core job workflow
+- only the owner can register for or access the hosted workspace
+- deployments and application restarts preserve database state and authenticated sessions
+- authenticated API responses are never stored in the service-worker cache
+- a production backup can be restored into a clean database
+- daily use produces concrete feedback for the next product milestone
+
+The architecture, execution slices, security constraints, pull-request sequence, and pilot checklist are defined in [`hosted-beta-plan.md`](hosted-beta-plan.md).
 
 ## V0.2: candidate evidence
 
@@ -103,15 +134,18 @@ Goal: evolve the proven single-user workflow into a secure product boundary.
 
 Deliverables:
 
-1. Add OIDC authentication and stable user identity.
-2. Add ownership and tenant boundaries to persisted entities.
-3. Enforce authorization in APIs and test cross-user isolation.
-4. Add secure secrets, deployment configuration, backups, and retention rules.
-5. Introduce asynchronous workers and queues only for workflows that need them.
-6. Add observability with OpenTelemetry and production dashboards.
+1. [x] Add password authentication, secure cookie sessions, and stable internal user identity.
+2. [x] Add ownership boundaries to persisted profile, job, evaluation, and application data.
+3. [x] Enforce authorization in APIs and test cross-user isolation.
+4. [ ] Add the public account lifecycle: email verification, password recovery, server-side session revocation, and optional OIDC or MFA.
+5. [ ] Add account export, deletion, retention rules, and administrative support boundaries.
+6. [ ] Add secure secrets, deployment configuration, backups, and recovery procedures appropriate to the hosting tier.
+7. [ ] Introduce asynchronous workers and queues only for workflows that need them.
+8. [ ] Add observability with OpenTelemetry and production dashboards.
 
 Exit criteria:
 
+- public users can verify, recover, export, and delete their accounts without administrator database access
 - users can only access their own profiles, jobs, applications, and artifacts
 - production operations have documented recovery and data-handling procedures
 - background work is retryable, idempotent, and observable

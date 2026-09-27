@@ -1,6 +1,6 @@
 # Project Context and Progress
 
-Last canonicalized: 2026-09-19
+Last canonicalized: 2026-09-27
 
 This document records the durable product context, current progress, and major decisions for the Agentic Job Search Workflow. `AGENTS.md` contains concise instructions for coding agents; this file provides the fuller context behind those instructions.
 
@@ -217,41 +217,34 @@ First establish reliable discovery/scoring/tracking/feedback. Any future submiss
 | Workstream | State | Approx. progress |
 | --- | --- | ---: |
 | Goals & success criteria | Complete | 100% |
-| System architecture | In progress | 50% |
-| Data contracts / schemas | Initial V0.1 models implemented | 40% |
-| Scoring engine | Deterministic V0.1 implemented | 35% |
-| Persistence | PostgreSQL/EF Core implemented | 40% |
+| System architecture | Local modular monolith implemented; hosted runtime planned | 75% |
+| Data contracts / schemas | Core account, profile, evidence, job, evaluation, workflow, and history models implemented | 75% |
+| Scoring engine | Profile-driven deterministic v2 with versioned fixtures | 70% |
+| Persistence | PostgreSQL/EF Core migrations and owner-scoped repositories implemented | 75% |
+| Application workflow | Database-owned lifecycle and dashboard implemented | 80% |
+| Hosted daily-use beta | Planned on a zero-subscription stack | 10% |
 | Resume tailoring | Not started | 0% |
 | Browser automation | Deferred | 0% |
 
 ## 9. Immediate v0.1 milestone
 
-The first implemented slice is:
+The local workflow now supports accounts, editable candidate evidence, job intake, profile-driven scoring, versioned evaluation history, database-owned application state, outcomes, follow-ups, and dashboard metrics. The immediate milestone is to make this workflow dependable enough for daily personal use from desktop and mobile.
 
-1. maintain a seeded candidate profile with verified evidence
-2. manually add a job description
-3. normalize job fields
-4. run deterministic eligibility and scoring
-5. persist the job and evaluation through EF Core/PostgreSQL
-6. display the recommendation in Angular
+The first hosted beta will use a free application host and managed free PostgreSQL. It will remain private and single-user, accept cold starts during the pilot, and require HTTPS, closed registration, durable database state, persistent session keys, structured diagnostics, and a tested backup restore. The Angular client will be installable as a standalone PWA without caching authenticated API data.
 
-The slice is now functional locally. Next work should replace development-time schema creation with migrations, add integration coverage, and make candidate evidence editable with explicit provenance and verification status. Model-assisted semantic scoring comes later, behind inspectable interfaces and a repeatable evaluation set.
+The complete execution plan is maintained in [`hosted-beta-plan.md`](hosted-beta-plan.md). Model-assisted semantic scoring comes later, after daily use produces a useful set of review decisions and exposes the real workflow bottlenecks.
 
 The ordered delivery plan is maintained in [`roadmap.md`](roadmap.md).
 
 ## 10. Near-term design questions
 
-These are intentionally unresolved and should be decided through architecture work rather than assumed:
+These are intentionally unresolved and should be decided from pilot evidence rather than assumed:
 
-- What is the canonical source/import format for candidate evidence?
-- How should evidence provenance and verification status be represented?
-- What lifecycle states should a `Job` have before it becomes an `Application`?
-- Should rejected/ignored jobs remain stored to improve future ranking?
-- What feedback taxonomy provides useful learning without becoming burdensome?
-- Which hard filters are absolute versus configurable penalties?
-- How should deterministic and semantic scores be normalized and explained?
-- What evaluation dataset or replay mechanism can measure ranking improvements over time?
-- What is the first useful interface: CLI, local web UI, API, or a combination?
+- Which resume input should the reviewed evidence importer support first: PDF, DOCX, or pasted text?
+- What feedback taxonomy provides useful learning without making daily tracking burdensome?
+- Which deterministic filters should become configurable after real false-positive and false-negative examples exist?
+- When do free-hosting cold starts or quotas justify a paid service?
+- What labeled review set and improvement threshold should semantic scoring have to beat before affecting recommendations?
 
 ## 11. Guiding constraint
 
