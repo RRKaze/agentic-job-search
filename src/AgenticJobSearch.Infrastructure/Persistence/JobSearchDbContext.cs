@@ -1,10 +1,13 @@
 using AgenticJobSearch.Domain;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgenticJobSearch.Infrastructure.Persistence;
 
-public sealed class JobSearchDbContext(DbContextOptions<JobSearchDbContext> options) : DbContext(options)
+public sealed class JobSearchDbContext(DbContextOptions<JobSearchDbContext> options)
+    : DbContext(options), IDataProtectionKeyContext
 {
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
     public DbSet<UserAccount> UserAccounts => Set<UserAccount>();
     public DbSet<CandidateProfile> CandidateProfiles => Set<CandidateProfile>();
     public DbSet<CandidateEvidence> CandidateEvidence => Set<CandidateEvidence>();

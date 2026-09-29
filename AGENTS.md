@@ -51,13 +51,13 @@ Browser/application automation is intentionally low priority. Build scoring, sta
 
 ## Current Engineering Progress
 - Goals & success criteria — Complete
-- System architecture — Layered modular monolith implemented; hosted runtime not started
+- System architecture — Layered modular monolith and production container runtime implemented
 - Data contracts/schemas — Core profile, job, evaluation, application, feedback, account, and history models implemented
 - Scoring engine — Profile-driven deterministic v2 with versioned regression fixtures
 - Persistence — PostgreSQL/EF Core migrations and owner-scoped repositories implemented
 - Application workflow — Database-owned lifecycle, follow-ups, outcomes, and dashboard implemented
 - Candidate evidence — Editable profile and verified evidence implemented; reviewed resume import not started
-- Hosted daily-use beta — Planned; not started
+- Hosted daily-use beta — Production runtime implemented; mobile PWA and deployment remain
 - Resume tailoring — Not Started
 - Browser automation — Not Started; intentionally low priority
 
@@ -77,4 +77,4 @@ Publish a private daily-use beta on a zero-subscription stack. Serve the Angular
 10. Never generate candidate claims unsupported by verified evidence.
 
 ## Current Next Action
-Implement the production hosting baseline described in `docs/hosted-beta-plan.md` as small reviewable pull requests. Complete the hosted daily-use pilot before semantic scoring, resume tailoring, or browser-driven application submission.
+Implement the installable mobile PWA described in `docs/hosted-beta-plan.md`, then add the reproducible free deployment. Complete the hosted daily-use pilot before semantic scoring, resume tailoring, or browser-driven application submission.

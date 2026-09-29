@@ -52,16 +52,16 @@ See the current [Render free-service behavior](https://render.com/docs/faq), [Re
 
 ### Slice 1: production runtime
 
-1. Add a multi-stage production Dockerfile that builds Angular with the pinned Node version and publishes the .NET API.
-2. Copy the Angular browser output into the API's static-file directory.
-3. Configure ASP.NET Core to serve static assets and fall back to `index.html` for client routes.
-4. Add typed configuration and fail startup when required production settings are missing.
-5. Respect forwarded HTTPS headers from the hosting proxy.
-6. Add liveness and readiness endpoints suitable for a hosting health check.
-7. Add structured request logs and a correlation identifier returned in response headers.
-8. Add a dedicated migration command so schema upgrades complete before new application code serves traffic.
-9. Add the private registration/bootstrap control.
-10. Persist and protect the data-protection key ring.
+1. [x] Add a multi-stage production Dockerfile that builds Angular with the pinned Node version and publishes the .NET API.
+2. [x] Copy the Angular browser output into the API's static-file directory.
+3. [x] Configure ASP.NET Core to serve static assets and fall back to `index.html` for client routes.
+4. [x] Add typed configuration and fail startup when required production settings are missing.
+5. [x] Respect forwarded HTTPS headers from the hosting proxy.
+6. [x] Add liveness and readiness endpoints suitable for a hosting health check.
+7. [x] Add structured request logs and a correlation identifier returned in response headers.
+8. [x] Add a dedicated migration command so schema upgrades complete before new application code serves traffic.
+9. [x] Add the private registration/bootstrap control.
+10. [x] Persist and protect the data-protection key ring.
 
 ### Slice 2: installable mobile PWA
 

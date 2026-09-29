@@ -1,6 +1,6 @@
 namespace AgenticJobSearch.Application.Accounts;
 
-public sealed record RegisterAccountRequest(string? DisplayName, string? Email, string? Password);
+public sealed record RegisterAccountRequest(string? DisplayName, string? Email, string? Password, string? BootstrapToken = null);
 public sealed record LoginAccountRequest(string? Email, string? Password);
 public sealed record UpdateAccountProfileRequest(string? DisplayName, string? CareerStage);
 

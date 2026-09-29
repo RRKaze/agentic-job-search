@@ -8,13 +8,16 @@ export class AuthComponent {
   readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   readonly register = inject(ActivatedRoute).snapshot.routeConfig?.path === 'register';
-  displayName = ''; email = ''; password = ''; confirmPassword = ''; busy = false; error = ''; showPassword = false;
+  displayName = ''; email = ''; password = ''; confirmPassword = ''; bootstrapToken = ''; busy = false; error = ''; showPassword = false;
   submit(): void {
     if (this.busy) return;
     if (this.register && this.password !== this.confirmPassword) { this.error = 'Your passwords do not match.'; return; }
     this.busy = true; this.error = '';
-    this.auth.authenticate(this.register ? 'register' : 'login', { displayName: this.displayName.trim(), email: this.email.trim(), password: this.password }).subscribe({
-      next: user => { this.password = ''; this.confirmPassword = ''; void this.router.navigateByUrl(user.careerStage ? '/' : '/onboarding'); },
+    this.auth.authenticate(this.register ? 'register' : 'login', {
+      displayName: this.displayName.trim(), email: this.email.trim(), password: this.password,
+      bootstrapToken: this.register ? this.bootstrapToken : undefined
+    }).subscribe({
+      next: user => { this.password = ''; this.confirmPassword = ''; this.bootstrapToken = ''; void this.router.navigateByUrl(user.careerStage ? '/' : '/onboarding'); },
       error: response => { this.busy = false; this.error = response.status === 429 ? 'Too many attempts. Please wait a minute and try again.' : response.error?.message ?? 'Unable to connect. Please try again.'; }
     });
   }

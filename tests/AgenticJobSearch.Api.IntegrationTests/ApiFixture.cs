@@ -31,6 +31,11 @@ public sealed class ApiFixture : IAsyncLifetime
     {
         await database.StartAsync();
         application = new TestApplicationFactory(database.GetConnectionString(), SourceVerifier);
+        await using (var scope = application.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<JobSearchDbContext>();
+            await db.Database.MigrateAsync();
+        }
         Client = CreateClient();
         var response = await Client.PostAsJsonAsync("/api/account/register", new { displayName = "Fixture Owner", email = "owner@example.test", password = "Fictional test passphrase 2026" });
         response.EnsureSuccessStatusCode();
@@ -47,6 +52,24 @@ public sealed class ApiFixture : IAsyncLifetime
 
     public void SetImportsEnabled(bool enabled) =>
         application!.Services.GetRequiredService<IConfiguration>()["Imports:Enabled"] = enabled.ToString();
+
+    public void SetRegistration(bool enabled, string bootstrapToken = "")
+    {
+        var configuration = application!.Services.GetRequiredService<IConfiguration>();
+        configuration["Accounts:RegistrationEnabled"] = enabled.ToString();
+        configuration["Accounts:RegistrationBootstrapToken"] = bootstrapToken;
+    }
+
+    public async Task<int> CountDataProtectionKeysAsync()
+    {
+        await using var scope = application!.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<JobSearchDbContext>();
+        var connection = db.Database.GetDbConnection();
+        await connection.OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM \"DataProtectionKeys\"";
+        return Convert.ToInt32(await command.ExecuteScalarAsync());
+    }
 
     public async Task RejectApplicationWritesAsync()
     {
@@ -130,6 +153,7 @@ public sealed class ApiFixture : IAsyncLifetime
             builder.UseEnvironment("Testing");
             builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?>
             {
+                ["ConnectionStrings:JobSearch"] = connectionString,
                 ["Imports:Token"] = ImportToken,
                 ["Imports:Enabled"] = "true"
             }));

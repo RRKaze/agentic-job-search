@@ -19,6 +19,7 @@
       @if (register) {
         <small id="password-help">Use 12–128 characters. A long, unique passphrase works well.</small>
         <label for="confirm-password">Confirm password<input id="confirm-password" name="confirmPassword" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" required maxlength="128" autocomplete="new-password" [disabled]="busy"></label>
+        <label for="bootstrap-token">Private registration token<input id="bootstrap-token" name="bootstrapToken" type="password" [(ngModel)]="bootstrapToken" autocomplete="off" [disabled]="busy"></label>
       }
       <label class="show-password"><input type="checkbox" name="showPassword" [(ngModel)]="showPassword"> Show password</label>
       <button class="primary-button" type="submit" [disabled]="form.invalid || busy || (register && !displayName.trim())">{{ busy ? 'Please wait…' : register ? 'Create account' : 'Sign in' }}</button>

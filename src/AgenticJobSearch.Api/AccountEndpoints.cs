@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AgenticJobSearch.Application.Accounts;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
 
 public static class AccountEndpoints
 {
@@ -13,8 +14,14 @@ public static class AccountEndpoints
             RegisterAccountRequest request,
             RegisterAccountHandler handler,
             HttpContext context,
+            IOptionsSnapshot<AccountRegistrationOptions> registration,
             CancellationToken cancellationToken) =>
-            await HandleAuthenticated(context, () => handler.HandleAsync(request, cancellationToken), created: true));
+        {
+            if (!registration.Value.RegistrationEnabled) return Results.NotFound();
+            if (!registration.Value.Accepts(request.BootstrapToken))
+                return Results.Json(new { message = "Registration requires the private bootstrap token." }, statusCode: 403);
+            return await HandleAuthenticated(context, () => handler.HandleAsync(request, cancellationToken), created: true);
+        });
 
         accounts.MapPost("/login", async (
             LoginAccountRequest request,

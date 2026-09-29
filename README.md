@@ -27,19 +27,19 @@ Browser/application automation comes later, after scoring and tracking are relia
 | Area | Status |
 | --- | --- |
 | Goals & success criteria | Complete |
-| System architecture | Local modular monolith implemented; hosted runtime planned |
+| System architecture | Modular monolith and production container runtime implemented |
 | Data contracts / schemas | Core account, profile, evidence, job, evaluation, and application models implemented |
 | Scoring engine | Profile-driven deterministic V2 with versioned fixtures |
 | Persistence | PostgreSQL/EF Core migrations and owner-scoped repositories implemented |
 | Application workflow | Database-owned tracking and dashboard implemented |
-| Hosted mobile beta | Planned on a zero-subscription stack |
+| Hosted mobile beta | Production runtime implemented; mobile PWA and deployment remain |
 | Candidate evidence | Editable and attributed; reviewed resume import remains |
 | Resume tailoring | Not started |
 | Browser automation | Deferred / low priority |
 
 ### Current milestone
 
-Prepare a private, zero-subscription hosted beta that can be installed on a phone and used as the primary daily job-search tracker. The execution plan uses a free application host and durable free PostgreSQL while explicitly covering registration control, session-key persistence, backups, mobile usability, and recovery. See [`docs/hosted-beta-plan.md`](docs/hosted-beta-plan.md) and [`docs/roadmap.md`](docs/roadmap.md).
+Add the installable mobile PWA, then deploy the private beta on the planned zero-subscription stack. The production runtime now provides one-origin hosting, private owner bootstrap, durable session keys, health checks, request diagnostics, and controlled database migrations. See [`docs/hosted-beta-plan.md`](docs/hosted-beta-plan.md), [`docs/production-configuration.md`](docs/production-configuration.md), and [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Run locally
 
@@ -213,7 +213,7 @@ dotnet tool run dotnet-ef migrations add MigrationName \
   --output-dir Persistence/Migrations
 ```
 
-Application startup applies pending migrations. Production deployment policy may move migration execution into a dedicated release step as the deployment model matures.
+Development startup applies pending migrations. In production, run the published application with `--migrate` as a one-time task before starting the new version; normal startup does not modify the schema. See [`docs/production-configuration.md`](docs/production-configuration.md).
 
 ## Design principles
 

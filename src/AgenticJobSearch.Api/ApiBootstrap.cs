@@ -2,18 +2,32 @@ using AgenticJobSearch.Application;
 using AgenticJobSearch.Application.Abstractions;
 using AgenticJobSearch.Infrastructure;
 using AgenticJobSearch.Infrastructure.Persistence;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 
 public static class ApiBootstrap
 {
-    public static async Task<WebApplication> BuildAsync(string[] args, Action<WebApplicationBuilder>? configure = null)
+    public static Task<WebApplication> BuildAsync(string[] args, Action<WebApplicationBuilder>? configure = null)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var hostingOptions = builder.Configuration.GetSection(HostingOptions.SectionName).Get<HostingOptions>() ?? new();
+        var registrationOptions = builder.Configuration.GetSection(AccountRegistrationOptions.SectionName).Get<AccountRegistrationOptions>() ?? new();
+        ProductionConfiguration.Validate(builder.Environment.IsProduction(), builder.Configuration, hostingOptions, registrationOptions);
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+        builder.Services.Configure<AccountRegistrationOptions>(builder.Configuration.GetSection(AccountRegistrationOptions.SectionName));
+        builder.Services.Configure<HostingOptions>(builder.Configuration.GetSection(HostingOptions.SectionName));
+        builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            options.ForwardLimit = 1;
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
         builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
@@ -50,7 +64,13 @@ public static class ApiBootstrap
         builder.Services.AddScoped<AgenticJobSearch.Infrastructure.Imports.RecordImporter>();
         builder.Services.AddSingleton<AgenticJobSearch.Application.Imports.ISourceHeadVerifier, AgenticJobSearch.Infrastructure.Imports.GitHubHeadVerifier>();
         builder.Services.AddApplication();
-        builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
+        var dataProtection = builder.Services
+            .AddDataProtection()
+            .SetApplicationName("AgenticJobSearch")
+            .PersistKeysToDbContext<JobSearchDbContext>();
+        if (!string.IsNullOrWhiteSpace(hostingOptions.DataProtectionCertificateBase64))
+            dataProtection.ProtectKeysWithCertificate(hostingOptions.LoadDataProtectionCertificate());
         builder.Services.ConfigureHttpJsonOptions(options =>
         {
             options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -64,15 +84,13 @@ public static class ApiBootstrap
             app.MapOpenApi();
         }
 
-        await using (var scope = app.Services.CreateAsyncScope())
-        {
-            var dbContext = scope.ServiceProvider.GetRequiredService<JobSearchDbContext>();
-            await dbContext.Database.MigrateAsync();
-        }
-
+        app.UseForwardedHeaders();
         app.UseExceptionHandler();
         app.UseStatusCodePages();
         app.UseCors();
+        app.UseMiddleware<CorrelationIdMiddleware>();
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
 
         app.UseAuthentication();
         app.UseAuthorization();
@@ -94,8 +112,16 @@ public static class ApiBootstrap
         app.MapJobEndpoints();
         app.MapHealthEndpoints();
         app.MapRecordImports();
+        app.Map("/api/{**path}", () => Results.NotFound());
+        app.MapFallbackToFile("index.html");
 
+        return Task.FromResult(app);
+    }
 
-        return app;
+    public static async Task MigrateDatabaseAsync(this WebApplication app, CancellationToken cancellationToken = default)
+    {
+        await using var scope = app.Services.CreateAsyncScope();
+        var database = scope.ServiceProvider.GetRequiredService<JobSearchDbContext>();
+        await database.Database.MigrateAsync(cancellationToken);
     }
 }
