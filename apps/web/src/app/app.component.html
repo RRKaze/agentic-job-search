@@ -1,4 +1,15 @@
 <main class="app-shell" [class.signed-out]="!auth.user()">
+  <div class="app-notifications">
+    @if (!pwa.online()) {
+      <aside class="connection-banner" role="status"><span><strong>You're offline.</strong> Saved app screens remain available, but job and account changes need a connection.</span></aside>
+    }
+    @if (pwa.updateAvailable()) {
+      <aside class="update-banner" role="status"><span><strong>An update is ready.</strong> Reload to use the latest version.</span><button type="button" (click)="pwa.installUpdate()">Reload</button></aside>
+    }
+    @if (pwa.updateError()) {
+      <aside class="connection-banner error-banner" role="alert"><span>{{ pwa.updateError() }}</span><button type="button" (click)="pwa.reload()">Reload</button></aside>
+    }
+  </div>
   @if (auth.user()) {
   <aside class="sidebar">
     <div class="brand-mark">A</div>

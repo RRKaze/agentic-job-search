@@ -57,7 +57,7 @@ Browser/application automation is intentionally low priority. Build scoring, sta
 - Persistence — PostgreSQL/EF Core migrations and owner-scoped repositories implemented
 - Application workflow — Database-owned lifecycle, follow-ups, outcomes, and dashboard implemented
 - Candidate evidence — Editable profile and verified evidence implemented; reviewed resume import not started
-- Hosted daily-use beta — Production runtime implemented; mobile PWA and deployment remain
+- Hosted daily-use beta — Production runtime and mobile PWA implemented; deployment and device verification remain
 - Resume tailoring — Not Started
 - Browser automation — Not Started; intentionally low priority
 
@@ -77,4 +77,4 @@ Publish a private daily-use beta on a zero-subscription stack. Serve the Angular
 10. Never generate candidate claims unsupported by verified evidence.
 
 ## Current Next Action
-Implement the installable mobile PWA described in `docs/hosted-beta-plan.md`, then add the reproducible free deployment. Complete the hosted daily-use pilot before semantic scoring, resume tailoring, or browser-driven application submission.
+Add the reproducible free deployment described in `docs/hosted-beta-plan.md`, then verify installation and the core workflow on iOS and Android. Complete the hosted daily-use pilot before semantic scoring, resume tailoring, or browser-driven application submission.

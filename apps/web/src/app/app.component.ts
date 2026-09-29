@@ -3,6 +3,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 
 import { AuthService } from './auth.service';
 import { JobStore } from './job-store.service';
+import { PwaStatusService } from './pwa-status.service';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ import { JobStore } from './job-store.service';
 })
 export class AppComponent {
   readonly auth = inject(AuthService);
+  readonly pwa = inject(PwaStatusService);
   private readonly router = inject(Router);
   private readonly jobs = inject(JobStore);
   signingOut = false; signOutError = '';

@@ -117,12 +117,11 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 }
 @media (max-width: 760px) {
   .app-shell { grid-template-columns: 1fr; }
-  .sidebar { position: static; display: flex; height: auto; padding: 15px 18px; }
-  .sidebar nav, .sync-card, .brand-copy span { display: none; }
+  .sidebar { position: static; display: flex; height: auto; padding: max(15px, env(safe-area-inset-top)) 18px 15px; }
+  .sync-card, .brand-copy span { display: none; }
   .brand-copy { flex: 1; }
-  .workspace { padding: 24px 16px 36px; }
+  .workspace { padding: 24px 16px calc(86px + env(safe-area-inset-bottom)); }
   .modal-backdrop { align-items: end; padding: 12px; }
-  .modal-panel { width: 100%; max-height: calc(100vh - 24px); border-radius: 14px; }
   .page-header, .tracker-toolbar { align-items: stretch; flex-direction: column; }
   .summary-grid, .field-grid { grid-template-columns: 1fr; }
   .search-box { flex-basis: auto; }

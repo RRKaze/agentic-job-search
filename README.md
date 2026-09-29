@@ -32,14 +32,14 @@ Browser/application automation comes later, after scoring and tracking are relia
 | Scoring engine | Profile-driven deterministic V2 with versioned fixtures |
 | Persistence | PostgreSQL/EF Core migrations and owner-scoped repositories implemented |
 | Application workflow | Database-owned tracking and dashboard implemented |
-| Hosted mobile beta | Production runtime implemented; mobile PWA and deployment remain |
+| Hosted mobile beta | Production runtime and installable PWA implemented; deployment remains |
 | Candidate evidence | Editable and attributed; reviewed resume import remains |
 | Resume tailoring | Not started |
 | Browser automation | Deferred / low priority |
 
 ### Current milestone
 
-Add the installable mobile PWA, then deploy the private beta on the planned zero-subscription stack. The production runtime now provides one-origin hosting, private owner bootstrap, durable session keys, health checks, request diagnostics, and controlled database migrations. See [`docs/hosted-beta-plan.md`](docs/hosted-beta-plan.md), [`docs/production-configuration.md`](docs/production-configuration.md), and [`docs/roadmap.md`](docs/roadmap.md).
+Deploy the private beta on the planned zero-subscription stack, then verify installation and daily use on a phone. The production runtime and installable PWA now provide one-origin hosting, private owner bootstrap, durable session keys, safe application-shell caching, offline/update feedback, and mobile navigation. See [`docs/hosted-beta-plan.md`](docs/hosted-beta-plan.md), [`docs/production-configuration.md`](docs/production-configuration.md), [`docs/mobile-pwa.md`](docs/mobile-pwa.md), and [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Run locally
 

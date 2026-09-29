@@ -51,7 +51,7 @@ Deliverables:
 2. [x] Add validated environment configuration, proxy handling, health checks, structured logs, and correlation identifiers.
 3. [x] Add a controlled migration command for hosted releases.
 4. [x] Add private registration/bootstrap controls and persistent protected session keys.
-5. [ ] Make the Angular application installable with a manifest, service worker, icons, update handling, and standalone display.
+5. [x] Make the Angular application installable with a manifest, service worker, icons, update handling, and standalone display.
 6. [ ] Complete a mobile usability pass and test current iOS Safari and Android Chrome.
 7. [ ] Add a repeatable Render configuration and Neon setup runbook without committing credentials.
 8. [ ] Add logical backup and restore tooling and complete a restore exercise.
