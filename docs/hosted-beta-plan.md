@@ -65,14 +65,14 @@ See the current [Render free-service behavior](https://render.com/docs/faq), [Re
 
 ### Slice 2: installable mobile PWA
 
-1. Add Angular PWA support, a web manifest, service-worker configuration, and production icons.
-2. Use `display: standalone`, application colors, and a stable application name.
-3. Cache only versioned application-shell assets.
-4. Show a clear offline state when API requests cannot run.
-5. Detect a newly deployed application version and prompt the user to refresh.
-6. Verify navigation, forms, dialogs, tables, and status controls at phone widths.
-7. Provide touch targets and focus states suitable for mobile use.
-8. Test installation and core workflows on current iOS Safari and Android Chrome.
+1. [x] Add Angular PWA support, a web manifest, service-worker configuration, and production icons.
+2. [x] Use `display: standalone`, application colors, and a stable application name.
+3. [x] Cache only versioned application-shell assets.
+4. [x] Show a clear offline state when API requests cannot run.
+5. [x] Detect a newly deployed application version and prompt the user to refresh.
+6. [x] Verify navigation, forms, dialogs, tables, and status controls at phone widths.
+7. [x] Provide touch targets and focus states suitable for mobile use.
+8. [ ] Test installation and core workflows on current iOS Safari and Android Chrome.
 
 Angular's PWA setup and HTTPS requirements are documented in the [Angular service-worker guide](https://angular.dev/ecosystem/service-workers/getting-started). Apple's standalone Home Screen behavior is described in [Web apps on iOS and iPadOS](https://developer.apple.com/videos/play/wwdc2023/10120/).
 
