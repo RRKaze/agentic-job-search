@@ -1,0 +1,37 @@
+name: Hosted smoke test
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Hosted HTTPS URL without a path
+        required: true
+        type: string
+      expect_registration_closed:
+        description: Verify that new account registration is closed
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Verify hosted application
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run public smoke checks
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+          EXPECT_REGISTRATION_CLOSED: ${{ inputs.expect_registration_closed }}
+        run: |
+          options=()
+          if [ "$EXPECT_REGISTRATION_CLOSED" = "true" ]; then
+            options+=(--expect-registration-closed)
+          fi
+          ./scripts/hosted-smoke-test.sh "$BASE_URL" "${options[@]}"

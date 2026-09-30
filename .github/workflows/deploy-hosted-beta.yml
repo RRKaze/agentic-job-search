@@ -1,0 +1,86 @@
+name: Deploy hosted beta
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hosted-beta-production
+  cancel-in-progress: false
+
+jobs:
+  migrate-and-deploy:
+    name: Migrate and deploy exact commit
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+    steps:
+      - name: Require main for a manual deployment
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Manual hosted deployments must run from main."
+            exit 1
+          fi
+
+      - name: Check deployment configuration
+        id: deployment-config
+        env:
+          NEON_MIGRATION_CONNECTION_STRING: ${{ secrets.NEON_MIGRATION_CONNECTION_STRING }}
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$NEON_MIGRATION_CONNECTION_STRING" ] || [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Hosted deployment skipped. Add the NEON_MIGRATION_CONNECTION_STRING and RENDER_DEPLOY_HOOK_URL repository secrets when the Neon and Render services exist."
+            exit 0
+          fi
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+
+      - name: Check out the verified commit
+        if: steps.deployment-config.outputs.configured == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+
+      - name: Set up .NET
+        if: steps.deployment-config.outputs.configured == 'true'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore migration runner
+        if: steps.deployment-config.outputs.configured == 'true'
+        run: dotnet restore src/AgenticJobSearch.Api/AgenticJobSearch.Api.csproj
+
+      - name: Apply database migrations
+        if: steps.deployment-config.outputs.configured == 'true'
+        env:
+          ASPNETCORE_ENVIRONMENT: Testing
+          ConnectionStrings__JobSearch: ${{ secrets.NEON_MIGRATION_CONNECTION_STRING }}
+        run: >-
+          dotnet run
+          --project src/AgenticJobSearch.Api/AgenticJobSearch.Api.csproj
+          --configuration Release
+          --no-restore
+          -- --migrate
+
+      - name: Deploy the migrated commit to Render
+        if: steps.deployment-config.outputs.configured == 'true'
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: >-
+          curl --fail --show-error --silent
+          --request POST
+          --url "${RENDER_DEPLOY_HOOK_URL}&ref=${DEPLOY_SHA}"

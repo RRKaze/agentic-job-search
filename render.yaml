@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: agentic-job-search
+    runtime: docker
+    plan: free
+    region: ohio
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health/ready
+    autoDeployTrigger: "off"
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:10000
+      - key: AllowedHosts
+        sync: false
+      - key: ConnectionStrings__JobSearch
+        sync: false
+      - key: Accounts__RegistrationEnabled
+        value: "true"
+      - key: Accounts__RegistrationBootstrapToken
+        sync: false
+      - key: Hosting__ApplyMigrationsOnStartup
+        value: "false"
+      - key: Hosting__DataProtectionCertificateBase64
+        sync: false
+      - key: Hosting__DataProtectionCertificatePassword
+        sync: false
+      - key: Imports__Enabled
+        value: "false"
