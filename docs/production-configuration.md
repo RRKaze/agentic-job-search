@@ -9,7 +9,7 @@ The production image serves the Angular application and ASP.NET Core API from on
 | `ASPNETCORE_ENVIRONMENT=Production` | Enables production startup validation and secure-cookie behavior. |
 | `ASPNETCORE_URLS=http://+:8080` | Listens on the container port used by the production image. |
 | `AllowedHosts` | The exact public host name, such as `example.onrender.com`; wildcards are rejected in production. |
-| `ConnectionStrings__JobSearch` | PostgreSQL connection string with TLS required. Use the managed provider's pooled connection string. |
+| `ConnectionStrings__JobSearch` | PostgreSQL connection string with TLS and host verification required. Use the managed provider's pooled connection string. |
 | `Accounts__RegistrationEnabled` | Set to `true` only while creating the owner's account. |
 | `Accounts__RegistrationBootstrapToken` | Random value of at least 32 characters while registration is enabled. |
 | `Hosting__DataProtectionCertificateBase64` | Base64-encoded PKCS#12 certificate used to protect session-key material in PostgreSQL. |
@@ -35,13 +35,15 @@ Use a unique password of at least 16 characters when `openssl pkcs12` prompts fo
 
 ## Apply database migrations
 
-Run the same image as a one-time task before starting a new application version:
+Run the same application as a one-time task before starting a new application version:
 
 ```sh
 dotnet AgenticJobSearch.Api.dll --migrate
 ```
 
 The command applies pending EF Core migrations and exits without opening the web port. Normal production startup does not apply migrations, which prevents multiple application instances from racing schema changes. `Hosting__ApplyMigrationsOnStartup=true` exists for controlled single-instance environments but should remain `false` on the hosted service.
+
+Render's free plan has no pre-deploy command. The checked-in GitHub deployment workflow therefore uses Neon's direct TLS endpoint to run `--migrate`, then calls Render's deploy hook with the exact migrated commit. The web service uses Neon's pooled endpoint for normal traffic. See the [free deployment runbook](free-deployment.md) for the complete sequence.
 
 ## Create the owner account
 

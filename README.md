@@ -39,7 +39,7 @@ Browser/application automation comes later, after scoring and tracking are relia
 
 ### Current milestone
 
-Deploy the private beta on the planned zero-subscription stack, then verify installation and daily use on a phone. The production runtime and installable PWA now provide one-origin hosting, private owner bootstrap, durable session keys, safe application-shell caching, offline/update feedback, and mobile navigation. See [`docs/hosted-beta-plan.md`](docs/hosted-beta-plan.md), [`docs/production-configuration.md`](docs/production-configuration.md), [`docs/mobile-pwa.md`](docs/mobile-pwa.md), and [`docs/roadmap.md`](docs/roadmap.md).
+Deploy the private beta on the planned zero-subscription stack, then verify installation and daily use on a phone. The production runtime, installable PWA, Render Blueprint, migration/deployment workflow, and hosted smoke checks are ready. Creating the Neon and Render resources, bootstrapping the owner, and checking real devices remain. See [`docs/free-deployment.md`](docs/free-deployment.md), [`docs/hosted-beta-plan.md`](docs/hosted-beta-plan.md), [`docs/production-configuration.md`](docs/production-configuration.md), [`docs/mobile-pwa.md`](docs/mobile-pwa.md), and [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Run locally
 

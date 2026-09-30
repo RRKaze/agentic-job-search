@@ -19,7 +19,7 @@ The Angular production build and ASP.NET Core API are served from one container 
 
 ## Initial free services
 
-Provider details in this section were last reviewed on 2026-09-27 and must be checked again before provisioning.
+Provider details in this section were last reviewed on 2026-09-30 and must be checked again before provisioning.
 
 - **Application hosting:** Render free web service using the repository's production Dockerfile.
 - **Database:** Neon free PostgreSQL. Do not use Render's free PostgreSQL offering because free databases expire after 30 days.
@@ -78,14 +78,16 @@ Angular's PWA setup and HTTPS requirements are documented in the [Angular servic
 
 ### Slice 3: reproducible free deployment
 
-1. Add a `render.yaml` blueprint for the web service, health check, Docker build, and CI-gated deployment.
-2. Document creation of a Neon project and use of its pooled TLS connection string.
-3. Document every required environment variable without committing a value.
-4. Deploy the application from `main` only after repository checks pass.
-5. Run migrations against the hosted database.
-6. Create the owner's account through the protected bootstrap flow and close registration.
-7. Verify authentication, ownership boundaries, scoring, application updates, and logout through the hosted URL.
-8. Install the application on a phone from the hosted HTTPS address.
+1. [x] Add a `render.yaml` blueprint for the web service, health check, Docker build, and CI-gated deployment.
+2. [x] Document creation of a Neon project and use of its pooled TLS connection string.
+3. [x] Document every required environment variable without committing a value.
+4. [x] Configure deployment of the exact `main` commit only after repository checks pass.
+5. [x] Add a single-runner migration workflow for the hosted database.
+6. [ ] Create the owner's account through the protected bootstrap flow and close registration.
+7. [ ] Verify authentication, ownership boundaries, scoring, application updates, and logout through the hosted URL.
+8. [ ] Install the application on a phone from the hosted HTTPS address.
+
+The executable steps and provider settings are in [`free-deployment.md`](free-deployment.md). Account creation and device verification remain launch operations because they require the owner's external service accounts and phone.
 
 ### Slice 4: backup and recovery
 
