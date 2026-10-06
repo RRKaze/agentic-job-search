@@ -248,3 +248,7 @@ The Personal Profile page also stores occupation-neutral career goals, preferenc
 ## Application workflow
 
 Saved opportunities can now move directly into Applications. Application rows provide validated status changes, while the detail panel stores status and submission dates, resume version, follow-up, outcome, and notes. PostgreSQL owns these edits and records status history; the temporary GitHub importer is retired by default. See [database-owned application workflow](docs/application-workflow.md) for transitions and API behavior.
+
+## Backup and daily use
+
+Follow [database backup and recovery](docs/backup-recovery.md) to keep private logical backups outside the hosting providers and test restoration. Use the [two-week pilot checklist](docs/daily-use-pilot.md) to collect daily-use feedback.

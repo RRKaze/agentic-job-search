@@ -91,11 +91,14 @@ The executable steps and provider settings are in [`free-deployment.md`](free-de
 
 ### Slice 4: backup and recovery
 
-1. Add a script that creates a timestamped logical backup with `pg_dump` without embedding credentials.
+1. [x] Add a script that creates a timestamped logical backup with `pg_dump` without embedding credentials.
 2. Store backups outside the application host and outside the Neon project.
 3. Take a backup before every production migration and at least weekly during the pilot.
-4. Restore a backup into a disposable database and run a documented integrity check.
+4. [x] Add a disposable restore exercise and documented integrity checks.
+   - [ ] Repeat with a private hosted backup.
 5. Record the backup time, migration version, restore result, and operator without storing candidate data in the repository.
+
+See [backup and recovery](backup-recovery.md) for commands and [daily-use pilot](daily-use-pilot.md) for the two-week checklist.
 
 The free database's short restore history is a convenience, not the only recovery mechanism. Logical backups remain required.
 
