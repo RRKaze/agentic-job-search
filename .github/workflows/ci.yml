@@ -59,6 +59,9 @@ jobs:
       - name: Test job view rules
         run: npm run test:model
 
+      - name: Test recovery pages in Chrome
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
 

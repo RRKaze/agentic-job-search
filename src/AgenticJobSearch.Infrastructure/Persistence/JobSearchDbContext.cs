@@ -8,6 +8,8 @@ public sealed class JobSearchDbContext(DbContextOptions<JobSearchDbContext> opti
     : DbContext(options), IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
+    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+    public DbSet<RecoveryEmail> RecoveryEmails => Set<RecoveryEmail>();
     public DbSet<UserAccount> UserAccounts => Set<UserAccount>();
     public DbSet<CandidateProfile> CandidateProfiles => Set<CandidateProfile>();
     public DbSet<CandidateEvidence> CandidateEvidence => Set<CandidateEvidence>();

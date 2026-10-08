@@ -8,6 +8,7 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<UserAccount>
 {
     public void Configure(EntityTypeBuilder<UserAccount> entity)
     {
+        entity.Property(x => x.SessionVersion).IsConcurrencyToken();
         entity.HasIndex(x => x.Email).IsUnique();
         entity.Property(x => x.Email).HasMaxLength(254);
         entity.Property(x => x.DisplayName).HasMaxLength(200);

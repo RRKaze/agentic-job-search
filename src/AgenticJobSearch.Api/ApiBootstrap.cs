@@ -37,6 +37,19 @@ public static class ApiBootstrap
                 options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing") ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
                 options.ExpireTimeSpan = TimeSpan.FromHours(8);
                 options.SlidingExpiration = false;
+                options.Events.OnValidatePrincipal = async context =>
+                {
+                    var idValue = context.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    var versionValue = context.Principal?.FindFirst("session_version")?.Value;
+                    var valid = Guid.TryParse(idValue, out var id) && long.TryParse(versionValue, out _);
+                    var db = context.HttpContext.RequestServices.GetRequiredService<JobSearchDbContext>();
+                    if (!valid || !await db.UserAccounts.AsNoTracking().AnyAsync(x => x.Id == id &&
+                        x.SessionVersion == long.Parse(versionValue!), context.HttpContext.RequestAborted))
+                    {
+                        context.RejectPrincipal();
+                        await Microsoft.AspNetCore.Authentication.AuthenticationHttpContextExtensions.SignOutAsync(context.HttpContext);
+                    }
+                };
                 options.Events.OnRedirectToLogin = ctx => { ctx.Response.StatusCode = 401; return Task.CompletedTask; };
                 options.Events.OnRedirectToAccessDenied = ctx => { ctx.Response.StatusCode = 403; return Task.CompletedTask; };
             });
@@ -44,6 +57,9 @@ public static class ApiBootstrap
         builder.Services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = 429;
+            options.AddPolicy("recovery", context => System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+                { PermitLimit = 10, Window = TimeSpan.FromMinutes(15), QueueLimit = 0 }));
             options.AddPolicy("accounts", context => System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
                 context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
                 { PermitLimit = 30, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
@@ -89,6 +105,16 @@ public static class ApiBootstrap
         app.UseStatusCodePages();
         app.UseCors();
         app.UseMiddleware<CorrelationIdMiddleware>();
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api/account") ||
+                context.Request.Path.StartsWithSegments("/reset-password") || context.Request.Path.StartsWithSegments("/forgot-password"))
+            {
+                context.Response.Headers.CacheControl = "no-store";
+                context.Response.Headers["Referrer-Policy"] = "no-referrer";
+            }
+            await next();
+        });
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
