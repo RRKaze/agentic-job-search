@@ -32,7 +32,9 @@
     "!/**/*.*",
     "!/**/*__*",
     "!/**/*__*/**",
-    "!/api/**"
+    "!/api/**",
+    "!/reset-password",
+    "!/forgot-password"
   ],
   "dataGroups": []
 }
