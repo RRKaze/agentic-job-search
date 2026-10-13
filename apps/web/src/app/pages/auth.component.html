@@ -24,6 +24,7 @@
       <label class="show-password"><input type="checkbox" name="showPassword" [(ngModel)]="showPassword"> Show password</label>
       <button class="primary-button" type="submit" [disabled]="form.invalid || busy || (register && !displayName.trim())">{{ busy ? 'Please wait…' : register ? 'Create account' : 'Sign in' }}</button>
     </form>
+    @if (!register) { <p class="auth-switch"><a routerLink="/forgot-password">Forgot password?</a></p> }
     <p class="auth-switch">{{ register ? 'Already have an account?' : 'New to Agentic Job Search?' }} <a [routerLink]="register ? '/sign-in' : '/register'">{{ register ? 'Sign in' : 'Create an account' }}</a></p>
   </section>
 </div>

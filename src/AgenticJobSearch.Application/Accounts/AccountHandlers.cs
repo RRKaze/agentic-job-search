@@ -77,5 +77,5 @@ public sealed class UpdateAccountProfileHandler(IAccountRepository accounts, ICu
 internal static class AccountMappings
 {
     public static AccountProfileDto ToProfile(this UserAccount account) =>
-        new(account.Id, account.Email, account.DisplayName, account.CareerStage, account.CreatedAt);
+        new(account.Id, account.Email, account.DisplayName, account.CareerStage, account.CreatedAt, account.SessionVersion);
 }

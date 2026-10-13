@@ -48,3 +48,7 @@ Pause writes, recover to a new database, verify it, and only then change Render'
 `python3 scripts/test-database-recovery.py` creates a temporary PostgreSQL container, migrates a fresh source database, seeds fictional related account/profile/job/application data, backs it up, restores it into another database, and checks contents and safety refusals. It removes only the container it creates. CI runs this exercise independently of production credentials. A passing exercise demonstrates tooling recovery; complete a separate private restore exercise with a hosted backup before treating recovery as verified for your live workspace.
 
 References: [PostgreSQL pg_dump](https://www.postgresql.org/docs/current/app-pgdump.html) and [pg_restore](https://www.postgresql.org/docs/current/app-pgrestore.html). The local recovery exercise selects a container major version matching the installed pg_dump client; set `RECOVERY_POSTGRES_IMAGE` only when its version matches.
+
+## Restoring password-recovery data
+
+Keep `PasswordRecovery__Enabled=false` on any disposable restore or recovery instance. Backups may include pending encrypted reset emails and valid reset-token hashes; enabling delivery could send real account emails. The data-protection certificate is also needed to decrypt pending messages. Never expose the disposable instance publicly or reuse its reset links against production.

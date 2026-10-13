@@ -1,3 +1,4 @@
+import { PasswordRecoveryComponent } from './pages/password-recovery.component';
 import { AuthComponent } from './pages/auth.component';
 import { ProfileComponent } from './pages/profile.component';
 import { accountGuard, guestGuard } from './auth.service';
@@ -7,6 +8,8 @@ import { DashboardComponent } from './pages/dashboard.component';
 import { OpportunitiesComponent } from './pages/opportunities.component';
 
 export const routes: Routes = [
+  { path: 'forgot-password', component: PasswordRecoveryComponent, title: 'Forgot password · Agentic Job Search' },
+  { path: 'reset-password', component: PasswordRecoveryComponent, title: 'Reset password · Agentic Job Search' },
   { path: 'register', component: AuthComponent, canActivate: [guestGuard], title: 'Create account · Agentic Job Search' },
   { path: 'sign-in', component: AuthComponent, canActivate: [guestGuard], title: 'Sign in · Agentic Job Search' },
   { path: 'onboarding', component: ProfileComponent, canActivate: [accountGuard], title: 'Welcome · Agentic Job Search' },

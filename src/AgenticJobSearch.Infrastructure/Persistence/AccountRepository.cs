@@ -29,8 +29,12 @@ public sealed class AccountRepository(JobSearchDbContext dbContext) : IAccountRe
     public Task<UserAccount?> FindByIdAsync(Guid id, CancellationToken cancellationToken) =>
         dbContext.UserAccounts.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-    public async Task UpdatePasswordHashAsync(UserAccount account, CancellationToken cancellationToken) =>
-        await dbContext.SaveChangesAsync(cancellationToken);
+    public async Task UpdatePasswordHashAsync(UserAccount account, CancellationToken cancellationToken)
+    {
+        try { await dbContext.SaveChangesAsync(cancellationToken); }
+        catch (DbUpdateConcurrencyException)
+        { throw new AgenticJobSearch.Application.Accounts.AccountFailure(401, "Email or password is incorrect."); }
+    }
 
     public async Task UpdateProfileAsync(UserAccount account, CancellationToken cancellationToken)
     {

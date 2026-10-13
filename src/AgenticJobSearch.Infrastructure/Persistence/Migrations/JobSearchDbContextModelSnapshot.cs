@@ -496,6 +496,80 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                     b.ToTable("JobEvaluationFactors");
                 });
 
+            modelBuilder.Entity("AgenticJobSearch.Domain.PasswordResetToken", b =>
+                {
+                    b.Property<string>("TokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("SessionVersion")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("UsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TokenHash");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("ExpiresAt");
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
+            modelBuilder.Entity("AgenticJobSearch.Domain.RecoveryEmail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("NextAttemptAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ProtectedMessage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("CompletedAt", "NextAttemptAt");
+
+                    b.HasIndex("Email", "CreatedAt");
+
+                    b.ToTable("RecoveryEmails");
+                });
+
             modelBuilder.Entity("AgenticJobSearch.Domain.TrackingChange", b =>
                 {
                     b.Property<Guid>("Id")
@@ -556,9 +630,16 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                         .HasMaxLength(254)
                         .HasColumnType("character varying(254)");
 
+                    b.Property<DateTimeOffset?>("PasswordChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<long>("SessionVersion")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -685,6 +766,15 @@ namespace AgenticJobSearch.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("JobEvaluation");
+                });
+
+            modelBuilder.Entity("AgenticJobSearch.Domain.PasswordResetToken", b =>
+                {
+                    b.HasOne("AgenticJobSearch.Domain.UserAccount", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("AgenticJobSearch.Domain.WorkflowChange", b =>

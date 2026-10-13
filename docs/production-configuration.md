@@ -45,6 +45,10 @@ The command applies pending EF Core migrations and exits without opening the web
 
 Render's free plan has no pre-deploy command. The checked-in GitHub deployment workflow therefore uses Neon's direct TLS endpoint to run `--migrate`, then calls Render's deploy hook with the exact migrated commit. The web service uses Neon's pooled endpoint for normal traffic. See the [free deployment runbook](free-deployment.md) for the complete sequence.
 
+## Password recovery
+
+Recovery is disabled by default. See [password recovery](password-recovery.md) for the four environment settings, backup prerequisite, and staged test-account rollout. The first deployment of the session-version migration signs out older cookies once.
+
 ## Create the owner account
 
 1. Deploy with registration enabled and a new bootstrap token.

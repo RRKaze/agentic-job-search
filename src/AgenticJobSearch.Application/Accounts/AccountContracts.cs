@@ -9,7 +9,8 @@ public sealed record AccountProfileDto(
     string Email,
     string DisplayName,
     string? CareerStage,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    [property: System.Text.Json.Serialization.JsonIgnore] long SessionVersion = 0);
 
 public sealed class AccountFailure(int statusCode, string message) : Exception(message)
 {

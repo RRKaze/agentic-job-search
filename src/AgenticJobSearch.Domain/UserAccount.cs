@@ -6,6 +6,8 @@ public sealed class UserAccount
     public string Email { get; set; } = "";
     public string DisplayName { get; set; } = "";
     public string PasswordHash { get; set; } = "";
+    public long SessionVersion { get; set; }
+    public DateTimeOffset? PasswordChangedAt { get; set; }
     public string? CareerStage { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
