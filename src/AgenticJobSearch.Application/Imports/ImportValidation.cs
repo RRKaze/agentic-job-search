@@ -19,7 +19,7 @@ public static class ImportValidation
         void Check(List<Dictionary<string, string?>> rows, bool jobs)
         {
             var fields = jobs ? JobFields : ApplicationFields;
-            var required = (jobs ? "job_id company role location priority stage source_url verified_date" : "application_id job_id submitted_date status").Split(' ');
+            var required = (jobs ? "job_id company role location priority stage source_url verified_date" : "application_id job_id status").Split(' ');
             var ids = new HashSet<string>();
             for (var i = 0; i < rows.Count; i++)
             {
@@ -29,6 +29,8 @@ public static class ImportValidation
                 foreach (var f in fields) if (!row.ContainsKey(f)) Error(f, "MISSING_FIELD");
                 foreach (var f in row.Keys) if (!fields.Contains(f)) Error(f, "UNKNOWN_FIELD");
                 foreach (var f in required) if (string.IsNullOrWhiteSpace(row.GetValueOrDefault(f))) Error(f, "REQUIRED");
+                if (!jobs && row.GetValueOrDefault("status") != "rejected" &&
+                    string.IsNullOrWhiteSpace(row.GetValueOrDefault("submitted_date"))) Error("submitted_date", "REQUIRED");
                 foreach (var (f, v) in row)
                 {
                     if (v is null) continue;

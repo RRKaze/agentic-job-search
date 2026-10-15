@@ -106,6 +106,34 @@ public sealed class ImportApiTests(ApiFixture fixture) : IClassFixture<ApiFixtur
     }
 
     [Fact]
+    public async Task Rejected_application_preserves_an_unknown_submission_date()
+    {
+        await using var isolated = new OwnedFixture();
+        await isolated.Value.InitializeAsync();
+        var f = isolated.Value;
+        f.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApiFixture.ImportToken);
+        var job = Job();
+        job["stage"] = "rejected";
+        var application = new Dictionary<string, string?>
+        {
+            ["application_id"] = "APP-FICTIONAL", ["job_id"] = "JOB-1",
+            ["submitted_date"] = null, ["status"] = "rejected",
+            ["resume_version"] = null, ["referral_contact"] = null,
+            ["next_follow_up"] = null, ["outcome"] = "rejected", ["notes"] = null
+        };
+        var request = new ImportRequest("1.0", false,
+            new("RRKaze/job-search", "main", f.SourceVerifier.Head, null), [job], [application]);
+        using var response = await f.Client.PostAsJsonAsync(Endpoint, request, ImportJson.Options);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Null(await f.ImportedSubmissionDateAsync());
+
+        application["status"] = "submitted";
+        job["stage"] = "applied";
+        using var invalid = await f.Client.PostAsJsonAsync(Endpoint, request, ImportJson.Options);
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, invalid.StatusCode);
+    }
+
+    [Fact]
     public async Task Authentication_and_strict_request_validation_fail_safely()
     {
         using var unauthorized = new HttpRequestMessage(HttpMethod.Get, Endpoint + "/checkpoint");

@@ -66,7 +66,7 @@ Payload property names match CSV headers exactly. Each row contains every listed
 | --- | --- |
 | application_id | Required permanent ID |
 | job_id | Required ID of a job in this snapshot |
-| submitted_date | Required date |
+| submitted_date | Required date except for a rejected application whose submission date is unknown; use null, never an inferred date |
 | status | Required: submitted, interviewing, offer, rejected, withdrawn |
 | resume_version | Optional text reference, not resume bytes |
 | referral_contact | Optional text; personal data |

@@ -160,6 +160,13 @@ public sealed class ApiFixture : IAsyncLifetime
         Assert.Equal(5, await db.TrackingChanges.CountAsync());
     }
 
+    public async Task<DateOnly?> ImportedSubmissionDateAsync()
+    {
+        await using var scope = application!.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<JobSearchDbContext>();
+        return await db.Applications.Select(app => app.SubmittedDate).SingleAsync();
+    }
+
     public async Task DisposeAsync()
     {
         Client?.Dispose();
