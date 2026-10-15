@@ -39,6 +39,9 @@ describe('tracker status controls', () => {
     (fixture.nativeElement.querySelector('.sort-button') as HTMLButtonElement).click();
     fixture.detectChanges();
     expect(rows().map((row) => row.querySelector('.job-identity strong')?.textContent)).toEqual(['Engineer old', 'Engineer new']);
+    (fixture.nativeElement.querySelector('.mobile-discovered-sort') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(rows().map((row) => row.querySelector('.job-identity strong')?.textContent)).toEqual(['Engineer new', 'Engineer old']);
     rows()[0].click();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.detail-actions button')?.textContent).toContain('Move to Applied');

@@ -20,6 +20,7 @@ body {
 /* Account and onboarding pages */
 .tracker-toolbar { align-items: center; }
 .toolbar-summary { display: grid; gap: 3px; }
+.mobile-discovered-sort { display: none; }
 .search-box, .search-box input { min-width: 0; }
 .search-box { min-height: 40px; }
 .application-row[role="button"] { cursor: pointer; }
@@ -102,6 +103,7 @@ body {
 .success-message { margin-bottom: 20px; padding: 12px; border-radius: 8px; color: #137451; background: #e4f7ee; }
 @media (max-width: 760px) {
   .auth-layout { grid-template-columns: 1fr; }
+  .mobile-discovered-sort { display: inline-flex; align-items: center; justify-content: center; }
   .auth-intro { padding: 28px; gap: 14px; }
   .auth-intro h1 { font-size: 2rem; }
   .intro-detail { display: none; }
