@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AddJobRequest, dateTimestamp, formatDate, isSavedOpportunity, Job, jobStage, stageLabel, statusDateValue, todayInput } from '../job.model';
+import { AddJobRequest, formatDate, isSavedOpportunity, Job, jobStage, sortByDiscoveredDate, stageLabel, statusDateValue, todayInput } from '../job.model';
 import { JobStore } from '../job-store.service';
 
 @Component({
@@ -12,20 +12,24 @@ import { JobStore } from '../job-store.service';
 export class OpportunitiesComponent {
   readonly store = inject(JobStore);
   readonly search = signal('');
+  readonly discoveredDirection = signal<'asc' | 'desc'>('desc');
   readonly selectedId = signal<string | null>(null);
   readonly showAddJob = signal(false);
   readonly opportunities = computed(() => {
     const query = this.search().trim().toLocaleLowerCase();
-    return this.store.jobs().filter((job) => isSavedOpportunity(job) && (!query || `${job.title} ${job.company} ${job.location}`.toLocaleLowerCase().includes(query)))
-      .sort((left, right) => dateTimestamp(statusDateValue(right)) - dateTimestamp(statusDateValue(left)));
+    return sortByDiscoveredDate(
+      this.store.jobs().filter((job) => isSavedOpportunity(job) && (!query || `${job.title} ${job.company} ${job.location}`.toLocaleLowerCase().includes(query))),
+      this.discoveredDirection()
+    );
   });
-  readonly selectedJob = computed(() => this.opportunities().find((job) => job.id === this.selectedId()) ?? this.opportunities()[0] ?? null);
+  readonly selectedJob = computed(() => this.opportunities().find((job) => job.id === this.selectedId()) ?? null);
   form: AddJobRequest = { title: '', company: '', location: '', sourceUrl: '', sourceText: '' };
 
   @HostListener('document:keydown.escape')
   closeAddJob(): void { this.showAddJob.set(false); }
 
   selectJob(job: Job): void { this.selectedId.set(job.id); }
+  toggleDiscoveredSort(): void { this.discoveredDirection.update((direction) => direction === 'asc' ? 'desc' : 'asc'); }
   markApplied(job: Job): void {
     const today = todayInput();
     this.store.updateWorkflow(job.id, { status: 'applied', statusDate: today, submittedDate: today }).subscribe({

@@ -98,7 +98,7 @@ Deliverables:
 1. [x] Make the database authoritative for job and application status and retire temporary GitHub ownership of those fields.
 2. [x] Finalize job and application lifecycle states and allowed transitions.
 3. [x] Convert a reviewed job into an application.
-4. [x] Add an inline status selector to each opportunity and persist changes through the API.
+4. [x] Let the user change status from an opened opportunity or application detail panel and persist changes through the API; keep list statuses read-only.
 5. [x] Immediately move an updated opportunity into or out of the active filtered list without requiring a page refresh.
 6. [x] Track dates, status, resume version, notes, and next action.
 7. [x] Record rejection, screen, interview, offer, and withdrawal outcomes.

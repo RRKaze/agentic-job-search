@@ -28,14 +28,14 @@
   <div class="tracker-toolbar"><div class="toolbar-summary"><strong>{{ opportunities().length }} saved opportunities</strong><p class="toolbar-copy">Saved jobs you have not applied to yet.</p></div><label class="search-box"><span>⌕</span><input aria-label="Search opportunities" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search company or role"></label></div>
   <div class="tracker-content">
     <div class="application-list">
-      <div class="static-list-heading"><span>Opportunity</span><span>Status</span><span>Discovered</span></div>
+      <div class="list-heading"><span class="list-column-label">Opportunity</span><span class="list-column-label">Status</span><button type="button" class="sort-button active" (click)="toggleDiscoveredSort()" [attr.aria-label]="'Sort by discovered date, currently ' + (discoveredDirection() === 'asc' ? 'oldest first' : 'newest first')">Discovered <span aria-hidden="true">{{ discoveredDirection() === 'asc' ? '↑' : '↓' }}</span></button></div>
       @if (store.isLoading()) { <div class="empty-state"><strong>Loading opportunities…</strong></div> }
       @else if (opportunities().length === 0) { <div class="empty-state"><strong>No saved opportunities match this view.</strong><p>Try another search term or add a job.</p></div> }
       @else {
         @for (job of opportunities(); track job.id) {
           <div class="application-row" role="button" tabindex="0" [class.selected]="selectedJob()?.id === job.id" (click)="selectJob(job)" (keydown.enter)="selectJob(job)">
             <span class="company-avatar">{{ job.company.slice(0, 1).toUpperCase() }}</span><span class="job-identity"><strong>{{ job.title }}</strong><small>{{ job.company }} · {{ job.location }}</small></span>
-            <button type="button" class="status-badge status-action" (click)="$event.stopPropagation(); markApplied(job)" [disabled]="store.isSaving()">Apply →</button><span class="updated-date">{{ statusDate(job) }}</span>
+            <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span><span class="updated-date">{{ statusDate(job) }}</span>
           </div>
         }
       }
@@ -48,7 +48,7 @@
         @if (job.fitRationale) { <section class="detail-note"><h3>Why it fits</h3><p>{{ job.fitRationale }}</p></section> }
         @if (job.gapsNotes) { <section class="detail-note caution"><h3>Gaps and cautions</h3><p>{{ job.gapsNotes }}</p></section> }
         @if (!job.fitRationale && job.explanation) { <section class="detail-note"><h3>Evaluation</h3><p>{{ job.explanation }}</p></section> }
-      } @else { <div class="empty-state"><strong>No opportunity selected</strong><p>Saved jobs will appear here.</p></div> }
+      } @else { <div class="empty-state"><strong>Select an opportunity</strong><p>Open a saved job to review it and move it to Applied.</p></div> }
     </aside>
   </div>
 </section>

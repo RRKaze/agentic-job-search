@@ -43,7 +43,7 @@ export class ApplicationsComponent {
       return matchesStage && matchesQuery;
     }).sort((left, right) => this.compareJobs(left, right));
   });
-  readonly selectedJob = computed(() => this.filteredJobs().find((job) => job.id === this.selectedId()) ?? this.filteredJobs()[0] ?? null);
+  readonly selectedJob = computed(() => this.filteredJobs().find((job) => job.id === this.selectedId()) ?? null);
   readonly filters: { key: StatusFilter; label: string }[] = [
     { key: 'all', label: 'All' }, { key: 'applied', label: 'Applied' }, { key: 'interviewing', label: 'Interviewing' },
     { key: 'offer', label: 'Offers' }, { key: 'rejected', label: 'Rejected' }, { key: 'withdrawn', label: 'Withdrawn' }
@@ -66,16 +66,8 @@ export class ApplicationsComponent {
   statusOptions(job: Job): { value: string; label: string }[] { return workflowStatusOptions(job); }
   historyLabel(status: string): string { return status === 'lead' ? 'Saved' : status.charAt(0).toUpperCase() + status.slice(1); }
   historyDate(value: string): string { return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)); }
-  quickStatus(job: Job, status: string): void {
-    if (status === jobStage(job)) return;
-    this.selectJob(job);
-    const request = workflowFormFor(job);
-    request.status = status;
-    request.statusDate = todayInput();
-    if (status === 'rejected' || status === 'withdrawn') request.nextFollowUp = undefined;
-    this.save(job, request);
-  }
   setStatus(status: string): void {
+    if (status !== this.workflowForm.status) this.workflowForm.statusDate = todayInput();
     this.workflowForm.status = status;
     if (status === 'rejected' || status === 'withdrawn') this.workflowForm.nextFollowUp = undefined;
   }
