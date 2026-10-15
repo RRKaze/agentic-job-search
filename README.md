@@ -252,3 +252,7 @@ Saved opportunities can now move directly into Applications. Application rows pr
 ## Backup and daily use
 
 Follow [database backup and recovery](docs/backup-recovery.md) to keep private logical backups outside the hosting providers and test restoration. Use the [two-week pilot checklist](docs/daily-use-pilot.md) to collect daily-use feedback.
+
+## API-only V2 discovery
+
+[ATS verification and review workflow](docs/ats-verification.md) retrieves Ashby, Greenhouse and Lever postings into an auditable review queue. [Validation results](docs/ats-api-validation-2026-10-15.md) cover offline regressions and live endpoints. Real job-search records remain in the separate canonical repository.

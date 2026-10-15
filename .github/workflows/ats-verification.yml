@@ -3,13 +3,15 @@ on:
   push:
     branches: [main]
     paths:
-      - 'scripts/verify_ats.py'
-      - 'tests/test_verify_ats.py'
+      - 'scripts/*ats.py'
+      - 'scripts/discover_v2.py'
+      - 'tests/test*.py'
       - '.github/workflows/ats-verification.yml'
   pull_request:
     paths:
-      - 'scripts/verify_ats.py'
-      - 'tests/test_verify_ats.py'
+      - 'scripts/*ats.py'
+      - 'scripts/discover_v2.py'
+      - 'tests/test*.py'
       - '.github/workflows/ats-verification.yml'
   workflow_dispatch:
 jobs:
@@ -21,4 +23,4 @@ jobs:
         with:
           python-version: '3.12'
       - name: Run offline ATS adapter tests
-        run: python3 -m unittest discover -s tests -p 'test_verify_ats.py' -v
+        run: python3 -m unittest discover -s tests -p 'test*.py' -v
