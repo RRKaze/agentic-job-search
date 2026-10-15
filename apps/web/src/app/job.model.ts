@@ -76,6 +76,13 @@ export function dateTimestamp(value: string): number {
   return Number.isNaN(timestamp) ? 0 : timestamp;
 }
 
+export function sortByDiscoveredDate(jobs: Job[], direction: 'asc' | 'desc'): Job[] {
+  return [...jobs].sort((left, right) => {
+    const difference = dateTimestamp(statusDateValue(left)) - dateTimestamp(statusDateValue(right));
+    return direction === 'asc' ? difference : -difference;
+  });
+}
+
 export function formatDate(value?: string): string {
   if (!value) return 'Not set';
   const date = new Date(value.length === 10 ? `${value}T12:00:00` : value);

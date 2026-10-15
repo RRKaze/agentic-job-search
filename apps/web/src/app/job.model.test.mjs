@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isSavedOpportunity } from './job.model.ts';
+import { isSavedOpportunity, sortByDiscoveredDate } from './job.model.ts';
 import { workflowStatusOptions } from './features/applications/application-workflow.model.ts';
 
 const job = { id: 'fixture', title: 'Engineer', company: 'Example', location: 'Remote', createdAt: '2026-09-22T12:00:00Z' };
@@ -29,4 +29,15 @@ test('workflow options match the allowed application transitions', () => {
   assert.deepEqual(workflowStatusOptions({ ...job, trackingStage: 'interviewing', application: { state: 'Interview' } }).map(({ value }) => value),
     ['interviewing', 'applied', 'offer', 'rejected', 'withdrawn']);
   assert.deepEqual(workflowStatusOptions({ ...job, trackingStage: 'lead' }).map(({ value }) => value), ['lead', 'applied']);
+});
+
+test('saved opportunities sort by discovered date in either direction without mutating the source list', () => {
+  const jobs = [
+    { ...job, id: 'middle', statusDate: '2026-10-12' },
+    { ...job, id: 'oldest', statusDate: '2026-09-30' },
+    { ...job, id: 'newest', statusDate: '2026-10-15' }
+  ];
+  assert.deepEqual(sortByDiscoveredDate(jobs, 'desc').map(({ id }) => id), ['newest', 'middle', 'oldest']);
+  assert.deepEqual(sortByDiscoveredDate(jobs, 'asc').map(({ id }) => id), ['oldest', 'middle', 'newest']);
+  assert.deepEqual(jobs.map(({ id }) => id), ['middle', 'oldest', 'newest']);
 });

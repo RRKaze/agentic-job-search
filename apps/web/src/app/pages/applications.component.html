@@ -31,9 +31,7 @@
           <div class="application-row" role="button" tabindex="0" [class.selected]="selectedJob()?.id === job.id" (click)="selectJob(job)" (keydown.enter)="selectJob(job)">
             <span class="company-avatar">{{ job.company.slice(0, 1).toUpperCase() }}</span>
             <span class="job-identity"><strong>{{ job.title }}</strong><small>{{ job.company }} · {{ job.location }}</small></span>
-            <select class="status-select compact" aria-label="Update status for {{ job.title }}" [ngModel]="stage(job)" (ngModelChange)="quickStatus(job, $event)" (click)="$event.stopPropagation()" [disabled]="store.isSaving()">
-              @for (option of statusOptions(job); track option.value) { <option [value]="option.value">{{ option.label }}</option> }
-            </select>
+            <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>
             <span class="updated-date">{{ statusDate(job) }}</span>
           </div>
         }
@@ -76,7 +74,7 @@
             }
           </section>
         }
-      } @else { <div class="empty-state"><strong>Select an application</strong><p>Its dates, notes, and next action will appear here.</p></div> }
+      } @else { <div class="empty-state"><strong>Select an application</strong><p>Open an application to update its status, dates, notes, and next action.</p></div> }
     </aside>
   </div>
 </section>
