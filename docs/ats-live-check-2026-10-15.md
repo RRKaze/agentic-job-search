@@ -15,3 +15,7 @@ Next:
 2. Test Ashby against a confirmed public board and Lever against a confirmed active board, recording status and response shape.
 3. Reconcile API results with existing jobs.csv and audit history; preserve Hold for unknown compensation, unsupported geography, or missing work arrangement.
 4. Only then run V2 discovery, keeping new assessments and provisional leads distinct from confirmed Apply entries.
+
+## Follow-up check
+- Lever public endpoint `https://api.lever.co/v0/postings/leverdemo?mode=json` returned a JSON array of job postings in a live read on 2026-10-15, confirming the public Lever API is accessible. This is a provider-level HTTP check, **not** an execution test of the committed Python verifier or a valid user lead (the board contains test postings).
+- Ashby public API remains unverified in this environment; Python verifier unit tests have not been observed passing in CI.
