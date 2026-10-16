@@ -42,7 +42,7 @@ describe('tracker status controls', () => {
     (fixture.nativeElement.querySelector('.mobile-discovered-sort') as HTMLButtonElement).click();
     fixture.detectChanges();
     expect(rows().map((row) => row.querySelector('.job-identity strong')?.textContent)).toEqual(['Engineer new', 'Engineer old']);
-    rows()[0].click();
+    rows().find((row) => row.querySelector('.job-identity strong')?.textContent === 'Engineer old')!.click();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.detail-actions button')?.textContent).toContain('Move to Applied');
     expect([...fixture.nativeElement.querySelectorAll('.detail-note li')].map((item: Element) => item.textContent?.trim())).toEqual([
