@@ -83,6 +83,12 @@ export function sortByDiscoveredDate(jobs: Job[], direction: 'asc' | 'desc'): Jo
   });
 }
 
+export function detailPoints(value: string): string[] {
+  return value.split(/\r?\n|[•●]|;\s+/).flatMap((part) =>
+    part.split(/(?<=[.!?])\s+(?=[A-Z])/u).map((segment) => segment.trim().replace(/^[-*]\s+/, '').trim())
+  ).filter(Boolean);
+}
+
 export function formatDate(value?: string): string {
   if (!value) return 'Not set';
   const date = new Date(value.length === 10 ? `${value}T12:00:00` : value);

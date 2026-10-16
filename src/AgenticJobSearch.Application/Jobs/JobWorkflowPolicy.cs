@@ -11,7 +11,7 @@ public sealed class JobWorkflowPolicy
             ["applied"] = ["interviewing", "rejected", "withdrawn"],
             ["interviewing"] = ["applied", "offer", "rejected", "withdrawn"],
             ["offer"] = ["interviewing", "rejected", "withdrawn"],
-            ["rejected"] = ["applied", "interviewing"],
+            ["rejected"] = [],
             ["withdrawn"] = ["applied"]
         };
 

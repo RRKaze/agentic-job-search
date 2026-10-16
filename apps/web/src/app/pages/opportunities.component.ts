@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AddJobRequest, formatDate, isSavedOpportunity, Job, jobStage, sortByDiscoveredDate, stageLabel, statusDateValue, todayInput } from '../job.model';
+import { AddJobRequest, detailPoints, formatDate, isSavedOpportunity, Job, jobStage, sortByDiscoveredDate, stageLabel, statusDateValue, todayInput } from '../job.model';
 import { JobStore } from '../job-store.service';
 
 @Component({
@@ -26,9 +26,13 @@ export class OpportunitiesComponent {
   form: AddJobRequest = { title: '', company: '', location: '', sourceUrl: '', sourceText: '' };
 
   @HostListener('document:keydown.escape')
+  onEscape(): void { this.closeAddJob(); this.closeDetails(); }
+
   closeAddJob(): void { this.showAddJob.set(false); }
+  closeDetails(): void { this.selectedId.set(null); }
 
   selectJob(job: Job): void { this.selectedId.set(job.id); }
+  detailPoints(value: string): string[] { return detailPoints(value); }
   toggleDiscoveredSort(): void { this.discoveredDirection.update((direction) => direction === 'asc' ? 'desc' : 'asc'); }
   markApplied(job: Job): void {
     const today = todayInput();

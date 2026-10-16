@@ -26,7 +26,7 @@ function provideStore(jobs: Job[]) {
 describe('tracker status controls', () => {
   it('shows saved status as read-only and sorts discovered dates when the header is clicked', () => {
     TestBed.configureTestingModule({ imports: [OpportunitiesComponent], providers: [provideStore([
-      job('old', 'lead', '2026-09-30'), job('new', 'lead', '2026-10-15')
+      { ...job('old', 'lead', '2026-09-30'), fitRationale: 'Relevant skills. Remote role.', gapsNotes: 'Travel; late hours' }, job('new', 'lead', '2026-10-15')
     ])] });
     const fixture = TestBed.createComponent(OpportunitiesComponent);
     fixture.detectChanges();
@@ -42,9 +42,16 @@ describe('tracker status controls', () => {
     rows()[0].click();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.detail-actions button')?.textContent).toContain('Move to Applied');
+    expect([...fixture.nativeElement.querySelectorAll('.detail-note li')].map((item: Element) => item.textContent?.trim())).toEqual([
+      'Relevant skills.', 'Remote role.', 'Travel', 'late hours'
+    ]);
+    expect(fixture.nativeElement.querySelector('.detail-panel.mobile-open')).not.toBeNull();
+    (fixture.nativeElement.querySelector('.mobile-detail-close') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.detail-panel.mobile-open')).toBeNull();
   });
 
-  it('keeps application row status read-only while allowing edits in the opened detail panel', () => {
+  it('keeps rejected status fixed while allowing edits to other application details', async () => {
     TestBed.configureTestingModule({ imports: [ApplicationsComponent], providers: [provideStore([
       job('rejected', 'rejected', '2026-10-15')
     ])] });
@@ -57,7 +64,15 @@ describe('tracker status controls', () => {
 
     row.click();
     fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
     const status = fixture.nativeElement.querySelector('select[name="workflowStatus"]') as HTMLSelectElement;
-    expect([...status.options].map((option) => option.value)).toEqual(['rejected', 'applied', 'interviewing']);
+    expect([...status.options].map((option) => option.value)).toEqual(['rejected']);
+    expect(status.disabled).toBeTrue();
+    expect(status.closest('label')?.textContent).toContain('Rejected is final');
+    expect((fixture.nativeElement.querySelector('textarea[name="workflowNotes"]') as HTMLTextAreaElement).disabled).toBeFalse();
+    (fixture.nativeElement.querySelector('.mobile-detail-close') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.workflow-form')).toBeNull();
   });
 });

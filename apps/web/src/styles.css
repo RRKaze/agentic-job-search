@@ -24,6 +24,10 @@ body {
 .search-box { min-height: 40px; }
 .application-row[role="button"] { cursor: pointer; }
 .application-row[role="button"]:focus-visible { outline: 2px solid #3970e5; outline-offset: -2px; }
+.detail-note ul { margin: 0; padding-left: 19px; color: #667287; font-size: .77rem; line-height: 1.5; }
+.detail-note li { padding-left: 2px; }
+.detail-note li + li { margin-top: 8px; }
+.mobile-detail-backdrop, .mobile-detail-close { display: none; }
 .status-select { min-width: 0; border: 1px solid #cdd7e5; border-radius: 8px; padding: 7px 28px 7px 9px; color: #355178; background: #fff; font: inherit; font-size: .72rem; font-weight: 800; }
 .status-select.compact { width: 105px; }
 .list-column-label { align-self: center; color: #99a3b2; font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
@@ -32,6 +36,7 @@ body {
 .workflow-form { display: grid; gap: 15px; margin-top: 22px; border-top: 1px solid #dfe5ee; padding-top: 20px; }
 .workflow-form .panel-heading { margin-bottom: 0; }
 .workflow-form label { display: grid; gap: 7px; color: #647188; font-size: .72rem; font-weight: 800; }
+.workflow-form label small { font-size: .72rem; font-weight: 500; line-height: 1.4; }
 .workflow-form input, .workflow-form select, .workflow-form textarea { min-width: 0; width: 100%; border: 1px solid #d4dce7; border-radius: 8px; padding: 10px 11px; color: #263248; background: #fff; font: inherit; resize: vertical; }
 .workflow-form input:focus, .workflow-form select:focus, .workflow-form textarea:focus { border-color: #3970e5; outline: 3px solid rgba(57,112,229,.12); }
 .workflow-history { display: grid; gap: 8px; margin-top: 22px; border-top: 1px solid #dfe5ee; padding-top: 18px; }
@@ -100,6 +105,12 @@ body {
 .profile-save-bar span { color: #61718a; font-size: .8rem; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .success-message { margin-bottom: 20px; padding: 12px; border-radius: 8px; color: #137451; background: #e4f7ee; }
+@media (max-width: 1100px) {
+  .mobile-detail-backdrop { position: fixed; z-index: 920; inset: 0; display: block; width: 100%; border: 0; background: rgba(20, 29, 46, .48); }
+  .detail-panel { display: none; }
+  .detail-panel.mobile-open { position: fixed; z-index: 930; right: 0; bottom: 0; left: 0; display: block; max-height: 85dvh; overflow-y: auto; overscroll-behavior: contain; border: 0; border-radius: 16px 16px 0 0; padding: 18px 22px calc(22px + env(safe-area-inset-bottom)); box-shadow: 0 -12px 42px rgba(20, 29, 46, .25); }
+  .mobile-detail-close { position: sticky; top: 0; display: grid; place-items: center; width: 44px; height: 44px; margin: -6px -10px 8px auto; border: 1px solid #d7deea; border-radius: 9px; color: #455168; background: #fff; font-size: 1.5rem; line-height: 1; }
+}
 @media (max-width: 760px) {
   .auth-layout { grid-template-columns: 1fr; }
   .auth-intro { padding: 28px; gap: 14px; }

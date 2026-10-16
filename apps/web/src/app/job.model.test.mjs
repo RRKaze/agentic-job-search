@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isSavedOpportunity, sortByDiscoveredDate } from './job.model.ts';
+import { detailPoints, isSavedOpportunity, sortByDiscoveredDate } from './job.model.ts';
 import { workflowStatusOptions } from './features/applications/application-workflow.model.ts';
 
 const job = { id: 'fixture', title: 'Engineer', company: 'Example', location: 'Remote', createdAt: '2026-09-22T12:00:00Z' };
@@ -29,6 +29,12 @@ test('workflow options match the allowed application transitions', () => {
   assert.deepEqual(workflowStatusOptions({ ...job, trackingStage: 'interviewing', application: { state: 'Interview' } }).map(({ value }) => value),
     ['interviewing', 'applied', 'offer', 'rejected', 'withdrawn']);
   assert.deepEqual(workflowStatusOptions({ ...job, trackingStage: 'lead' }).map(({ value }) => value), ['lead', 'applied']);
+  assert.deepEqual(workflowStatusOptions({ ...job, trackingStage: 'rejected', application: { state: 'Rejected' } }).map(({ value }) => value), ['rejected']);
+});
+
+test('fit and caution text becomes readable bullet points without splitting technical abbreviations', () => {
+  assert.deepEqual(detailPoints('Works with .NET services. Strong C# background; remote role\n• Team fit.'),
+    ['Works with .NET services.', 'Strong C# background', 'remote role', 'Team fit.']);
 });
 
 test('saved opportunities sort by discovered date in either direction without mutating the source list', () => {

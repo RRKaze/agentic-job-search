@@ -11,10 +11,10 @@ The canonical statuses are Saved (`lead`), Applied, Interviewing, Offer, Rejecte
 | Applied | Interviewing, Rejected, Withdrawn |
 | Interviewing | Applied, Offer, Rejected, Withdrawn |
 | Offer | Interviewing, Rejected, Withdrawn |
-| Rejected | Applied, Interviewing |
+| Rejected | None; status is final |
 | Withdrawn | Applied |
 
-Backward transitions support correction and reopening while preserving application notes. Applications do not move back to Saved because removing the application would discard workflow context. Updating details without changing status is allowed and does not create a duplicate status-history entry.
+Other allowed backward transitions support corrections while preserving application notes. Rejected applications keep their status, but their dates, outcome, and notes can still be edited. Applications do not move back to Saved because removing the application would discard workflow context. Updating details without changing status is allowed and does not create a duplicate status-history entry.
 
 Each update stores the status date, submitted date, resume version, next follow-up, outcome or next action, and notes. Rejected and withdrawn applications cannot retain a follow-up date. Status changes are recorded with the account, previous and current status, job, and timestamp.
 
