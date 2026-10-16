@@ -28,7 +28,7 @@
         <div class="empty-state"><strong>No applications match this view.</strong><p>Try another status or search term.</p></div>
       } @else {
         @for (job of filteredJobs(); track job.id) {
-          <div class="application-row" role="button" tabindex="0" [class.selected]="selectedJob()?.id === job.id" (click)="selectJob(job)" (keydown.enter)="selectJob(job)">
+          <div class="application-row" role="button" tabindex="0" [class.selected]="selectedJob()?.id === job.id" [attr.aria-expanded]="selectedJob()?.id === job.id" aria-controls="application-details" (click)="selectJob(job)" (keydown.enter)="selectJob(job)">
             <span class="company-avatar">{{ job.company.slice(0, 1).toUpperCase() }}</span>
             <span class="job-identity"><strong>{{ job.title }}</strong><small>{{ job.company }} · {{ job.location }}</small></span>
             <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>
@@ -38,8 +38,10 @@
       }
     </div>
 
-    <aside class="detail-panel">
+    @if (selectedJob()) { <button type="button" class="mobile-detail-backdrop" aria-label="Close application details" (click)="closeDetails()"></button> }
+    <aside id="application-details" class="detail-panel" [class.mobile-open]="selectedJob()">
       @if (selectedJob(); as job) {
+        <button type="button" class="mobile-detail-close" aria-label="Close application details" (click)="closeDetails()">×</button>
         <div class="detail-header"><span class="company-avatar large">{{ job.company.slice(0, 1).toUpperCase() }}</span><div><p class="eyebrow">{{ job.company }}</p><h2>{{ job.title }}</h2><p>{{ job.location }}</p></div></div>
         <div class="detail-actions"><span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span>@if (job.sourceUrl) { <a [href]="job.sourceUrl" target="_blank" rel="noreferrer">Open posting ↗</a> }</div>
         <dl class="detail-grid">
@@ -47,16 +49,16 @@
           <div><dt>Applied</dt><dd>{{ formatDate(job.application?.submittedDate) }}</dd></div><div><dt>Next follow-up</dt><dd>{{ formatDate(job.application?.nextFollowUp) }}</dd></div>
           <div><dt>Resume used</dt><dd>{{ job.application?.resumeVersion || 'Not recorded' }}</dd></div><div><dt>Verified</dt><dd>{{ formatDate(job.verifiedDate) }}</dd></div>
         </dl>
-        @if (job.fitRationale) { <section class="detail-note"><h3>Why it fits</h3><p>{{ job.fitRationale }}</p></section> }
-        @if (job.gapsNotes) { <section class="detail-note caution"><h3>Gaps and cautions</h3><p>{{ job.gapsNotes }}</p></section> }
+        @if (job.fitRationale) { <section class="detail-note"><h3>Why it fits</h3><ul>@for (point of detailPoints(job.fitRationale); track $index) { <li>{{ point }}</li> }</ul></section> }
+        @if (job.gapsNotes) { <section class="detail-note caution"><h3>Gaps and cautions</h3><ul>@for (point of detailPoints(job.gapsNotes); track $index) { <li>{{ point }}</li> }</ul></section> }
         @if (job.application?.notes) { <section class="detail-note"><h3>Application notes</h3><p class="preserve-lines">{{ job.application?.notes }}</p></section> }
         <form class="workflow-form" (ngSubmit)="saveSelected(job)">
           <div class="panel-heading"><div><p class="eyebrow">Update progress</p><h3>Application details</h3></div></div>
           @if (saveMessage()) { <p class="success-message" role="status">{{ saveMessage() }}</p> }
           <div class="field-grid">
-            <label><span>Status</span><select name="workflowStatus" [ngModel]="workflowForm.status" (ngModelChange)="setStatus($event)" [disabled]="store.isSaving()">
+            <label><span>Status</span><select name="workflowStatus" [ngModel]="workflowForm.status" (ngModelChange)="setStatus($event)" [disabled]="store.isSaving() || stage(job) === 'rejected'">
               @for (option of statusOptions(job); track option.value) { <option [value]="option.value">{{ option.label }}</option> }
-            </select></label>
+            </select>@if (stage(job) === 'rejected') { <small>Rejected is final. You can still update dates and notes.</small> }</label>
             <label><span>Status date</span><input name="statusDate" type="date" [(ngModel)]="workflowForm.statusDate" required [disabled]="store.isSaving()"></label>
             <label><span>Submitted date</span><input name="submittedDate" type="date" [(ngModel)]="workflowForm.submittedDate" [disabled]="store.isSaving()"></label>
             <label><span>Next follow-up</span><input name="nextFollowUp" type="date" [(ngModel)]="workflowForm.nextFollowUp" [disabled]="store.isSaving() || workflowForm.status === 'rejected' || workflowForm.status === 'withdrawn'"></label>

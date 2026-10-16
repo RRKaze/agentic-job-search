@@ -38,6 +38,19 @@ public sealed class JobWorkflowPolicyTests
         Assert.Equal(400, failure.StatusCode);
     }
 
+    [Theory]
+    [InlineData("applied")]
+    [InlineData("interviewing")]
+    public void Rejected_application_cannot_change_status(string nextStatus)
+    {
+        var job = new Job { TrackingStage = "rejected" };
+
+        var failure = Assert.Throws<WorkflowFailure>(() => policy.ValidateTransition(job, Request(nextStatus)));
+
+        Assert.Equal(409, failure.StatusCode);
+        Assert.Equal("rejected", policy.ValidateTransition(job, Request("rejected") with { Notes = "Corrected details" }));
+    }
+
     private static UpdateJobWorkflowRequest Request(string status) =>
         new(status, new DateOnly(2026, 9, 22), null, null, null, null, null);
 }

@@ -35,7 +35,7 @@ export function workflowStatusOptions(job: WorkflowJob): { value: string; label:
     applied: ['interviewing', 'rejected', 'withdrawn'],
     interviewing: ['applied', 'offer', 'rejected', 'withdrawn'],
     offer: ['interviewing', 'rejected', 'withdrawn'],
-    rejected: ['applied', 'interviewing'],
+    rejected: [],
     withdrawn: ['applied']
   };
   const labels: Record<string, string> = {

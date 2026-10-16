@@ -33,20 +33,22 @@
       @else if (opportunities().length === 0) { <div class="empty-state"><strong>No saved opportunities match this view.</strong><p>Try another search term or add a job.</p></div> }
       @else {
         @for (job of opportunities(); track job.id) {
-          <div class="application-row" role="button" tabindex="0" [class.selected]="selectedJob()?.id === job.id" (click)="selectJob(job)" (keydown.enter)="selectJob(job)">
+          <div class="application-row" role="button" tabindex="0" [class.selected]="selectedJob()?.id === job.id" [attr.aria-expanded]="selectedJob()?.id === job.id" aria-controls="opportunity-details" (click)="selectJob(job)" (keydown.enter)="selectJob(job)">
             <span class="company-avatar">{{ job.company.slice(0, 1).toUpperCase() }}</span><span class="job-identity"><strong>{{ job.title }}</strong><small>{{ job.company }} · {{ job.location }}</small></span>
             <span class="status-badge" [attr.data-stage]="stage(job)">{{ stageLabel(job) }}</span><span class="updated-date">{{ statusDate(job) }}</span>
           </div>
         }
       }
     </div>
-    <aside class="detail-panel">
+    @if (selectedJob()) { <button type="button" class="mobile-detail-backdrop" aria-label="Close opportunity details" (click)="closeDetails()"></button> }
+    <aside id="opportunity-details" class="detail-panel" [class.mobile-open]="selectedJob()">
       @if (selectedJob(); as job) {
+        <button type="button" class="mobile-detail-close" aria-label="Close opportunity details" (click)="closeDetails()">×</button>
         <div class="detail-header"><span class="company-avatar large">{{ job.company.slice(0, 1).toUpperCase() }}</span><div><p class="eyebrow">{{ job.company }}</p><h2>{{ job.title }}</h2><p>{{ job.location }}</p></div></div>
         <div class="detail-actions"><button type="button" class="primary-button" (click)="markApplied(job)" [disabled]="store.isSaving()">{{ store.isSaving() ? 'Saving…' : 'Move to Applied' }}</button>@if (job.sourceUrl) { <a [href]="job.sourceUrl" target="_blank" rel="noreferrer">Open posting ↗</a> }</div>
         <dl class="detail-grid"><div><dt>Priority</dt><dd>{{ job.priority || 'Not set' }}</dd></div><div><dt>Discovered</dt><dd>{{ statusDate(job) }}</dd></div><div><dt>Work mode</dt><dd>{{ job.workMode || 'Not set' }}</dd></div><div><dt>Verified</dt><dd>{{ formatDate(job.verifiedDate) }}</dd></div></dl>
-        @if (job.fitRationale) { <section class="detail-note"><h3>Why it fits</h3><p>{{ job.fitRationale }}</p></section> }
-        @if (job.gapsNotes) { <section class="detail-note caution"><h3>Gaps and cautions</h3><p>{{ job.gapsNotes }}</p></section> }
+        @if (job.fitRationale) { <section class="detail-note"><h3>Why it fits</h3><ul>@for (point of detailPoints(job.fitRationale); track $index) { <li>{{ point }}</li> }</ul></section> }
+        @if (job.gapsNotes) { <section class="detail-note caution"><h3>Gaps and cautions</h3><ul>@for (point of detailPoints(job.gapsNotes); track $index) { <li>{{ point }}</li> }</ul></section> }
         @if (!job.fitRationale && job.explanation) { <section class="detail-note"><h3>Evaluation</h3><p>{{ job.explanation }}</p></section> }
       } @else { <div class="empty-state"><strong>Select an opportunity</strong><p>Open a saved job to review it and move it to Applied.</p></div> }
     </aside>

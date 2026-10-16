@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { formatDate, Job, jobStage, stageLabel, statusDateValue, dateTimestamp, todayInput } from '../job.model';
+import { detailPoints, formatDate, Job, jobStage, stageLabel, statusDateValue, dateTimestamp, todayInput } from '../job.model';
 import {
   cleanWorkflowUpdate,
   JobWorkflowUpdate,
@@ -63,6 +63,10 @@ export class ApplicationsComponent {
   }
 
   selectJob(job: Job): void { this.selectedId.set(job.id); this.saveMessage.set(''); }
+  closeDetails(): void { this.selectedId.set(null); }
+  @HostListener('document:keydown.escape')
+  onEscape(): void { this.closeDetails(); }
+  detailPoints(value: string): string[] { return detailPoints(value); }
   statusOptions(job: Job): { value: string; label: string }[] { return workflowStatusOptions(job); }
   historyLabel(status: string): string { return status === 'lead' ? 'Saved' : status.charAt(0).toUpperCase() + status.slice(1); }
   historyDate(value: string): string { return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)); }
