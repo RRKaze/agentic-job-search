@@ -7,6 +7,9 @@ import { map, switchMap } from 'rxjs';
 import { AuthService } from '../auth.service';
 import { CandidateProfileUpdate, editableCandidateProfile, emptyCandidateProfile, profileCompleteness } from '../features/profile/candidate-profile.model';
 import { CandidateProfileService } from '../features/profile/candidate-profile.service';
+import { resumeEvidenceCandidates, reviewedResumeEvidence } from '../features/profile/resume-evidence-import.model';
+
+type ResumeCandidate = { statement: string; selected: boolean };
 
 @Component({ selector: 'app-profile', imports: [FormsModule, DatePipe], templateUrl: './profile.component.html', changeDetection: ChangeDetectionStrategy.Eager })
 export class ProfileComponent implements OnInit {
@@ -21,6 +24,9 @@ export class ProfileComponent implements OnInit {
   busy = false;
   error = '';
   saved = false;
+  resumePreview: ResumeCandidate[] = [];
+  resumeImportMessage = '';
+  resumeImportError = '';
 
   ngOnInit(): void {
     if (this.onboarding) return;
@@ -31,6 +37,42 @@ export class ProfileComponent implements OnInit {
   }
 
   get completion(): number { return profileCompleteness(this.draft, this.careerStage); }
+  get selectedResumeCount(): number { return this.resumePreview.filter((item) => item.selected).length; }
+  get availableEvidenceSlots(): number { return 25 - this.draft.evidence.length; }
+
+  clearResumePreview(): void {
+    this.resumePreview = [];
+    this.resumeImportMessage = '';
+    this.resumeImportError = '';
+  }
+
+  previewResumeEvidence(): void {
+    this.resumePreview = resumeEvidenceCandidates(this.draft.resumeText, this.draft.evidence)
+      .map((statement) => ({ statement, selected: false }));
+    this.resumeImportError = '';
+    this.resumeImportMessage = this.resumePreview.length
+      ? 'Choose the statements you want to add. Nothing is added or saved automatically.'
+      : 'No new bullet statements were found. Use bullet lines in your resume text or add evidence manually.';
+  }
+
+  addSelectedResumeEvidence(): void {
+    const selected = this.resumePreview.filter((item) => item.selected);
+    if (selected.length === 0) return;
+    if (selected.length > this.availableEvidenceSlots) {
+      this.resumeImportError = `Choose at most ${this.availableEvidenceSlots} more statements.`;
+      return;
+    }
+    const stillAvailable = new Set(resumeEvidenceCandidates(this.draft.resumeText, this.draft.evidence));
+    if (selected.some((item) => !stillAvailable.has(item.statement))) {
+      this.resumeImportError = 'Your evidence changed. Preview the resume again before adding statements.';
+      return;
+    }
+    this.draft.evidence.push(...reviewedResumeEvidence(selected.map((item) => item.statement)));
+    this.resumePreview = this.resumePreview.filter((item) => !item.selected);
+    this.resumeImportError = '';
+    this.resumeImportMessage = `Added ${selected.length} statement${selected.length === 1 ? '' : 's'} to your draft as Needs review. Review the details below, then save your profile.`;
+    this.saved = false;
+  }
 
   addEvidence(): void {
     this.draft.evidence.push({ category: '', statement: '', verificationStatus: 'Unverified', source: '' });

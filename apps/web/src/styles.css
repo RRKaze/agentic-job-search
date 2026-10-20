@@ -98,6 +98,15 @@ body {
 .checkbox-field { display: flex !important; flex-direction: row; align-items: center; align-self: end; min-height: 45px; padding: 10px 12px; border: 1px solid #d7dfe9; border-radius: 8px; }
 .checkbox-field input { width: 18px; height: 18px; accent-color: #2b63df; }
 .evidence-editor { display: grid; gap: 14px; border: 1px solid #dfe5ee; border-radius: 12px; padding: 18px; background: #fafbfd; }
+.resume-import { display: grid; gap: 14px; border: 1px solid #dfe5ee; border-radius: 12px; padding: 18px; background: #fafbfd; }
+.resume-import-heading, .resume-import-actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.resume-import-heading h3 { font-size: .95rem; }
+.resume-import-heading p, .resume-import-actions span { margin-top: 5px; color: #61718a; font-size: .78rem; line-height: 1.5; }
+.resume-import-heading button, .resume-import-actions button { flex: 0 0 auto; }
+.resume-preview { display: grid; gap: 8px; max-height: 360px; overflow-y: auto; border: 0; border-top: 1px solid #e0e6ef; margin: 0; padding: 12px 0 0; }
+.resume-preview legend { padding: 12px 0 0; font-size: .8rem; font-weight: 700; }
+.resume-candidate { display: flex !important; align-items: start; gap: 10px; border: 1px solid #dfe5ee; border-radius: 8px; padding: 12px; background: #fff; font-size: .8rem; font-weight: 400; line-height: 1.5; }
+.resume-candidate input { flex: 0 0 auto; width: 18px; height: 18px; margin: 1px 0 0; accent-color: #2b63df; }
 .text-button { justify-self: start; border: 0; padding: 0; color: #2457d6; background: transparent; cursor: pointer; font: inherit; font-size: .8rem; font-weight: 700; }
 .danger-text { color: #a74242; }
 .empty-evidence { margin: 0; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 18px; color: #718096; font-size: .84rem; }
@@ -120,6 +129,8 @@ body {
   .intro-detail { display: none; }
   .auth-card { padding: 30px 24px; }
   .profile-field-grid, .career-options-grid { grid-template-columns: 1fr; }
+  .resume-import-heading, .resume-import-actions { align-items: stretch; flex-direction: column; }
+  .resume-import-heading button, .resume-import-actions button { width: 100%; }
   .section-heading, .profile-save-bar { align-items: stretch; flex-direction: column; }
   .section-heading > p { text-align: left; }
   .profile-save-bar .primary-button { width: 100%; }

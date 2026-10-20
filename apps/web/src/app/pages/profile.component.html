@@ -82,7 +82,22 @@
             <label>LinkedIn URL<input name="linkedInUrl" type="url" [(ngModel)]="draft.linkedInUrl" maxlength="2048" placeholder="https://linkedin.com/in/…" [disabled]="busy"></label>
             <label>Portfolio or professional website<input name="portfolioUrl" type="url" [(ngModel)]="draft.portfolioUrl" maxlength="2048" placeholder="https://…" [disabled]="busy"></label>
           </div>
-          <label>Resume text<textarea name="resumeText" [(ngModel)]="draft.resumeText" maxlength="30000" rows="10" placeholder="Paste your current resume text. File upload can be added after secure document storage is introduced." [disabled]="busy"></textarea></label>
+          <label>Resume text<textarea name="resumeText" [(ngModel)]="draft.resumeText" (input)="clearResumePreview()" maxlength="30000" rows="10" placeholder="Paste your current resume text. File upload can be added after secure document storage is introduced." [disabled]="busy"></textarea></label>
+          <div class="resume-import">
+            <div class="resume-import-heading"><div><h3>Review resume evidence</h3><p>Find explicit bullet statements in the pasted text. You choose what to add; imported items stay unverified until you review them.</p></div><button type="button" class="secondary-button" (click)="previewResumeEvidence()" [disabled]="busy || candidate.isLoading() || !draft.resumeText.trim() || availableEvidenceSlots === 0">Preview bullets</button></div>
+            @if (resumeImportMessage) { <p class="profile-hint" role="status">{{ resumeImportMessage }}</p> }
+            @if (resumeImportError) { <p class="error" role="alert">{{ resumeImportError }}</p> }
+            @if (resumePreview.length > 0) {
+              <fieldset class="resume-preview" [disabled]="busy">
+                <legend>Select statements to add as Needs review</legend>
+                @for (item of resumePreview; track item.statement) {
+                  <label class="resume-candidate"><input type="checkbox" [checked]="item.selected" (change)="item.selected = $any($event.target).checked"><span>{{ item.statement }}</span></label>
+                }
+              </fieldset>
+              <div class="resume-import-actions"><span>{{ selectedResumeCount }} selected · {{ availableEvidenceSlots }} evidence slots available</span><button type="button" class="secondary-button" (click)="addSelectedResumeEvidence()" [disabled]="busy || selectedResumeCount === 0 || selectedResumeCount > availableEvidenceSlots">Add selected to draft</button></div>
+              @if (selectedResumeCount > availableEvidenceSlots) { <p class="error" role="alert">Select no more than {{ availableEvidenceSlots }} statements.</p> }
+            }
+          </div>
         </section>
 
         <section class="profile-section">
