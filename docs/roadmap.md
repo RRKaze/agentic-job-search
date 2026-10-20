@@ -79,7 +79,7 @@ Deliverables:
 2. [x] Add candidate-profile and evidence API endpoints.
 3. [x] Add Angular screens for reviewing and editing profile preferences and evidence.
 4. [x] Require scoring explanations to identify the verified evidence they used.
-5. [ ] Import structured evidence from a resume without silently accepting generated claims.
+5. [ ] Import structured evidence from a resume without silently accepting generated claims. The first slice previews explicit bullets from pasted resume text and adds only selected statements as `NeedsReview`; broader resume formats remain.
 
 Exit criteria:
 

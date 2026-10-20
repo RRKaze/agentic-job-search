@@ -19,6 +19,10 @@ Evidence can be `Unverified`, `NeedsReview`, or `Verified`. A source should iden
 
 The profile page never creates accomplishments from job descriptions or inferred experience. Users explicitly enter and classify their own evidence.
 
+## Reviewed resume import
+
+The first import input is pasted resume text already stored in the private profile. **Preview bullets** extracts only explicit bullet or numbered lines, preserves their wording, and omits exact duplicates of existing evidence. It does not interpret prose, infer skills, or generate new claims. The user selects statements to add to the editable profile draft and then saves the profile separately. Imported statements have category `Resume`, source `Pasted resume`, and status `NeedsReview`; they do not count as verified scoring evidence until the user reviews and changes their status. File upload, PDF/DOCX extraction, and semantic claim extraction remain outside this first slice.
+
 ## Ownership and API
 
 `GET /api/candidate-profile` and `PUT /api/candidate-profile` operate only on the signed-in account's profile. Mutations require the same custom request header used by other browser writes. The backend validates lengths, allowed preference values, year and experience ranges, URL schemes, evidence count, and required evidence content.
